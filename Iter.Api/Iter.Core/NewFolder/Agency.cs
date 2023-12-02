@@ -1,4 +1,6 @@
-﻿namespace Iter.Core.Models
+﻿using Iter.Core.Models;
+
+namespace Iter.Core.Models
 {
     public class Agency
     {
@@ -37,8 +39,8 @@
         public DateTime DateModified { get; set; }
 
 
-        public List<User> Users{ get; set; }
+        public List<User> Users { get; set; }
 
-        public List<Arrangement> Arrangements{ get; set; }
+        public List<Arrangement> Arrangements { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Iter.Core.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace Iter.Core
+namespace Iter.Core.Models
 {
     public class User : IdentityUser
     {
@@ -19,7 +19,7 @@ namespace Iter.Core
 
         public bool IsActive { get; set; }
 
-        public List<Reservation> Reservations{ get; set; }
+        public List<Reservation> Reservations { get; set; }
 
         public List<EmployeeArrangment> EmployeeArrangments { get; set; }
     }
