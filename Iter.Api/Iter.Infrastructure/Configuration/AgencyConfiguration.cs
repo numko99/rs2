@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 
-using Iter.Core.Models;
+using Iter.Core.EntityModels;
 
 namespace Iter.Infrastrucure.Configurations
 {
@@ -27,9 +27,6 @@ namespace Iter.Infrastrucure.Configurations
 
             builder.Property(a => a.LicenseNumber)
                 .HasMaxLength(50);
-
-            builder.Property(a => a.LogoUrl)
-                .HasMaxLength(200);
 
             builder.HasOne(a => a.Address)
                 .WithMany()

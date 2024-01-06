@@ -12,7 +12,7 @@ public class ServiceTemplate
     this.entityName = entityName;
     this.serviceTemplate =
 $@"using AutoMapper;
-using Iter.Core.Models;
+using Iter.Core.EntityModels;
 using Iter.Core.Requests;
 using Iter.Core.Responses;
 using Iter.Repository.Interface;

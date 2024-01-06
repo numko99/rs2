@@ -1,4 +1,4 @@
-﻿using Iter.Api.Mapping;
+using Iter.Api.Mapping;
 using Iter.Core.Options;
 using Iter.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,19 +14,47 @@ using Iter.Services;
 using Iter.Infrastrucure;
 using Iter.Repository.Interface;
 using Iter.Repository;
+using Iter.Core.EntityModels;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 namespace Iter.Api.Infrastructure
 {
     public static class StartupHelper
     {
+        private const string DefaultCulture = "bs-BA";
+
         public static void ConfigureServices(this IServiceCollection services)
         {
+            services.AddScoped<IAccommodationService, AccommodationService>();
+            services.AddScoped<IAccommodationRepository, AccommodationRepository>();
+
+
+            services.AddScoped<IArrangementService, ArrangementService>();
+            services.AddScoped<IArrangementRepository, ArrangementRepository>();
+
+
+            services.AddScoped<IDestinationService, DestinationService>();
+            services.AddScoped<IDestinationRepository, DestinationRepository>();
+
+
+            services.AddScoped<IEmployeeArrangmentService, EmployeeArrangmentService>();
+            services.AddScoped<IEmployeeArrangmentRepository, EmployeeArrangmentRepository>();
+
+
+            services.AddScoped<IReservationService, ReservationService>();
+            services.AddScoped<IReservationRepository, ReservationRepository>();
+
+
             services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
 
             services.AddScoped<IAgencyService, AgencyService>();
             services.AddScoped<IAgencyRepository, AgencyRepository>();
 
             services.AddSingleton(AutoMapperConfig.CreateMapping());
+
+            services.AddHttpClient();
         }
 
         public static void ConfigureDb(this IServiceCollection services, IConfiguration configuration)

@@ -1,37 +1,40 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:injectable/injectable.dart';
-import 'main.config.dart';
+import 'package:provider/provider.dart';
+import 'package:ui/pages/agency_details.dart';
+import 'package:ui/pages/arrangments_add_edit.dart';
+import 'package:ui/services/agency_provider.dart';
 
-import 'package:ui/pages/home.dart';
+import 'package:ui/pages/agency.dart';
 import 'package:ui/pages/login.dart';
-
-final getIt = GetIt.instance;
-
-@injectableInit
-void configureDependencies() => $initGetIt(getIt);
+import 'package:ui/services/arrangment_provider.dart';
+import 'package:ui/services/auth_provider.dart';
 
 void main() {
-  configureDependencies();
-  runApp(IterApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => AgencyProvider()),
+    ChangeNotifierProvider(create: (_) => AuthProvider()),
+    ChangeNotifierProvider(create: (_) => ArrangmentProvider()),
+  ], child: IterApp()));
 }
 
 class IterApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ITer',
-      theme: ThemeData(
-        primarySwatch: Colors.amber,
-        fontFamily: 'Elsie-Regular',
-      ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => Login(),
-        '/home': (context) => Home(),
-      },
-    );
+        title: 'ITer',
+        theme: ThemeData(
+          primarySwatch: Colors.amber,
+          fontFamily: 'Elsie-Regular',
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const ArrangementAddEditPage(),
+          '/agency': (context) => const AgencyPage(),
+          '/agency/details': (context) {
+            final args = ModalRoute.of(context)!.settings.arguments as Map;
+            return AgencyDetailsPage(id: args['id']);
+          },
+        });
   }
 }

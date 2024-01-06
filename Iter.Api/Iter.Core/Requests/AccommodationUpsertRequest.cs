@@ -1,0 +1,2 @@
+namespace Iter.Core.Requests
+{    public class AccommodationUpsertRequest    {        public Guid Id { get; set; }        public string HotelName { get; set; }        public Guid HotelAddressId { get; set; }        public AddressInsertRequest HotelAddress { get; set; }        public DateTime CheckInDate { get; set; }        public DateTime CheckOutDate { get; set; }        public bool IsDeleted { get; set; }        public DateTime DateCreated { get; set; }        public DateTime DateModified { get; set; }    }}

@@ -49,7 +49,6 @@ namespace Iter.Desktop.Forms
                     PostalCode = PostalCodeTxtBox.Text,
                     HouseNumber = HouseNumberTxtBox.Text,
                     Street = StreetTxtBox.Text,
-                    LogoUrl = string.Empty
                 };
 
                 var errorLabels = new Dictionary<string, Label>

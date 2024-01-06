@@ -1,50 +1,53 @@
-﻿using Iter.Core.Models;
+﻿using AutoMapper;
+using Iter.Core.EntityModels;
+using Iter.Core.Models;
 using Iter.Core.Requests;
 using Iter.Core.Responses;
+using Iter.Core.Search_Models;
 using Iter.Infrastrucure;
 using Iter.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Iter.Repository
 {
-    public class AgencyRepository: BaseCrudRepository<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse>, IAgencyRepository
+    public class AgencyRepository : BaseCrudRepository<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel>, IAgencyRepository
     {
         private readonly IterContext dbContext;
-        public AgencyRepository(IterContext dbContext) : base(dbContext)
+        private readonly IMapper mapper;
+
+        public AgencyRepository(IterContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
             this.dbContext = dbContext;
+            this.mapper = mapper;
         }
 
-        public async Task<List<AgencySearchResponse>> GetAgenciesSearch(int currentPage, int pageSize)
+        public override async Task<PagedResult<AgencyResponse>> Get(AgencySearchModel? search)
         {
-            var skip = (currentPage - 1) * pageSize;
+            var query = dbContext.Set<Agency>().AsQueryable();
 
-            var query = dbContext.Agency.
-                        AsNoTracking().
-                        OrderByDescending(a => a.DateCreated);
+            PagedResult<AgencyResponse> result = new PagedResult<AgencyResponse>();
 
-            var totalCount = await query.CountAsync();
+            if (!string.IsNullOrEmpty(search?.Name))
+            {
+                query = query.Where(a => a.Name.Contains(search.Name));
+            }
 
-            var agencySearchResponses = await query
-                .Skip(skip)
-                .Take(pageSize)
-                .Select(a => new AgencySearchResponse
-                {
-                    Id = a.Id,
-                    Name = a.Name,
-                    City = a.Address != null ? a.Address.City : null,
-                    ContactEmail = a.ContactEmail,
-                    ContactPhone = a.ContactPhone,
-                    TotalCount = totalCount
-                })
-                .ToListAsync();
+            query = query.Where(a => a.IsDeleted == false);
 
-            return agencySearchResponses;
+            query = query.Include(nameof(Address));
+
+            result.Count = await query.CountAsync();
+
+            query = query.OrderByDescending(q => q.DateCreated);
+
+            if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
+            {
+                query = query.Skip((search.CurrentPage.Value - 1) * search.PageSize.Value).Take(search.PageSize.Value);
+            }
+            var list = await query.ToListAsync();
+            var tmp = mapper.Map<List<AgencyResponse>>(list);
+            result.Result = tmp;
+            return result;
         }
 
         public async override Task AddAsync(Agency entity)
@@ -62,7 +65,7 @@ namespace Iter.Repository
             return await this.dbContext.Agency.Include(a => a.Address).FirstOrDefaultAsync(a => a.Id == id);
         }
 
-         public override async Task DeleteAsync(Agency entity)
+        public override async Task DeleteAsync(Agency entity)
         {
             var address = entity.Address;
             this.dbContext.Agency.Remove(entity);

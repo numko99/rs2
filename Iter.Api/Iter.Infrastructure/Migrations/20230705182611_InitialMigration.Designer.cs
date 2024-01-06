@@ -24,7 +24,7 @@ namespace Iter.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Iter.Core.Models.Accommodation", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Accommodation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -60,7 +60,7 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("Accommodation", (string)null);
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Address", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Address", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,7 +105,7 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("Address", (string)null);
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Agency", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Agency", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -166,7 +166,7 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("Agency", (string)null);
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Arrangement", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Arrangement", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -213,7 +213,7 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("Arrangement", (string)null);
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Destination", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Destination", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -262,7 +262,7 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("Destination", (string)null);
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.EmployeeArrangment", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.EmployeeArrangment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -296,7 +296,7 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("EmployeeArrangment", (string)null);
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Reservation", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Reservation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -348,7 +348,7 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("Reservation", (string)null);
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.ReservationStatus", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.ReservationStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -584,9 +584,9 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Accommodation", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Accommodation", b =>
                 {
-                    b.HasOne("Iter.Core.Models.Address", "HotelAddress")
+                    b.HasOne("Iter.Core.EntityModels.Address", "HotelAddress")
                         .WithMany()
                         .HasForeignKey("HotelAddressId")
                         .IsRequired()
@@ -595,9 +595,9 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("HotelAddress");
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Agency", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Agency", b =>
                 {
-                    b.HasOne("Iter.Core.Models.Address", "Address")
+                    b.HasOne("Iter.Core.EntityModels.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressId")
                         .IsRequired()
@@ -606,9 +606,9 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Arrangement", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Arrangement", b =>
                 {
-                    b.HasOne("Iter.Core.Models.Agency", "Agency")
+                    b.HasOne("Iter.Core.EntityModels.Agency", "Agency")
                         .WithMany("Arrangements")
                         .HasForeignKey("AgencyId")
                         .IsRequired()
@@ -617,15 +617,15 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Agency");
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Destination", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Destination", b =>
                 {
-                    b.HasOne("Iter.Core.Models.Accommodation", "Accommodation")
+                    b.HasOne("Iter.Core.EntityModels.Accommodation", "Accommodation")
                         .WithMany("Destinations")
                         .HasForeignKey("AccommodationId")
                         .IsRequired()
                         .HasConstraintName("FK_Destination_Accommodation");
 
-                    b.HasOne("Iter.Core.Models.Arrangement", "Arrangement")
+                    b.HasOne("Iter.Core.EntityModels.Arrangement", "Arrangement")
                         .WithMany("Destinations")
                         .HasForeignKey("ArrangementId")
                         .IsRequired()
@@ -636,9 +636,9 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Arrangement");
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.EmployeeArrangment", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.EmployeeArrangment", b =>
                 {
-                    b.HasOne("Iter.Core.Models.Arrangement", "Arrangement")
+                    b.HasOne("Iter.Core.EntityModels.Arrangement", "Arrangement")
                         .WithMany("EmployeeArrangments")
                         .HasForeignKey("ArrangementId")
                         .IsRequired()
@@ -655,15 +655,15 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Employee");
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Reservation", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Reservation", b =>
                 {
-                    b.HasOne("Iter.Core.Models.Arrangement", "Arrangement")
+                    b.HasOne("Iter.Core.EntityModels.Arrangement", "Arrangement")
                         .WithMany("Reservations")
                         .HasForeignKey("ArrangmentId")
                         .IsRequired()
                         .HasConstraintName("FK_Reservation_Arrangement");
 
-                    b.HasOne("Iter.Core.Models.ReservationStatus", "Status")
+                    b.HasOne("Iter.Core.EntityModels.ReservationStatus", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId")
                         .IsRequired()
@@ -684,7 +684,7 @@ namespace Iter.Infrastructure.Migrations
 
             modelBuilder.Entity("Iter.Core.User", b =>
                 {
-                    b.HasOne("Iter.Core.Models.Agency", "Agency")
+                    b.HasOne("Iter.Core.EntityModels.Agency", "Agency")
                         .WithMany("Users")
                         .HasForeignKey("AgencyId");
 
@@ -742,19 +742,19 @@ namespace Iter.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Accommodation", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Accommodation", b =>
                 {
                     b.Navigation("Destinations");
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Agency", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Agency", b =>
                 {
                     b.Navigation("Arrangements");
 
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("Iter.Core.Models.Arrangement", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Arrangement", b =>
                 {
                     b.Navigation("Destinations");
 

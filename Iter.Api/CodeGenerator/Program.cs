@@ -9,38 +9,38 @@ namespace CodeGenerator.Script
         {
             string currentWorkingDirectory = Directory.GetCurrentDirectory();
             string projectName = "Iter.Core";
-            string targetFolderDBEntities = @"C:\Projects\Iter\Iter.Api\Iter.Core\Models\";
+            string targetFolderDBEntities = @"C:\Projects\rs2\Iter.Api\Iter.Core\Models\";
             string absolutePathDBEntities = Path.GetFullPath(targetFolderDBEntities);
-            string targetFolderController = @"C:\Projects\Iter\Iter.Api\Iter.Api\Controllers\";
+            string targetFolderController = @"C:\Projects\rs2\Iter.Api\Iter.Api\Controllers\";
             string absolutePathTargetFolder = Path.GetFullPath(targetFolderController);
-            string targetFolderService = @"C:\Projects\Iter\Iter.Api\Iter.Service";
+            string targetFolderService = @"C:\Projects\rs2\Iter.Api\Iter.Service";
             string absolutePathTargetFolderService = Path.GetFullPath(targetFolderService);
-            string targetFolderServiceInterface = @"C:\Projects\Iter\Iter.Api\Iter.Service.Interface";
+            string targetFolderServiceInterface = @"C:\Projects\rs2\Iter.Api\Iter.Service.Interface";
             string absolutePathTargetFolderServiceInterface = Path.GetFullPath(targetFolderServiceInterface);
-            string targetFolderRepository = @"C:\Projects\Iter\Iter.Api\Iter.Repository";
+            string targetFolderRepository = @"C:\Projects\rs2\Iter.Api\Iter.Repository";
             string absolutePathTargetFolderRepository = Path.GetFullPath(targetFolderRepository);
-            string targetFolderRepositoryInterface = @"C:\Projects\Iter\Iter.Api\Iter.Repository.Interface";
+            string targetFolderRepositoryInterface = @"C:\Projects\rs2\Iter.Api\Iter.Repository.Interface";
             string absolutePathTargetFolderRepositoryInterface = Path.GetFullPath(targetFolderRepositoryInterface);
-            string targetFolderUpsertModels = @"C:\Projects\Iter\Iter.Api\Iter.Core\Requests";
+            string targetFolderUpsertModels = @"C:\Projects\rs2\Iter.Api\Iter.Core\Requests";
             string absolutePathTargetFolderUpsertModels = Path.GetFullPath(targetFolderUpsertModels);
-            string targetFolderResponseModels = @"C:\Projects\Iter\Iter.Api\Iter.Core\Responses\";
+            string targetFolderResponseModels = @"C:\Projects\rs2\Iter.Api\Iter.Core\Responses\";
             string absolutePathTargetFolderResponseModels = Path.GetFullPath(targetFolderResponseModels);
 
-            string targetFolderMapper = @"C:\Projects\Iter\Iter.Api\Iter.Api\Mapping";
+            string targetFolderMapper = @"C:\Projects\rs2\Iter.Api\Iter.Api\Mapping";
             string absolutePathTargetFolderMapper = Path.GetFullPath(targetFolderMapper);
             string[] mapperContent = File.ReadAllLines(Path.Combine(absolutePathTargetFolderMapper, $"IterAutoMapperProfile.cs"));
 
-            string targetStartupHelper = @"C:\Projects\Iter\Iter.Api\Iter.Api\Infrastructure";
+            string targetStartupHelper = @"C:\Projects\rs2\Iter.Api\Iter.Api\Infrastructure";
             string absolutePathTargetStartupHelper = Path.GetFullPath(targetStartupHelper);
             string[] startupHelperContent = File.ReadAllLines(Path.Combine(absolutePathTargetStartupHelper, $"StartupHelper.cs"));
 
             string[] entityPaths = Directory.GetFiles(absolutePathDBEntities, "*.cs", SearchOption.TopDirectoryOnly);
 
             string[] entityNames = entityPaths.Select(path => Path.GetFileNameWithoutExtension(path)).ToArray();
-            entityNames = Array.FindAll(entityNames, name => !name.Contains("Context") && !name.Contains("Address") && !name.Contains("Agency") && !name.Contains("Migrations"));
+            entityNames = Array.FindAll(entityNames, name => !name.Contains("Context") && !name.Contains("Migrations"));
             
             string[] entityContents = entityPaths.Select(path => File.ReadAllText(path)).ToArray();
-            entityContents = Array.FindAll(entityContents, content => !content.Contains("Context") && !content.Contains("Address") && !content.Contains("Agency") && !content.Contains("Migrations"));
+            entityContents = Array.FindAll(entityContents, content => !content.Contains("Context") && !content.Contains("Migrations"));
 
             // string[][] entityContentLines = entityPaths.Select(path => File.ReadAllLines(path)).ToArray();
             // entityContentLines = Array.FindAll(entityContentLines, content => !content.ToString().Contains("Context") && !content.ToString().Contains("Migrations"));
@@ -69,7 +69,7 @@ namespace CodeGenerator.Script
             string modifiedEntityContent = "";
             foreach (string line in entityContentLines)
             {
-                if (line.Contains("namespace Iter.Core.Models"))
+                if (line.Contains("namespace Iter.Core.EntityModels"))
                 {
                     modifiedEntityContent += "namespace Iter.Core.Requests" + Environment.NewLine;
                 }

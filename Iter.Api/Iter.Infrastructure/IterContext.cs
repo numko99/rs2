@@ -1,5 +1,5 @@
 ﻿using Iter.Core;
-using Iter.Core.Models;
+using Iter.Core.EntityModels;
 using Iter.Infrastrucure.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

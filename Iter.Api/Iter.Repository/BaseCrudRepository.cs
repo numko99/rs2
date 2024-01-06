@@ -1,15 +1,17 @@
-﻿using Iter.Infrastrucure;
+﻿using AutoMapper;
+using Iter.Core.Search_Models;
+using Iter.Infrastrucure;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace Iter.Repository
 {
-    public class BaseCrudRepository<T, TInsert, TUpdate, TGet> : BaseReadRepository<T, TGet> where TInsert : class where T : class where TGet : class
+    public class BaseCrudRepository<T, TInsert, TUpdate, TGet, TSearch> : BaseReadRepository<T, TGet, TSearch> where TInsert : class where T : class where TGet : class where TSearch : BaseSearchModel
     {
         private readonly IterContext dbContext;
         private readonly DbSet<T> dbSet;
 
-        public BaseCrudRepository(IterContext dbContext) : base(dbContext)
+        public BaseCrudRepository(IterContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
             this.dbContext = dbContext;
             this.dbSet = this.dbContext.Set<T>();

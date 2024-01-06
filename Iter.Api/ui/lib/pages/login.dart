@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:ui/services/authService.dart';
+import 'package:provider/provider.dart';
+import 'package:ui/services/agency_provider.dart';
+import 'package:ui/services/auth_provider.dart';
 import '../widgets/inputField.dart';
 import '../widgets/logo.dart';
 
@@ -28,13 +30,19 @@ class LoginContainer extends StatefulWidget {
 }
 
 class _LoginContainerState extends State<LoginContainer> {
-  final _formKey = GlobalKey<FormState>();
+  AuthProvider? _authProvider = null;
 
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   bool displayInvalidLoginMsg = false;
 
-  final AuthService _authService = GetIt.instance<AuthService>();
+  @override
+  void initState() {
+    super.initState();
+    _authProvider = context.read<AuthProvider>();
+  }
 
   Future<void> submit() async {
     print("clicked");
@@ -42,12 +50,13 @@ class _LoginContainerState extends State<LoginContainer> {
       return;
     }
 
-    if (await _authService.loginUserAsync(
-        _usernameController.text, _passwordController.text)) {
+    var isValidLogin = await _authProvider?.loginUserAsync(_usernameController.text, _passwordController.text);
+    print(isValidLogin);
+    if (isValidLogin != null && isValidLogin == true) {
       setState(() {
         displayInvalidLoginMsg = false;
       });
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/agency');
     } else {
       setState(() {
         displayInvalidLoginMsg = true;

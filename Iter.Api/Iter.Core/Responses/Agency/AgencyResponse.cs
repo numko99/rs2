@@ -1,4 +1,4 @@
-﻿using Iter.Core.Models;
+﻿using Iter.Core.EntityModels;
 
 namespace Iter.Core.Responses
 {
@@ -20,7 +20,7 @@ namespace Iter.Core.Responses
 
         public bool IsActive { get; set; }
 
-        public string LogoUrl { get; set; }
+        public string Logo { get; set; }
 
         public decimal Rating { get; set; }
 

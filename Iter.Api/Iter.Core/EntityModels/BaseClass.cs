@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Iter.Core.Models
+namespace Iter.Core.EntityModels
 {
     public class BaseClass : IBaseEntity
     {

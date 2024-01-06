@@ -1,16 +1,11 @@
-﻿using Iter.Core.Models;
+﻿using Iter.Core.EntityModels;
 using Iter.Core.Requests;
 using Iter.Core.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Iter.Core.Search_Models;
 
 namespace Iter.Repository.Interface
 {
-    public interface IAgencyRepository : IBaseCrudRepository<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse>
+    public interface IAgencyRepository : IBaseCrudRepository<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel>
     {
-        Task<List<AgencySearchResponse>> GetAgenciesSearch(int currentPage, int pageSize);
     }
 }

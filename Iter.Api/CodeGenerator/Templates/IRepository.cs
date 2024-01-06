@@ -11,7 +11,7 @@ public class IRepositoryTemplate
   {
     this.entityName = entityName;
     this.iRepositoryTemplate =
-$@"using Iter.Core.Models;
+$@"using Iter.Core.EntityModels;
 using Iter.Core.Requests;
 using Iter.Core.Responses;
 using System;

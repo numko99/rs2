@@ -11,7 +11,7 @@ public class IServiceTemplate
   {
     this.entityName = entityName;
     this.iServiceTemplate =
-$@"using Iter.Core.Models;
+$@"using Iter.Core.EntityModels;
 using Iter.Core.Requests;
 using Iter.Core.Responses;
 using Iter.Services.Interfaces;

@@ -1,8 +1,8 @@
-﻿using AutoMapper;
+using AutoMapper;
 
 using Iter.Core;
 using Iter.Core.Dto;
-using Iter.Core.Models;
+using Iter.Core.EntityModels;
 using Iter.Core.Requests;
 using Iter.Core.Responses;
 using System.Net;
@@ -18,46 +18,42 @@ namespace Iter.Api.Mapping
 
         private void CreateMap()
         {
+            this.CreateMap<Accommodation?, AccommodationResponse?>();
+            this.CreateMap<AccommodationUpsertRequest?, Accommodation?>();
+
+
+            this.CreateMap<Arrangement?, ArrangementResponse?>()
+                .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.Agency.Name));
+
+            this.CreateMap<ArrangementUpsertRequest?, Arrangement?>();
+
+
+            this.CreateMap<Destination?, DestinationResponse?>();
+            this.CreateMap<DestinationUpsertRequest?, Destination?>();
+
+
+            this.CreateMap<EmployeeArrangment?, EmployeeArrangmentResponse?>();
+            this.CreateMap<EmployeeArrangmentUpsertRequest?, EmployeeArrangment?>();
+
+
+            this.CreateMap<Reservation?, ReservationResponse?>();
+            this.CreateMap<ReservationUpsertRequest?, Reservation?>();
+
+
             this.CreateMap<UserRegistrationDto?, User?>();
 
             this.CreateMap<Address?, AddressResponse?>();
-            this.CreateMap<AddressInsertRequest?, Address?>();
-
-            this.CreateMap<Agency?, AgencyResponse?>();
-            CreateMap<AgencyInsertRequest, Agency>()
-              .ForMember(dest => dest.Id, opt => opt.Ignore())
-             .ForMember(dest => dest.Address, opt => opt.MapFrom((src, dest) =>
-             {
-                 if (dest.Address != null)
-                 {
-                     dest.Address.City = src.City;
-                     dest.Address.Country = src.Country;
-                     dest.Address.Street = src.Street;
-                     dest.Address.HouseNumber = src.HouseNumber;
-                     dest.Address.PostalCode = src.PostalCode;
-                     dest.DateModified = DateTime.Now;
-                     return dest.Address;
-                 }
-                 else
-                 {
-                     var address = new Address
-                     {
-                         Street = src.Street,
-                         HouseNumber = src.HouseNumber,
-                         City = src.City,
-                         PostalCode = src.PostalCode,
-                         Country = src.Country,
-                         IsDeleted = false,
-                         DateCreated = DateTime.Now,
-                         DateModified = DateTime.Now
-                     };
-                     return address;
-                 }
-
-             }))
-              .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false))
-              .ForMember(dest => dest.DateCreated, opt => opt.Ignore())
-              .ForMember(dest => dest.DateModified, opt => opt.Ignore());
+            this.CreateMap<AgencyInsertRequest, Address>()
+                 .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.DateCreated, opt => opt.MapFrom((src, dest) => dest.Id == default ? DateTime.Now : dest.DateCreated))
+                 .ForMember(dest => dest.DateModified, opt => opt.MapFrom(src => DateTime.Now));
+            this.CreateMap<Agency?, AgencyResponse?>()
+                .ForMember(dest => dest.Logo, opt => opt.MapFrom(src => src.Logo == null ? null : Convert.ToBase64String(src.Logo)));
+            this.CreateMap<AgencyInsertRequest, Agency>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.AddressId, opt => opt.Ignore())
+                .ForMember(dest => dest.DateCreated, opt => opt.MapFrom((src, dest) => dest.Id == default ? DateTime.Now : dest.DateCreated))
+                .ForMember(dest => dest.DateModified, opt => opt.MapFrom(src => DateTime.Now));
         }
     }
 }

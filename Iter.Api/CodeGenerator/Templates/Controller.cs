@@ -14,7 +14,7 @@ public class ControllerTemplate
 $@"using Iter.API.Controllers;
 using Iter.Core;
 using Iter.Core.Enum;
-using Iter.Core.Models;
+using Iter.Core.EntityModels;
 using Iter.Core.Requests;
 using Iter.Core.Responses;
 using Iter.Services.Interface;

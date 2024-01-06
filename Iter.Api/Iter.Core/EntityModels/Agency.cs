@@ -1,6 +1,6 @@
-﻿using Iter.Core.Models;
+﻿using Iter.Core.EntityModels;
 
-namespace Iter.Core.Models
+namespace Iter.Core.EntityModels
 {
     public class Agency
     {
@@ -27,7 +27,7 @@ namespace Iter.Core.Models
 
         public bool IsActive { get; set; }
 
-        public string LogoUrl { get; set; }
+        public byte[]? Logo { get; set; }
 
         public decimal Rating { get; set; }
 

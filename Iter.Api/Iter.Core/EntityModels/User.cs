@@ -1,7 +1,7 @@
-﻿using Iter.Core.Models;
+﻿using Iter.Core.EntityModels;
 using Microsoft.AspNetCore.Identity;
 
-namespace Iter.Core.Models
+namespace Iter.Core.EntityModels
 {
     public class User : IdentityUser
     {

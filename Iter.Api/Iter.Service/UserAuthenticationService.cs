@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Iter.Core;
 using Iter.Core.Dto;
+using Iter.Core.EntityModels;
 using Iter.Core.Options;
 using Iter.Services.Interface;
 using Microsoft.AspNetCore.Identity;

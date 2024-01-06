@@ -36,7 +36,7 @@ class Layout extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(
+        iconTheme: const IconThemeData(
           color: Colors.amber,
         ),
       ),
@@ -44,25 +44,15 @@ class Layout extends StatelessWidget {
         color: CupertinoColors.lightBackgroundGray,
         child: Column(
           children: <Widget>[
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    offset: Offset(0, 3),
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-              child: Container(
-                color: Colors.white,
+              child: const Card(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                  padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
                   child: Row(
                     children: [
                       Text(
-                        "Početna",
+                        "Agencije",
                         style: TextStyle(color: Colors.amber, fontSize: 30),
                       ),
                       Expanded(
@@ -80,8 +70,8 @@ class Layout extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
-            body
+            const SizedBox(height: 20),
+            Expanded(child: SingleChildScrollView(child: body))
           ],
         ),
       ),
@@ -96,7 +86,7 @@ class Layout extends StatelessWidget {
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.2),
-                        offset: Offset(0, 3),
+                        offset: const Offset(0, 3),
                         blurRadius: 4,
                       ),
                     ],
@@ -114,7 +104,7 @@ class Layout extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 for (var item in sidebarItems)
                   SidebarItem(
                       text: item['text'] as String,

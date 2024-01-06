@@ -1,14 +1,15 @@
 ﻿using AutoMapper;
+using Iter.Core.Search_Models;
 using Iter.Repository;
 
 namespace Iter.Services
 {
-    public class BaseCrudService<T, TInsert, TUpdate, TGet> : BaseReadService<T, TGet> where TInsert : class where T : class where TGet : class
+    public class BaseCrudService<T, TInsert, TUpdate, TGet, TSearch> : BaseReadService<T, TGet, TSearch> where TInsert : class where T : class where TGet : class where TSearch : BaseSearchModel
     {
-        private readonly IBaseCrudRepository<T, TInsert, TUpdate, TGet> baseCrudRepository;
+        private readonly IBaseCrudRepository<T, TInsert, TUpdate, TGet, TSearch> baseCrudRepository;
         private readonly IMapper mapper;
 
-        public BaseCrudService(IBaseCrudRepository<T, TInsert, TUpdate, TGet> baseCrudRepository, IMapper mapper)
+        public BaseCrudService(IBaseCrudRepository<T, TInsert, TUpdate, TGet, TSearch> baseCrudRepository, IMapper mapper)
             : base(baseCrudRepository, mapper)
         {
             this.baseCrudRepository = baseCrudRepository;

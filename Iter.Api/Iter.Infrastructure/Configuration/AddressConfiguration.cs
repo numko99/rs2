@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using Iter.Core;
-using Iter.Core.Models;
+using Iter.Core.EntityModels;
 
 namespace Iter.Infrastrucure.Configurations
 {
