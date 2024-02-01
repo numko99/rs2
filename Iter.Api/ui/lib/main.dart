@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/pages/agency_details.dart';
@@ -6,15 +5,16 @@ import 'package:ui/pages/arrangments_add_edit.dart';
 import 'package:ui/services/agency_provider.dart';
 
 import 'package:ui/pages/agency.dart';
-import 'package:ui/pages/login.dart';
 import 'package:ui/services/arrangment_provider.dart';
 import 'package:ui/services/auth_provider.dart';
+import 'package:ui/services/dropdown_provider.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => AgencyProvider()),
     ChangeNotifierProvider(create: (_) => AuthProvider()),
     ChangeNotifierProvider(create: (_) => ArrangmentProvider()),
+    ChangeNotifierProvider(create: (_) => DropdownProvider()),
   ], child: IterApp()));
 }
 

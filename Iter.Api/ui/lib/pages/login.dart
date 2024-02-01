@@ -45,13 +45,11 @@ class _LoginContainerState extends State<LoginContainer> {
   }
 
   Future<void> submit() async {
-    print("clicked");
     if (_formKey.currentState?.validate() == false) {
       return;
     }
 
     var isValidLogin = await _authProvider?.loginUserAsync(_usernameController.text, _passwordController.text);
-    print(isValidLogin);
     if (isValidLogin != null && isValidLogin == true) {
       setState(() {
         displayInvalidLoginMsg = false;

@@ -25,12 +25,6 @@ namespace Iter.Infrastrucure.Configurations
             builder.Property(a => a.Description)
                 .HasMaxLength(500);
 
-            builder.Property(a => a.Price)
-                .HasColumnType("decimal(18,2)");
-
-            builder.Property(a => a.Capacity)
-                .IsRequired();
-
             builder.Property(a => a.StartDate)
                 .IsRequired();
 

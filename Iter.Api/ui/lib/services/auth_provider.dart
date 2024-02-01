@@ -31,11 +31,9 @@ class AuthProvider with ChangeNotifier {
 
         return true;
       } else {
-        print('Neuspela prijava. Kod greške: ${response.statusCode}');
         return false;
       }
     } catch (error) {
-      print('Greška prilikom prijave: $error');
       return false;
     }
   }

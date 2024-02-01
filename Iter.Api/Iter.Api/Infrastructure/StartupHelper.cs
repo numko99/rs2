@@ -52,6 +52,8 @@ namespace Iter.Api.Infrastructure
             services.AddScoped<IAgencyService, AgencyService>();
             services.AddScoped<IAgencyRepository, AgencyRepository>();
 
+            services.AddScoped<IDropdownRepository, DropdownRepository>();
+
             services.AddSingleton(AutoMapperConfig.CreateMapping());
 
             services.AddHttpClient();

@@ -29,21 +29,15 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        // Uspela prijava, čuvanje JWT tokena
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final String token = responseData['token'];
 
         await _baseApiService.setAuthToken(token);
         return true;
       } else {
-        // Neuspela prijava, obradi grešku ako je potrebno
-        // Na primer, prikaži poruku korisniku
-        print('Neuspela prijava. Kod greške: ${response.statusCode}');
         return false;
       }
     } catch (error) {
-      // Obrada eventualnih izuzetaka tokom prijave
-      print('Greška prilikom prijave: $error');
       return false;
     }
   }

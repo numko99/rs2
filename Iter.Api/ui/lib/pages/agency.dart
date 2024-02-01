@@ -8,7 +8,6 @@ import 'package:ui/widgets/Layout/layout.dart';
 import 'package:ui/widgets/search_button.dart';
 
 import '../modals/customConfirmationModal.dart';
-import '../widgets/inputField.dart';
 
 class AgencyPage extends StatefulWidget {
   const AgencyPage({super.key});
@@ -256,8 +255,6 @@ class _AgencyPageState extends State<AgencyPage> {
         });
       }
     } catch (error) {
-      print('Error loading data: $error');
-
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Center(child: Text("Došlo je do greške na serveru")),
         backgroundColor: Colors.red,

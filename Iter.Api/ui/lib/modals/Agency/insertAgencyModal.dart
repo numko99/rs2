@@ -256,7 +256,9 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
                     if (_image != null) ...[
                       const SizedBox(width: 60),
                       Expanded(
-                        child: Stack(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Center(
                               child: Container(
@@ -269,8 +271,6 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
                               ),
                             ),
                             Positioned(
-                              top: 0,
-                              right: 0,
                               child: IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () {
@@ -341,7 +341,6 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
         backgroundColor: Colors.green,
       ));
     } catch (error) {
-      print('Error loading data: $error');
 
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Center(
@@ -353,7 +352,6 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
 
   Future getImage() async {
     var result = await FilePicker.platform.pickFiles(type: FileType.image);
-    // print(result?.names);
     if (result != null && result.files.single.path != null) {
       setState(() {
         _image = File(result.files.single.path!);
