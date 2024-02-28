@@ -1,6 +1,5 @@
 ﻿using Iter.Core.EntityModels;
-using Iter.Core.Requests;
-using Iter.Core.Responses;
+using Iter.Core;
 using Iter.Core.Search_Models;
 using Iter.Services.Interfaces;
 

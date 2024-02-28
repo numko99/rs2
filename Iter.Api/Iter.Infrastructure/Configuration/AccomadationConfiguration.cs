@@ -17,9 +17,9 @@ namespace Iter.Infrastrucure.Configurations
                 .HasMaxLength(100);
 
             builder.HasOne(a => a.HotelAddress)
-                     .WithMany()
+                     .WithMany(a => a.Accommodations)
                      .HasForeignKey(a => a.HotelAddressId)
-                     .OnDelete(DeleteBehavior.ClientSetNull)
+                     .OnDelete(DeleteBehavior.NoAction)
                      .HasConstraintName("FK_Accomadation_HotelAddress");
 
             builder.Property(a => a.CheckInDate)
@@ -28,9 +28,9 @@ namespace Iter.Infrastrucure.Configurations
             builder.Property(a => a.CheckOutDate)
                       .IsRequired();
 
-            builder.Property(a => a.DateCreated).IsRequired();
+            builder.Property(a => a.CreatedAt).IsRequired();
 
-            builder.Property(a => a.DateCreated);
+            builder.Property(a => a.ModifiedAt);
 
             builder.Property(a => a.IsDeleted).IsRequired();
         }

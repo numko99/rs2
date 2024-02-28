@@ -5,8 +5,10 @@ import 'package:ui/widgets/logo.dart';
 
 class Layout extends StatelessWidget {
   final Widget body;
+  final String name;
+  final IconData icon;
 
-  Layout({required this.body});
+  Layout({required this.body, required this.name, required this.icon});
 
   var sidebarItems = [
     {
@@ -16,13 +18,23 @@ class Layout extends StatelessWidget {
     },
     {
       'text': 'Korisnici',
-      'icon': Icons.person,
+      'icon': Icons.beach_access_outlined,
       'link': '/users',
     },
     {
       'text': 'Agencije',
-      'icon': Icons.card_travel,
+      'icon': Icons.business,
       'link': '/agency',
+    },
+        {
+      'text': 'Aranžmani',
+      'icon': Icons.beach_access_outlined,
+      'link': '/arrangements',
+    },
+    {
+      'text': 'Rezervacije',
+      'icon': Icons.list_alt,
+      'link': '/reservations',
     },
     {
       'text': 'Izvještaji',
@@ -46,20 +58,20 @@ class Layout extends StatelessWidget {
           children: <Widget>[
             const SizedBox(height: 40),
             Container(
-              child: const Card(
+              child:  Card(
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
                   child: Row(
                     children: [
                       Text(
-                        "Agencije",
+                        name,
                         style: TextStyle(color: Colors.amber, fontSize: 30),
                       ),
                       Expanded(
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Icon(
-                            Icons.home,
+                            icon,
                             color: Colors.amber,
                             size: 70.0,
                           ),

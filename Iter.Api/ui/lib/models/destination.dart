@@ -5,6 +5,7 @@ part 'destination.g.dart';
 
 @JsonSerializable()
 class Destination {
+  String? id;
   String? city;
   String? country;
   DateTime? arrivalDate;
@@ -13,7 +14,9 @@ class Destination {
   Accomodation? accommodation;
 
   Destination(
-      {this.city,
+      {
+      this.id,
+      this.city,
       this.country,
       this.arrivalDate,
       this.departureDate,

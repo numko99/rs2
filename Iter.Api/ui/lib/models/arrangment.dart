@@ -1,38 +1,38 @@
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-
-import 'agency.dart';
+import 'package:ui/models/agency.dart';
+import 'package:ui/models/arrangement_price.dart';
+import 'package:ui/models/destination.dart';
+import 'package:ui/models/image_model.dart';
 
 part 'arrangment.g.dart';
 
 @JsonSerializable()
 class Arrangement {
   final String id;
-  final String agencyId;
-  final String agency;
   final String name;
+  final Agency agency;
   final String description;
-  final double price;
-  final int capacity;
   final DateTime startDate;
-  final DateTime endDate;
-  final DateTime dateCreated;
-  final DateTime dateModified;
+  final DateTime? endDate;
+  final List<ArrangementPrice> prices;
+  final List<ImageModel> images;
+  final List<Destination> destinations;
+
 
   Arrangement({
     required this.id,
-    required this.agencyId,
-    required this.agency,
     required this.name,
+    required this.agency,
     required this.description,
-    required this.price,
-    required this.capacity,
     required this.startDate,
     required this.endDate,
-    required this.dateCreated,
-    required this.dateModified,
+    required this.prices,
+    required this.images,
+    required this.destinations,
   });
-
-  factory Arrangement.fromJson(Map<String, dynamic> json) => _$ArrangementFromJson(json);
+  factory Arrangement.fromJson(Map<String, dynamic> json) =>
+      _$ArrangementFromJson(json);
 
   Map<String, dynamic> toJson() => _$ArrangementToJson(this);
 }

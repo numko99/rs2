@@ -2,9 +2,9 @@
 {
     public enum Roles
     {
-        Administrator=1,
-        User,
-        Company,
-        Employee
+        Admin=1,
+        Coordinator,
+        TouristGuide,
+        Client
     }
 }

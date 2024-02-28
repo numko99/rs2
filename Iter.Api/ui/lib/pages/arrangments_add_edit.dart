@@ -1,22 +1,28 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:ui/helpers/image_helper.dart';
+import 'package:ui/helpers/scaffold_messenger_helper.dart';
+import 'package:ui/models/accomodation_type_form_controllers.dart';
 import 'package:ui/models/arrangement_price.dart';
 import 'package:ui/models/accomodation.dart';
 import 'package:ui/models/address.dart';
+import 'package:ui/models/arrangment.dart';
 import 'package:ui/models/destination.dart';
+import 'package:ui/models/destinatios_form_controllers.dart';
 import 'package:ui/models/image_model.dart';
 import 'package:ui/services/arrangment_provider.dart';
 import 'package:ui/widgets/Layout/layout.dart';
+import 'package:ui/widgets/arrangement_add_edit/basic_data_form.dart';
+import 'package:ui/widgets/arrangement_add_edit/description_images_form.dart';
+import 'package:ui/widgets/arrangement_add_edit/destinations_form.dart';
 
 class ArrangementAddEditPage extends StatefulWidget {
-  const ArrangementAddEditPage({super.key});
+  const ArrangementAddEditPage(
+      {super.key, this.agencyId, this.arrangementId});
+
+  final String? agencyId;
+  final String? arrangementId;
 
   @override
   State<ArrangementAddEditPage> createState() => _ArrangementAddEditPageState();
@@ -30,32 +36,36 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
   ];
 
   ArrangmentProvider? _arrangmentProvider;
-  List<dynamic>? images = [];
-  dynamic mainImage;
+  List<ImageModel>? images = [];
+  ImageModel? mainImage;
+  bool displayMainImageValidationMsg = false;
+  bool displayImagesValidationMsg = false;
+
   bool displayLoader = false;
 
-  List<ArrangementPrice> pricesRows = [];
-  List<Destination> destionationsRows = [];
+  var accomodationTypeFormControllers = AccomodationTypeFormControllers();
+  var destinationsFormControllers = DestinatiosFormControllers();
 
-  Map<int, bool> isHotelIncluded = {};
-
-  int? arangmentType = 1;
   int currentStep = 0;
+  int initialArrangemetType = 1;
+  int arrangementType = 1;
+  late Arrangement? arrangement;
+  Map<String, dynamic> _initialValue1 = {};
+  Map<String, dynamic> _initialValue2 = {};
+  
 
   @override
   void initState() {
     super.initState();
-    pricesRows.add(ArrangementPrice());
-    destionationsRows.add(Destination());
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _arrangmentProvider =
-          Provider.of<ArrangmentProvider>(context, listen: false);
-    });
+    _arrangmentProvider = context.read<ArrangmentProvider>();
+    loadData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Layout(
+      name: "Aranžmani",
+      icon: Icons.beach_access_outlined,
       body: Card(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -63,7 +73,7 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
             const Text('Dodaj aranžman'),
             const SizedBox(height: 10),
             const Icon(
-              Icons.card_travel,
+              Icons.beach_access_outlined,
               color: Colors.amber,
               size: 50,
             ),
@@ -85,13 +95,13 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
                         children: <Widget>[
                           ElevatedButton(
                             onPressed: details.onStepContinue,
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.amber),
                             child: Text(currentStep < 2 ? 'Dalje' : 'Završi',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 15,
                                   color: Colors.white,
                                 )),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.amber),
                           ),
                           SizedBox(width: 10),
                           ElevatedButton(
@@ -110,20 +120,37 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
                       Step(
                         title: const Text('Osnovni podaci'),
                         content: FormBuilder(
-                            key: formKeys[0], child: _buildBasicInfoForm()),
+                            key: formKeys[0],
+                            initialValue: _initialValue1,
+                            child: BasicDataFormPage(
+                                controllers: accomodationTypeFormControllers,
+                                setArrangementType: setArrangementType,
+                                initialArrangementType: initialArrangemetType)),
                         isActive: currentStep == 0,
                       ),
                       Step(
                         title: const Text('Slike i Opis'),
                         content: FormBuilder(
                             key: formKeys[1],
-                            child: _buildImagesAndDescriptionForm()),
+                            initialValue: _initialValue2,
+                            child: DescriptionImageFormPage(
+                              images: images,
+                              mainImage: mainImage,
+                              displayImagesValidationMsg:
+                                  displayImagesValidationMsg,
+                              displayMainImageValidationMsg:
+                                  displayMainImageValidationMsg,
+                              onUpdateImages: updateImages,
+                              onUpdateMainImage: updateMainImage,
+                            )),
                         isActive: currentStep == 1,
                       ),
                       Step(
                         title: const Text('Destinacije i smještaji'),
                         content: FormBuilder(
-                            key: formKeys[2], child: _buildDestinationForm()),
+                            key: formKeys[2],
+                            child: DestinationFormPage(
+                                controllers: destinationsFormControllers)),
                         isActive: currentStep == 2,
                       ),
                     ],
@@ -138,707 +165,281 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
     try {
       if (formKeys[currentStep].currentState?.saveAndValidate() ?? false) {
         var basicDataFormData = Map.from(formKeys[0].currentState!.value);
-        var processedBasicData = processBasicData(basicDataFormData);
 
+        var processedBasicData = processBasicData(basicDataFormData);
         var descriptionAndImagesFormData =
             Map.from(formKeys[1].currentState!.value);
         var procesedDescriptionAndImagesFormData =
             await processDescriptionAndImagesData(descriptionAndImagesFormData);
 
-        var destinatiosFormData = Map.from(formKeys[2].currentState!.value);
-        var procesedDestinatiosFormData =
-            processDestinationsData(destinatiosFormData);
+        var procesedDestinatiosFormData = processDestinationsData();
 
         var finalFormData = {
           ...processedBasicData,
           ...procesedDescriptionAndImagesFormData
         };
         finalFormData["destinations"] = procesedDestinatiosFormData;
-        await _arrangmentProvider?.insert(finalFormData);
 
+        if (widget.arrangementId == null) {
+          await _arrangmentProvider!.insert(finalFormData);
+        } else {
+          await _arrangmentProvider!
+              .update(widget.arrangementId, finalFormData);
+        }
+
+        ScaffoldMessengerHelper.showCustomSnackBar(
+            context: context,
+            message: "Aranžman uspješno dodan!",
+            backgroundColor: Colors.green);
+
+        Navigator.pushNamed(context, '/agency/details',
+            arguments: {'id': widget.agencyId});
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Center(child: Text("Došlo je do greške na serveru")),
-        backgroundColor: Colors.red,
-      ));
-      print(error);
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Došlo je do greške",
+          backgroundColor: Colors.red);
     } finally {
       setState(() => displayLoader = false);
     }
   }
 
-  List<Destination> processDestinationsData(Map<dynamic, dynamic> formData) {
-    List<Destination> destinationList = [];
+  Map<dynamic, dynamic> processBasicData(Map<dynamic, dynamic> formData) {
+    List<ArrangementPrice> prices = [];
+    if (arrangementType == 1) {
+      for (int i = 0;
+          i < accomodationTypeFormControllers.accomodationTypePrices.length;
+          i++) {
+        var price = double.tryParse(accomodationTypeFormControllers
+                .accomodationTypePrices[i].text) ??
+            0;
+        prices.add(ArrangementPrice(
+            id: accomodationTypeFormControllers.accomodationTypeIds[i],
+            accommodationType:
+                accomodationTypeFormControllers.accomodationTypes[i].text,
+            price: price));
+      }
+    }
+    DateTime startDate = formData["startDate"];
+    DateTime? endDate = formData["endDate"];
+    formData["startDate"] = startDate.toIso8601String();
+    if (endDate != null){
+      formData["endDate"] = endDate.toIso8601String();
+    }
+    formData["prices"] = prices;
+    formData["price"] = arrangementType == 1 ? null : formData["price"];
+    formData["agencyId"] = widget.agencyId;
 
-    int index = 0;
-    while (formData.containsKey('destination_$index')) {
+    return formData;
+  }
+
+  Future<Map<dynamic, dynamic>> processDescriptionAndImagesData(
+      Map<dynamic, dynamic> formData) async {
+    formData["mainImage"] = mainImage!.toJson();
+    formData["images"] = images!.map((image) => image.toJson()).toList();
+    return formData;
+  }
+
+  List<Destination> processDestinationsData() {
+    List<Destination> destinationList = [];
+    DateFormat format = DateFormat("dd-MM-yyyy HH:mm");
+
+    for (int i = 0;
+        i < destinationsFormControllers.destinationControllers.length;
+        i++) {
+      var arrivalDate = format.parse(
+          destinationsFormControllers.arrivalDateTimeControllers[i].text);
+      var departureDate = format.parse(
+          destinationsFormControllers.departureDateTimeControllers[i].text);
+
+      bool isOneDayTrip =
+          destinationsFormControllers.hotelNameControllers[i].text.isEmpty;
+
       var destination = Destination(
-          city: formData['destination_$index'],
-          country: formData['country_$index'],
-          arrivalDate: formData['arrivalDateTime_$index'],
-          departureDate: formData['departureDateTime_$index'],
-          isOneDayTrip: formData['isHotelIncluded_$index'] == 'false',
-          accommodation: Accomodation(
-            hotelName: formData['hotelName_$index'],
-            checkInDate: formData['arrivalDateTime_$index'],
-            checkOutDate: formData['departureDateTime_$index'],
-            hotelAddress: Address(
-                street: formData['street_$index'],
-                houseNumber: formData['houseNumber_$index'],
-                city: formData['city_$index'],
-                postalCode: formData['postalCode_$index'],
-                country: formData['country_$index']
-              ),
-            )
-        );
+          id: destinationsFormControllers.idControllers[i].text.isEmpty
+              ? null
+              : destinationsFormControllers.idControllers[i].text,
+          city: destinationsFormControllers.destinationControllers[i].text,
+          country: destinationsFormControllers.countryControllers[i].text,
+          arrivalDate: arrivalDate,
+          departureDate: departureDate,
+          isOneDayTrip: isOneDayTrip,
+          accommodation: !isOneDayTrip
+              ? Accomodation(
+                  hotelName:
+                      destinationsFormControllers.hotelNameControllers[i].text,
+                  checkInDate: arrivalDate,
+                  checkOutDate: departureDate,
+                  hotelAddress: Address(
+                    street:
+                        destinationsFormControllers.streetControllers[i].text,
+                    houseNumber: destinationsFormControllers
+                        .houseNumberControllers[i].text,
+                    city: destinationsFormControllers.cityControllers[i].text,
+                    postalCode: destinationsFormControllers
+                        .postalCodeControllers[i].text,
+                    country:
+                        destinationsFormControllers.countryControllers[i].text,
+                  ),
+                )
+              : null);
 
       destinationList.add(destination);
-      index++;
     }
 
     return destinationList;
   }
 
-  Future<Map<dynamic, dynamic>> processDescriptionAndImagesData(
-      Map<dynamic, dynamic> formData) async {
-    var mainImageTemp = await ImageHelper.processImage(mainImage);
-    formData["mainImage"] = mainImageTemp.toJson();
-
-    List<ImageModel> imagesTemp = [];
-    if (images != null) {
-      for (var image in images!) {
-        var imageTemp = await ImageHelper.processImage(image);
-        imagesTemp.add(imageTemp);
-      }
-    }
-
-    formData["images"] = imagesTemp.map((image) => image.toJson()).toList();
-    return formData;
+  void updateImages(List<ImageModel> updatedImages) {
+    setState(() {
+      images = updatedImages;
+    });
   }
 
-  Map<dynamic, dynamic> processBasicData(Map<dynamic, dynamic> formData) {
-    List<Map<String, dynamic>> prices = [];
-    int index = 0;
+  void updateMainImage(ImageModel? updatedMainImage) {
+    setState(() {
+      mainImage = updatedMainImage;
+    });
+  }
 
-    while (formData.containsKey('accommodationType_$index')) {
-      var accommodationType = formData['accommodationType_$index'];
-      var priceKey = 'price_$index';
-      var price = double.tryParse(formData[priceKey].toString()) ?? 0;
-
-      var priceData = ArrangementPrice(
-          accommodationType: accommodationType, price: price);
-
-      prices.add(priceData.toJson());
-
-      formData.remove('accommodationType_$index');
-      formData.remove('price_$index');
-
-      formData["prices"] = prices;
-      index++;
-    }
-
-    DateTime startDate = formData["startDate"]; 
-    DateTime endDate = formData["endDate"];
-    formData["startDate"] = startDate.toIso8601String();
-    formData["endDate"] = endDate.toIso8601String();
-    formData["prices"] = prices;
-
-    return formData;
+  void setArrangementType(int? value){
+    setState(() {
+      arrangementType = value!;
+    });
   }
 
   Future<void> increaseStep() async {
-    if (formKeys[currentStep].currentState?.saveAndValidate() ?? false) {
+    setState(() {
+      displayMainImageValidationMsg = currentStep == 1 && (mainImage == null);
+      displayImagesValidationMsg =
+          currentStep == 1 && (images?.isEmpty ?? true);
+    });
+
+    var validFormData =
+        formKeys[currentStep].currentState?.saveAndValidate() ?? false;
+    if (validFormData &&
+        !displayMainImageValidationMsg &&
+        !displayImagesValidationMsg) {
       setState(() {
         currentStep = currentStep + 1;
       });
     }
   }
 
-  Future getImages(bool allowMultiple) async {
-    var result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: allowMultiple,
-    );
+  Future<void> loadData() async {
+    if (widget.arrangementId == null) {
+      return;
+    }
 
-    if (result != null && result.files.isNotEmpty) {
-      List<File> files = result.files.map((file) => File(file.path!)).toList();
+    try {
       setState(() {
-        if (allowMultiple) {
-          images?.addAll(files);
-        } else {
-          mainImage = files[0];
-        }
+        displayLoader = true;
+      });
+      arrangement = await _arrangmentProvider?.getById(widget.arrangementId);
+
+      setInitialBasicData();
+      setInitialDescriptionAndImagesData();
+      setInitialDestinationsData();
+    } catch (error) {
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Došlo je do greške",
+          backgroundColor: Colors.red);
+    } finally {
+      setState(() {
+        displayLoader = false;
       });
     }
   }
 
-  Widget _buildBasicInfoForm() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Radio(
-                      value: 1,
-                      groupValue: arangmentType,
-                      onChanged: (value) {
-                        setState(() {
-                          arangmentType = value;
-                        });
-                      }),
-                  Expanded(
-                    child: Text('Višednevno putovanje'),
-                  )
-                ],
-              ),
-            ),
-            Expanded(
-              child: Row(
-                children: [
-                  Radio(
-                      value: 2,
-                      groupValue: arangmentType,
-                      onChanged: (value) {
-                        setState(() {
-                          arangmentType = value;
-                        });
-                      }),
-                  Expanded(child: Text('Jednodnevni izlet'))
-                ],
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 20),
-        Row(
-          children: [
-            Expanded(
-              child: FormBuilderTextField(
-                name: 'name',
-                decoration: const InputDecoration(labelText: 'Naziv'),
-                validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(
-                      errorText: "Polje je obavezno"),
-                  FormBuilderValidators.maxLength(100,
-                      errorText: "Neispravan unos"),
-                ]),
-              ),
-            ),
-            const SizedBox(width: 60),
-            Expanded(
-              child: FormBuilderDateTimePicker(
-                name: 'startDate',
-                decoration: const InputDecoration(labelText: 'Datum polaska'),
-                validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(
-                      errorText: "Polje je obavezno"),
-                ]),
-                inputType: InputType.date,
-              ),
-            ),
-            const SizedBox(width: 60),
-            arangmentType == 1
-                ? Expanded(
-                    child: FormBuilderDateTimePicker(
-                      name: 'endDate',
-                      decoration:
-                          const InputDecoration(labelText: 'Datum povratka'),
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(
-                            errorText: "Polje je obavezno"),
-                      ]),
-                      inputType: InputType.date,
-                    ),
-                  )
-                : Expanded(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: FormBuilderTextField(
-                            name: 'price',
-                            decoration: const InputDecoration(
-                              labelText: 'Cijena',
-                            ),
-                            keyboardType: TextInputType.number,
-                            validator: FormBuilderValidators.compose([
-                              FormBuilderValidators.required(
-                                  errorText: "Polje je obavezno"),
-                              FormBuilderValidators.numeric(
-                                  errorText: "Unesite validan broj"),
-                            ]),
-                          ),
-                        ),
-                        const Text('KM',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w400)),
-                      ],
-                    ),
-                  )
-          ],
-        ),
-        const SizedBox(height: 20),
-        if (arangmentType == 1)
-          Column(
-            children: [
-              Column(
-                children: List.generate(pricesRows.length, (int index) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: FormBuilderTextField(
-                          name: 'accommodationType_$index',
-                          decoration: InputDecoration(
-                              labelText: index == 0 ? 'Tip smještaja' : null),
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(
-                                errorText: "Polje je obavezno"),
-                            FormBuilderValidators.maxLength(100,
-                                errorText: "Neispravan unos"),
-                          ]),
-                        ),
-                      ),
-                      const SizedBox(width: 60),
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 9,
-                              child: FormBuilderTextField(
-                                name: 'price_$index',
-                                decoration: InputDecoration(
-                                  labelText: index == 0 ? 'Cijena' : null,
-                                ),
-                                keyboardType: TextInputType.number,
-                                validator: FormBuilderValidators.compose([
-                                  FormBuilderValidators.required(
-                                      errorText: "Polje je obavezno"),
-                                  FormBuilderValidators.numeric(
-                                      errorText: "Unesite validan broj"),
-                                ]),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text('KM',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400)),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 60),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              setState(() {
-                                if (pricesRows.length != 1) {
-                                  pricesRows.removeAt(index);
-                                }
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        pricesRows.add(ArrangementPrice());
-                      });
-                    },
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Icon(
-                          Icons.add_circle_rounded,
-                          color: Colors.amber,
-                          size: 30,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 8),
-                          child: Text(
-                            'Dodaj smještaj',
-                            style: TextStyle(
-                              color: Colors.amber,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-      ],
-    );
+  void setInitialDestinationsData() {
+    var destinations = arrangement!.destinations;
+    for (int i = 0; i < destinations.length; i++) {
+      destinationsFormControllers.addDestination();
+      destinationsFormControllers.idControllers[i].text = destinations[i].id!;
+      destinationsFormControllers.destinationControllers[i].text =
+          destinations[i].city!;
+      destinationsFormControllers.countryControllers[i].text =
+          destinations[i].country!;
+      if (destinations[i].arrivalDate != null) {
+        String formattedDate =
+            DateFormat('dd-MM-yyyy HH:mm').format(destinations[i].arrivalDate!);
+        destinationsFormControllers.arrivalDateTimeControllers[i].text =
+            formattedDate;
+      }
+
+      if (destinations[i].departureDate != null) {
+        String formattedDate = DateFormat('dd-MM-yyyy HH:mm')
+            .format(destinations[i].departureDate!);
+        destinationsFormControllers.departureDateTimeControllers[i].text =
+            formattedDate;
+      }
+      destinationsFormControllers.isHotelIncluded[i] =
+          destinations[i].accommodation != null;
+      if (destinations[i].accommodation != null) {
+        destinationsFormControllers.hotelNameControllers[i].text =
+            destinations[i].accommodation!.hotelName!;
+
+        if (destinations[i].accommodation?.checkInDate != null) {
+          String formattedDate = DateFormat('dd-MM-yyyy HH:mm')
+              .format(destinations[i].accommodation!.checkInDate!);
+          destinationsFormControllers.arrivalDateTimeControllers[i].text =
+              formattedDate;
+        }
+        if (destinations[i].accommodation?.checkOutDate != null) {
+          String formattedDate = DateFormat('dd-MM-yyyy HH:mm')
+              .format(destinations[i].accommodation!.checkOutDate!);
+          destinationsFormControllers.departureDateTimeControllers[i].text =
+              formattedDate;
+        }
+        destinationsFormControllers.streetControllers[i].text =
+            destinations[i].accommodation!.hotelAddress!.street!;
+        destinationsFormControllers.houseNumberControllers[i].text =
+            destinations[i].accommodation!.hotelAddress!.houseNumber!;
+        destinationsFormControllers.cityControllers[i].text =
+            destinations[i].accommodation!.hotelAddress!.city!;
+        destinationsFormControllers.postalCodeControllers[i].text =
+            destinations[i].accommodation!.hotelAddress!.postalCode!;
+        destinationsFormControllers.countryControllers[i].text =
+            destinations[i].accommodation!.hotelAddress!.country!;
+      }
+    }
   }
 
-  Widget _buildImagesAndDescriptionForm() {
-    return Column(children: [
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 6, 0, 0),
-              child: FormBuilderTextField(
-                  name: 'description',
-                  maxLines: 10,
-                  minLines: 1,
-                  decoration: const InputDecoration(labelText: 'Opis'),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(
-                        errorText: "Polje je obavezno"),
-                  ])),
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 20),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                FormBuilderField(
-                  name: 'mainImage',
-                  builder: ((field) {
-                    return InputDecorator(
-                      decoration: InputDecoration(
-                          label: Text('Odaberite pozadinu'),
-                          errorText: field.errorText),
-                      child: ListTile(
-                        leading: Icon(Icons.photo),
-                        title: Text("Glavna slika"),
-                        trailing: Icon(Icons.file_upload),
-                        onTap: () => getImages(false),
-                      ),
-                    );
-                  }),
-                ),
-                if (mainImage != null) ...[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-                        width: 200,
-                        height: 200,
-                        child: mainImage is File
-                            ? Image.file(mainImage!)
-                            : mainImage,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () {
-                          setState(() {
-                            mainImage = null;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ]
-              ],
-            ),
-          ),
-          const SizedBox(width: 60),
-          Expanded(
-              flex: 2,
-              child: Column(children: [
-                FormBuilderField(
-                  name: 'images',
-                  builder: ((field) {
-                    return InputDecorator(
-                      decoration: InputDecoration(
-                          label: Text('Odaberite slike putovanja'),
-                          errorText: field.errorText),
-                      child: ListTile(
-                        leading: Icon(Icons.photo),
-                        title: Text("Slike"),
-                        trailing: Icon(Icons.file_upload),
-                        onTap: () => getImages(true),
-                      ),
-                    );
-                  }),
-                ),
-                if (images != null && images!.isNotEmpty) ...[
-                  Wrap(
-                    alignment: WrapAlignment.start,
-                    spacing: 8.0,
-                    runSpacing: 8.0,
-                    children: List<Widget>.generate(images!.length, (index) {
-                      return Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-                            width: 100,
-                            height: 100,
-                            child:
-                                Image.file(images![index], fit: BoxFit.cover),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.close),
-                            onPressed: () {
-                              setState(() {
-                                images?.removeAt(index);
-                              });
-                            },
-                          ),
-                        ],
-                      );
-                    }),
-                  ),
-                ]
-              ])),
-        ],
-      ),
-      const SizedBox(height: 20),
-    ]);
+  void setInitialDescriptionAndImagesData() {
+    _initialValue2 = {
+      "description": arrangement?.description,
+    };
+
+    mainImage = arrangement!.images
+        .where((element) => element.isMainImage == true)
+        .firstOrNull;
+    images = arrangement!.images
+        .where((element) => element.isMainImage == false)
+        .toList();
   }
 
-  Widget _buildDestinationForm() {
-    return Column(
-      children: [
-        Column(
-            children: List.generate(destionationsRows.length, (int index) {
-          return Container(
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 30),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Text("${index + 1}. destinacija",
-                            style:
-                                TextStyle(color: Colors.amber, fontSize: 15))),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () {
-                       setState(() {
-                          if (destionationsRows.length != 1) {
-                            destionationsRows.removeAt(index);
-                          }
-                        });
-                      },
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: FormBuilderTextField(
-                        name: 'destination_$index',
-                        decoration: const InputDecoration(labelText: 'Destinacija'),
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(
-                              errorText: "Polje je obavezno"),
-                          FormBuilderValidators.maxLength(100,
-                              errorText: "Neispravan unos"),
-                        ]),
-                      ),
-                    ),
-                    const SizedBox(width: 60),
-                    Expanded(
-                      child: FormBuilderTextField(
-                        name: 'country_$index',
-                        decoration: const InputDecoration(labelText: 'Država'),
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(
-                              errorText: "Polje je obavezno"),
-                          FormBuilderValidators.maxLength(100,
-                              errorText: "Neispravan unos"),
-                        ]),
-                      ),
-                    ),
-                    const SizedBox(width: 60),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: FormBuilderDateTimePicker(
-                              name: 'arrivalDateTime_$index',
-                              decoration: const InputDecoration(
-                                  labelText: 'Vrijeme dolaska'),
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.required(
-                                    errorText: "Polje je obavezno"),
-                              ]),
-                              inputType: InputType.both,
-                            ),
-                          ),
-                          const SizedBox(width: 60),
-                          Expanded(
-                            child: FormBuilderDateTimePicker(
-                              name: 'departureDateTime_$index',
-                              decoration: const InputDecoration(
-                                  labelText: 'Vrijeme odlaska'),
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.required(
-                                    errorText: "Polje je obavezno"),
-                              ]),
-                              inputType: InputType.both,
-                            ),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 20),
-                FormBuilderCheckbox(
-                  name: 'isHotelIncluded_$index',
-                  initialValue: isHotelIncluded[index] ?? false,
-                  title: Text('Uključen hotel', style: TextStyle(fontSize: 15)),
-                  onChanged: (bool? value) {
-                    setState(() {
-                      isHotelIncluded[index] = value ?? false;
-                    });
-                  },
-                ),
-                if (isHotelIncluded[index] ?? false)
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: FormBuilderTextField(
-                              name: 'hotelName_$index',
-                              decoration: const InputDecoration(
-                                  labelText: 'Naziv hotela'),
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.required(
-                                    errorText: "Polje je obavezno"),
-                                FormBuilderValidators.maxLength(30,
-                                    errorText: "Neispravan unos"),
-                              ]),
-                            ),
-                          ),
-                          const SizedBox(width: 60),
-                          Expanded(
-                            child: FormBuilderTextField(
-                              name: 'city_$index',
-                              decoration:
-                                  const InputDecoration(labelText: 'Grad'),
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.required(
-                                    errorText: "Polje je obavezno"),
-                                FormBuilderValidators.maxLength(30,
-                                    errorText: "Neispravan unos"),
-                              ]),
-                            ),
-                          ),
-                          const SizedBox(width: 60),
-                          Expanded(
-                            child: FormBuilderTextField(
-                              name: 'postalCode_$index',
-                              decoration: const InputDecoration(
-                                  labelText: 'Poštanski broj'),
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.required(
-                                    errorText: "Polje je obavezno"),
-                                FormBuilderValidators.maxLength(10,
-                                    errorText: "Neispravan unos"),
-                              ]),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: FormBuilderTextField(
-                              name: 'street_$index',
-                              decoration:
-                                  const InputDecoration(labelText: 'Ulica'),
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.required(
-                                    errorText: "Polje je obavezno"),
-                                FormBuilderValidators.maxLength(30,
-                                    errorText: "Neispravan unos"),
-                              ]),
-                            ),
-                          ),
-                          const SizedBox(width: 60),
-                          Expanded(
-                            child: FormBuilderTextField(
-                              name: 'houseNumber_$index',
-                              decoration: const InputDecoration(
-                                  labelText: 'Kućni broj'),
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.required(
-                                    errorText: "Polje je obavezno"),
-                                FormBuilderValidators.maxLength(5,
-                                    errorText: "Neispravan unos"),
-                              ]),
-                            ),
-                          ),
-                          const SizedBox(width: 60),
-                          Spacer()
-                        ],
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-          );
-        })),
-        Row(
-          children: [
-            InkWell(
-              onTap: () {
-                setState(() {
-                  destionationsRows.add(Destination());
-                });
-              },
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Icon(
-                    Icons.add_circle_rounded,
-                    color: Colors.amber,
-                    size: 30,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 8),
-                    child: Text(
-                      'Dodaj destinaciju',
-                      style: TextStyle(
-                        color: Colors.amber,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
+  void setInitialBasicData() {
+    var pricess = arrangement!.prices;
+    initialArrangemetType = pricess.length == 1 && pricess[0].accommodationType == null ? 2 : 1;
+    setArrangementType(initialArrangemetType);
+    _initialValue1 = {
+      "name": arrangement?.name,
+      "startDate": arrangement?.startDate,
+      "endDate": arrangement?.endDate,
+      "price": initialArrangemetType == 2 ? pricess[0].price.toString() : null
+    };
+
+    if (initialArrangemetType == 1) {
+      for (int i = 0; i < pricess.length; i++) {
+          accomodationTypeFormControllers.addArrangementPrices();
+        accomodationTypeFormControllers.accomodationTypePrices[i].text =
+            pricess[i].price.toString();
+        accomodationTypeFormControllers.accomodationTypes[i].text =
+            pricess[i].accommodationType!;
+        accomodationTypeFormControllers.accomodationTypeIds[i] = pricess[i].id;
+      }
+    }
   }
 }

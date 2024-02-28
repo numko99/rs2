@@ -1,7 +1,6 @@
 ﻿using Iter.Core.Dto;
 using Iter.Core.Enum;
-using Iter.Core.Requests;
-using Iter.Core.Responses;
+using Iter.Core;
 using Iter.Desktop.Helper;
 using Iter.Desktop.UserControls;
 using Iter.UI.Desktop.Services;

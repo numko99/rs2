@@ -28,7 +28,7 @@ class CustomConfirmationDialog extends StatelessWidget {
         ),
         ElevatedButton(
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.red),
+            backgroundColor: MaterialStateProperty.all(Colors.amber),
           ),
           onPressed: () {
             onConfirm();

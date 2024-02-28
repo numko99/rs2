@@ -1,6 +1,6 @@
 ﻿using Iter.Core.EntityModels;
 
-namespace Iter.Core.Responses
+namespace Iter.Core
 {
     public class AgencyResponse
     {
@@ -20,7 +20,7 @@ namespace Iter.Core.Responses
 
         public bool IsActive { get; set; }
 
-        public string Logo { get; set; }
+        public ImageResponse Logo { get; set; }
 
         public decimal Rating { get; set; }
 

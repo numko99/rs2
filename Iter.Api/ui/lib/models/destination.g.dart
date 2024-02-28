@@ -7,6 +7,7 @@ part of 'destination.dart';
 // **************************************************************************
 
 Destination _$DestinationFromJson(Map<String, dynamic> json) => Destination(
+      id: json['id'] as String?,
       city: json['city'] as String?,
       country: json['country'] as String?,
       arrivalDate: json['arrivalDate'] == null
@@ -24,6 +25,7 @@ Destination _$DestinationFromJson(Map<String, dynamic> json) => Destination(
 
 Map<String, dynamic> _$DestinationToJson(Destination instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'city': instance.city,
       'country': instance.country,
       'arrivalDate': instance.arrivalDate?.toIso8601String(),

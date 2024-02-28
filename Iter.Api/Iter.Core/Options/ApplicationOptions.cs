@@ -4,5 +4,7 @@
     {
         public JwtConfiguration JwtConfiguration { get; set; } = new JwtConfiguration();
 
+        public EmailSettings EmailSettings { get; set; } = new EmailSettings();
+
     }
 }

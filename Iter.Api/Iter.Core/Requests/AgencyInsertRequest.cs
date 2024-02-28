@@ -1,7 +1,7 @@
 ﻿using Iter.Core.EntityModels;
 using System.ComponentModel.DataAnnotations;
 
-namespace Iter.Core.Requests
+namespace Iter.Core
 {
     public class AgencyInsertRequest
     {
@@ -15,19 +15,8 @@ namespace Iter.Core.Requests
 
         public string LicenseNumber { get; set; }
 
-        public byte[]? Logo { get; set; }
+        public ImageUpsertRequest? Logo { get; set; }
 
-        public byte[]? LogoThumb { get; set; }
-
-
-        public string Street { get; set; }
-
-        public string HouseNumber { get; set; }
-
-        public string City { get; set; }
-
-        public string PostalCode { get; set; }
-
-        public string Country { get; set; }
+        public AddressInsertRequest Address { get; set; }
     }
 }

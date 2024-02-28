@@ -37,7 +37,9 @@ namespace Iter.Services
             {
                 throw new ArgumentException("Invalid request");
             }
-            return this.mapper.Map<TGet>(entity);
+            var a = this.mapper.Map<TGet>(entity);
+
+            return a;
         }
     }
 }

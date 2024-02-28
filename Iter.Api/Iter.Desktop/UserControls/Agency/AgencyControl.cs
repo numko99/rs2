@@ -1,5 +1,5 @@
-﻿using Iter.Core.Enum;
-using Iter.Core.Responses;
+﻿using Iter.Core;
+using Iter.Core.Enum;
 using Iter.Desktop.Forms;
 using Iter.Desktop.Models;
 using Iter.Desktop.UserControls.Pagination;

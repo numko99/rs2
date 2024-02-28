@@ -19,14 +19,23 @@ namespace Iter.Repository
             this.dbContext = dbContext;
             this.mapper = mapper;
         }
-        public async Task<PagedResult<DropdownModel>> Get(DropdownType type)
+        public async Task<PagedResult<DropdownModel>> Get(int type, string? arrangementId  = null)
         {
             var list = new List<DropdownModel>();
 
-            switch (type)
+            switch ((DropdownType)type)
             {
                 case DropdownType.ReservationStatus:
                     list = this.mapper.Map<List<DropdownModel>>(await dbContext.ReservationStatus.ToListAsync());
+                    break;
+                case DropdownType.Agencies:
+                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.Agency.ToListAsync());
+                    break;
+                case DropdownType.Clients:
+                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.Client.ToListAsync());
+                    break;
+                case DropdownType.AccomodationTypes:
+                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.ArrangementPrice.Where(x => x.ArrangementId == new Guid(arrangementId) && x.IsDeleted == false).ToListAsync());
                     break;
                 default:
                     break;

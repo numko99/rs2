@@ -1,7 +1,6 @@
 ﻿using Iter.API.Controllers;
 using Iter.Core.EntityModels;
-using Iter.Core.Requests;
-using Iter.Core.Responses;
+using Iter.Core;
 using Iter.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Iter.Core.Search_Models;

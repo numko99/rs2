@@ -1,9 +1,7 @@
-﻿using Iter.Core;
-using Iter.Core.EntityModels;
+﻿using Iter.Core.EntityModels;
 using Iter.Infrastrucure.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace Iter.Infrastrucure
 {
@@ -23,6 +21,10 @@ namespace Iter.Infrastrucure
 
         public virtual DbSet<ArrangementPrice> ArrangementPrice { get; set; }
 
+        public virtual DbSet<ArrangementImage> ArrangementImage { get; set; }
+
+        public virtual DbSet<Image> Image { get; set; }
+
         public virtual DbSet<Destination> Destination { get; set; }
 
         public virtual DbSet<EmployeeArrangment> EmployeeArrangment { get; set; }
@@ -32,6 +34,10 @@ namespace Iter.Infrastrucure
         public virtual DbSet<ReservationStatus> ReservationStatus { get; set; }
 
         public virtual DbSet<User> User { get; set; }
+
+        public virtual DbSet<Employee> Employee { get; set; }
+
+        public virtual DbSet<Client> Client { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -50,6 +56,11 @@ namespace Iter.Infrastrucure
             builder.ApplyConfiguration(new DestinationConfiguration());
             builder.ApplyConfiguration(new EmployeeArrangmentConfiguration());
             builder.ApplyConfiguration(new ReservationConfiguration());
+            builder.ApplyConfiguration(new ArrangementPriceConfiguration());
+            builder.ApplyConfiguration(new ArrangementImageConfiguration());
+            builder.ApplyConfiguration(new ImageConfiguration());
+            builder.ApplyConfiguration(new EmployeeConfiguration());
+            builder.ApplyConfiguration(new ClientConfiguration());
         }
     }
 }

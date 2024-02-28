@@ -34,10 +34,7 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<DateTime>("CheckOutDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateModified")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("HotelAddressId")
@@ -50,6 +47,9 @@ namespace Iter.Infrastructure.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -74,10 +74,7 @@ namespace Iter.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateModified")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("HouseNumber")
@@ -87,6 +84,10 @@ namespace Iter.Infrastructure.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
@@ -122,11 +123,11 @@ namespace Iter.Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateModified")
-                        .HasColumnType("datetime2");
+                    b.Property<Guid?>("ImageId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -139,8 +140,9 @@ namespace Iter.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<byte[]>("Logo")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<DateTime?>("ModifiedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -159,6 +161,8 @@ namespace Iter.Infrastructure.Migrations
 
                     b.HasIndex("AddressId");
 
+                    b.HasIndex("ImageId");
+
                     b.ToTable("Agency", (string)null);
                 });
 
@@ -171,10 +175,7 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<Guid>("AgencyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateModified")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -182,11 +183,15 @@ namespace Iter.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -212,10 +217,7 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<Guid>("ArrangementId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateModified")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("ImageId")
@@ -227,13 +229,17 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<bool>("IsMainImage")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("ModifiedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ArrangementId");
 
                     b.HasIndex("ImageId");
 
-                    b.ToTable("ArrangementImage");
+                    b.ToTable("ArrangementImage", (string)null);
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.ArrangementPrice", b =>
@@ -243,26 +249,73 @@ namespace Iter.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AccommodationType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("ArrangementId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateModified")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("ModifiedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ArrangementId");
 
-                    b.ToTable("ArrangementPrice");
+                    b.ToTable("ArrangementPrice", (string)null);
+                });
+
+            modelBuilder.Entity("Iter.Core.EntityModels.Client", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AddressId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("BirthPlace")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
+
+                    b.ToTable("Client", (string)null);
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.Destination", b =>
@@ -271,7 +324,7 @@ namespace Iter.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AccommodationId")
+                    b.Property<Guid?>("AccommodationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ArrangementId")
@@ -290,10 +343,7 @@ namespace Iter.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateModified")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DepartureDate")
@@ -305,6 +355,10 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<bool>("IsOneDayTrip")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("ModifiedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AccommodationId");
@@ -312,6 +366,54 @@ namespace Iter.Infrastructure.Migrations
                     b.HasIndex("ArrangementId");
 
                     b.ToTable("Destination", (string)null);
+                });
+
+            modelBuilder.Entity("Iter.Core.EntityModels.Employee", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AddressId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("BirthPlace")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
+
+                    b.HasIndex("AgencyId");
+
+                    b.ToTable("Employee", (string)null);
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.EmployeeArrangment", b =>
@@ -323,18 +425,18 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<Guid>("ArrangementId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("Rating")
                         .HasColumnType("decimal(18,2)");
@@ -355,6 +457,7 @@ namespace Iter.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("ImageContent")
+                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<byte[]>("ImageThumb")
@@ -362,11 +465,12 @@ namespace Iter.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Image");
+                    b.ToTable("Image", (string)null);
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.Reservation", b =>
@@ -375,13 +479,16 @@ namespace Iter.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("ArrangementPriceId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("ArrangmentId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateModified")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeparturePlace")
@@ -392,31 +499,37 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("ModifiedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Rating")
                         .HasColumnType("int");
+
+                    b.Property<string>("Reminder")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReservationNumber")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("StatusId")
+                    b.Property<int>("ReservationStatusId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalPaid")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ArrangementPriceId");
 
                     b.HasIndex("ArrangmentId");
 
-                    b.HasIndex("StatusId");
+                    b.HasIndex("ClientId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ReservationStatusId");
 
                     b.ToTable("Reservation", (string)null);
                 });
@@ -446,15 +559,8 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("AgencyId")
+                    b.Property<Guid?>("ClientId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("BirthDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("BirthPlace")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -467,14 +573,11 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid?>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -499,6 +602,9 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -511,7 +617,13 @@ namespace Iter.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AgencyId");
+                    b.HasIndex("ClientId")
+                        .IsUnique()
+                        .HasFilter("[ClientId] IS NOT NULL");
+
+                    b.HasIndex("EmployeeId")
+                        .IsUnique()
+                        .HasFilter("[EmployeeId] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -660,8 +772,9 @@ namespace Iter.Infrastructure.Migrations
             modelBuilder.Entity("Iter.Core.EntityModels.Accommodation", b =>
                 {
                     b.HasOne("Iter.Core.EntityModels.Address", "HotelAddress")
-                        .WithMany()
+                        .WithMany("Accommodations")
                         .HasForeignKey("HotelAddressId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_Accomadation_HotelAddress");
 
@@ -671,12 +784,21 @@ namespace Iter.Infrastructure.Migrations
             modelBuilder.Entity("Iter.Core.EntityModels.Agency", b =>
                 {
                     b.HasOne("Iter.Core.EntityModels.Address", "Address")
-                        .WithMany()
+                        .WithMany("Agencies")
                         .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_Agency_Address");
 
+                    b.HasOne("Iter.Core.EntityModels.Image", "Image")
+                        .WithMany("Agencies")
+                        .HasForeignKey("ImageId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_Agency_Image");
+
                     b.Navigation("Address");
+
+                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.Arrangement", b =>
@@ -684,6 +806,7 @@ namespace Iter.Infrastructure.Migrations
                     b.HasOne("Iter.Core.EntityModels.Agency", "Agency")
                         .WithMany("Arrangements")
                         .HasForeignKey("AgencyId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_Arrangement_Agency");
 
@@ -695,14 +818,16 @@ namespace Iter.Infrastructure.Migrations
                     b.HasOne("Iter.Core.EntityModels.Arrangement", "Arrangement")
                         .WithMany("ArrangementImages")
                         .HasForeignKey("ArrangementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_ArrangementImage_Arrangement");
 
                     b.HasOne("Iter.Core.EntityModels.Image", "Image")
                         .WithMany("ArrangementImages")
                         .HasForeignKey("ImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_ArrangementImage_Image");
 
                     b.Navigation("Arrangement");
 
@@ -714,10 +839,23 @@ namespace Iter.Infrastructure.Migrations
                     b.HasOne("Iter.Core.EntityModels.Arrangement", "Arrangement")
                         .WithMany("ArrangementPrices")
                         .HasForeignKey("ArrangementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_ArrangementPrice_Arrangement");
 
                     b.Navigation("Arrangement");
+                });
+
+            modelBuilder.Entity("Iter.Core.EntityModels.Client", b =>
+                {
+                    b.HasOne("Iter.Core.EntityModels.Address", "Address")
+                        .WithMany("Clients")
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_Client_Address");
+
+                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.Destination", b =>
@@ -725,12 +863,13 @@ namespace Iter.Infrastructure.Migrations
                     b.HasOne("Iter.Core.EntityModels.Accommodation", "Accommodation")
                         .WithMany("Destinations")
                         .HasForeignKey("AccommodationId")
-                        .IsRequired()
+                        .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("FK_Destination_Accommodation");
 
                     b.HasOne("Iter.Core.EntityModels.Arrangement", "Arrangement")
                         .WithMany("Destinations")
                         .HasForeignKey("ArrangementId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_Destination_Arrangement");
 
@@ -739,17 +878,40 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Arrangement");
                 });
 
+            modelBuilder.Entity("Iter.Core.EntityModels.Employee", b =>
+                {
+                    b.HasOne("Iter.Core.EntityModels.Address", "Address")
+                        .WithMany("Employees")
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_Employee_Address");
+
+                    b.HasOne("Iter.Core.EntityModels.Agency", "Agency")
+                        .WithMany("Employees")
+                        .HasForeignKey("AgencyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_Employee_Agency");
+
+                    b.Navigation("Address");
+
+                    b.Navigation("Agency");
+                });
+
             modelBuilder.Entity("Iter.Core.EntityModels.EmployeeArrangment", b =>
                 {
                     b.HasOne("Iter.Core.EntityModels.Arrangement", "Arrangement")
                         .WithMany("EmployeeArrangments")
                         .HasForeignKey("ArrangementId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_EmployeeArrangment_Arrangement");
 
-                    b.HasOne("Iter.Core.EntityModels.User", "Employee")
+                    b.HasOne("Iter.Core.EntityModels.Employee", "Employee")
                         .WithMany("EmployeeArrangments")
                         .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_EmployeeArrangment_Employee");
 
@@ -760,38 +922,56 @@ namespace Iter.Infrastructure.Migrations
 
             modelBuilder.Entity("Iter.Core.EntityModels.Reservation", b =>
                 {
+                    b.HasOne("Iter.Core.EntityModels.ArrangementPrice", "ArrangementPrice")
+                        .WithMany("Reservations")
+                        .HasForeignKey("ArrangementPriceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_Reservation_ArrangementPrice");
+
                     b.HasOne("Iter.Core.EntityModels.Arrangement", "Arrangement")
                         .WithMany("Reservations")
                         .HasForeignKey("ArrangmentId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_Reservation_Arrangement");
 
-                    b.HasOne("Iter.Core.EntityModels.ReservationStatus", "Status")
+                    b.HasOne("Iter.Core.EntityModels.Client", "Client")
+                        .WithMany("Reservations")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_Reservation_Client");
+
+                    b.HasOne("Iter.Core.EntityModels.ReservationStatus", "ReservationStatus")
                         .WithMany()
-                        .HasForeignKey("StatusId")
+                        .HasForeignKey("ReservationStatusId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_Reservation_ReservationStatus");
 
-                    b.HasOne("Iter.Core.EntityModels.User", "User")
-                        .WithMany("Reservations")
-                        .HasForeignKey("UserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_Reservation_User");
-
                     b.Navigation("Arrangement");
 
-                    b.Navigation("Status");
+                    b.Navigation("ArrangementPrice");
 
-                    b.Navigation("User");
+                    b.Navigation("Client");
+
+                    b.Navigation("ReservationStatus");
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.User", b =>
                 {
-                    b.HasOne("Iter.Core.EntityModels.Agency", "Agency")
-                        .WithMany("Users")
-                        .HasForeignKey("AgencyId");
+                    b.HasOne("Iter.Core.EntityModels.Client", "Client")
+                        .WithOne("User")
+                        .HasForeignKey("Iter.Core.EntityModels.User", "ClientId");
 
-                    b.Navigation("Agency");
+                    b.HasOne("Iter.Core.EntityModels.Employee", "Employee")
+                        .WithOne("User")
+                        .HasForeignKey("Iter.Core.EntityModels.User", "EmployeeId");
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -850,11 +1030,22 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Destinations");
                 });
 
+            modelBuilder.Entity("Iter.Core.EntityModels.Address", b =>
+                {
+                    b.Navigation("Accommodations");
+
+                    b.Navigation("Agencies");
+
+                    b.Navigation("Clients");
+
+                    b.Navigation("Employees");
+                });
+
             modelBuilder.Entity("Iter.Core.EntityModels.Agency", b =>
                 {
                     b.Navigation("Arrangements");
 
-                    b.Navigation("Users");
+                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.Arrangement", b =>
@@ -870,16 +1061,30 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Reservations");
                 });
 
-            modelBuilder.Entity("Iter.Core.EntityModels.Image", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.ArrangementPrice", b =>
                 {
-                    b.Navigation("ArrangementImages");
+                    b.Navigation("Reservations");
                 });
 
-            modelBuilder.Entity("Iter.Core.EntityModels.User", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.Client", b =>
+                {
+                    b.Navigation("Reservations");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Iter.Core.EntityModels.Employee", b =>
                 {
                     b.Navigation("EmployeeArrangments");
 
-                    b.Navigation("Reservations");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Iter.Core.EntityModels.Image", b =>
+                {
+                    b.Navigation("Agencies");
+
+                    b.Navigation("ArrangementImages");
                 });
 #pragma warning restore 612, 618
         }

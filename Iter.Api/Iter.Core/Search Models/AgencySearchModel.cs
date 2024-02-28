@@ -1,8 +1,12 @@
 ﻿namespace Iter.Core.Search_Models
 {
-    public class AgencySearchModel: BaseSearchModel
+    public class UserSearchModel: BaseSearchModel
     {
         public string? Name { get; set; }
+
+        public string? AgencyId { get; set; }
+        
+        public int? RoleId { get; set; }
 
     }
 }

@@ -29,17 +29,23 @@ namespace Iter.Infrastrucure.Configurations
                 .HasMaxLength(50);
 
             builder.HasOne(a => a.Address)
-                .WithMany()
+                .WithMany(a => a.Agencies)
                 .HasForeignKey(a => a.AddressId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .HasConstraintName("FK_Agency_Address");
+
+            builder.HasOne(a => a.Image)
+                .WithMany(a => a.Agencies)
+                .HasForeignKey(a => a.ImageId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .HasConstraintName("FK_Agency_Image");
 
             builder.Property(a => a.Rating)
                 .HasColumnType("decimal(18,2)");
 
-            builder.Property(a => a.DateCreated).IsRequired();
+            builder.Property(a => a.CreatedAt).IsRequired();
 
-            builder.Property(a => a.DateCreated);
+            builder.Property(a => a.ModifiedAt).IsRequired();
 
             builder.Property(a => a.IsDeleted).IsRequired();
         }

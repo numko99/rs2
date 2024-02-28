@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:ui/models/arrangment.dart';
 import 'package:ui/widgets/Layout/layout.dart';
 import 'package:ui/widgets/agency_details/arrangement_data_table.dart';
+import 'package:ui/widgets/reservation/reservation_mini_data_table.dart';
 import '../models/agency.dart';
 import '../services/agency_provider.dart';
 import '../services/arrangment_provider.dart';
@@ -46,6 +47,8 @@ class _AgencyDetailsPageState extends State<AgencyDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
+      name: "Agencije",
+      icon: Icons.business,
       body: displayLoader
           ? const Center(child: Column(children: [CircularProgressIndicator()]))
           : Card(
@@ -84,7 +87,7 @@ class _AgencyDetailsPageState extends State<AgencyDetailsPage> {
           padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
           width: 150,
           height: 150,
-          child: agency.logo != null ? Image.memory(base64Decode(agency!.logo!)) : Container() //BASE IMAGE TODO,
+          child: agency.logo != null ? Image.memory(base64Decode(agency.logo?.image)) : Container() //BASE IMAGE TODO,
         ),
         const SizedBox(height: 20),
         Row(
@@ -141,7 +144,7 @@ class _AgencyDetailsPageState extends State<AgencyDetailsPage> {
                   child:
                       Icon(Icons.location_city_outlined, color: Colors.amber),
                 ),
-                title: Text('${agency?.address.country}'),
+                title: Text('${agency?.address?.country}'),
               ),
             ),
             Flexible(
@@ -150,7 +153,7 @@ class _AgencyDetailsPageState extends State<AgencyDetailsPage> {
                   message: 'Grad',
                   child: Icon(Icons.location_city, color: Colors.amber),
                 ),
-                title: Text('${agency?.address.city}'),
+                title: Text('${agency?.address?.city}'),
               ),
             )
           ],
@@ -163,7 +166,7 @@ class _AgencyDetailsPageState extends State<AgencyDetailsPage> {
                   message: 'Poštanski broj',
                   child: Icon(Icons.numbers, color: Colors.amber),
                 ),
-                title: Text('${agency.address.postalCode}'),
+                title: Text('${agency.address?.postalCode}'),
               ),
             ),
             Flexible(
@@ -173,7 +176,7 @@ class _AgencyDetailsPageState extends State<AgencyDetailsPage> {
                   child: Icon(Icons.home, color: Colors.amber),
                 ),
                 title: Text(
-                    '${agency?.address.street} ${agency.address.houseNumber}' ??
+                    '${agency?.address?.street} ${agency.address?.houseNumber}' ??
                         ''),
               ),
             )
@@ -203,8 +206,10 @@ class _AgencyDetailsPageState extends State<AgencyDetailsPage> {
               children: <Widget>[
                 Padding(
                     padding: const EdgeInsets.fromLTRB(5, 30, 5, 5),
-                    child: ArrangementDataTable(agencyId: agency!.id)),
-                const Center(child: Text('Sadržaj za Drugi Tab')),
+                    child: SingleChildScrollView(child: ArrangementDataTable(agencyId: agency!.id))),
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(5, 30, 5, 5),
+                    child: SingleChildScrollView(child: ReservationDataTable(agencyId: agency!.id)))
               ],
             ),
           )

@@ -8,29 +8,33 @@ part of 'arrangment.dart';
 
 Arrangement _$ArrangementFromJson(Map<String, dynamic> json) => Arrangement(
       id: json['id'] as String,
-      agencyId: json['agencyId'] as String,
-      agency: json['agency'] as String,
       name: json['name'] as String,
+      agency: Agency.fromJson(json['agency'] as Map<String, dynamic>),
       description: json['description'] as String,
-      price: (json['price'] as num).toDouble(),
-      capacity: json['capacity'] as int,
       startDate: DateTime.parse(json['startDate'] as String),
-      endDate: DateTime.parse(json['endDate'] as String),
-      dateCreated: DateTime.parse(json['dateCreated'] as String),
-      dateModified: DateTime.parse(json['dateModified'] as String),
+      endDate: json['endDate'] == null
+          ? null
+          : DateTime.parse(json['endDate'] as String),
+      prices: (json['prices'] as List<dynamic>)
+          .map((e) => ArrangementPrice.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      images: (json['images'] as List<dynamic>)
+          .map((e) => ImageModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      destinations: (json['destinations'] as List<dynamic>)
+          .map((e) => Destination.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ArrangementToJson(Arrangement instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'agencyId': instance.agencyId,
-      'agency': instance.agency,
       'name': instance.name,
+      'agency': instance.agency,
       'description': instance.description,
-      'price': instance.price,
-      'capacity': instance.capacity,
       'startDate': instance.startDate.toIso8601String(),
-      'endDate': instance.endDate.toIso8601String(),
-      'dateCreated': instance.dateCreated.toIso8601String(),
-      'dateModified': instance.dateModified.toIso8601String(),
+      'endDate': instance.endDate?.toIso8601String(),
+      'prices': instance.prices,
+      'images': instance.images,
+      'destinations': instance.destinations,
     };

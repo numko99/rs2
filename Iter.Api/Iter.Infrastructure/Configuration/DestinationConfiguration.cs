@@ -23,13 +23,13 @@ namespace Iter.Infrastrucure.Configurations
             builder.HasOne(d => d.Accommodation)
                 .WithMany(a => a.Destinations)
                 .HasForeignKey(d => d.AccommodationId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .HasConstraintName("FK_Destination_Accommodation");
 
             builder.HasOne(d => d.Arrangement)
                 .WithMany(a => a.Destinations)
                 .HasForeignKey(d => d.ArrangementId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .HasConstraintName("FK_Destination_Arrangement");
 
             builder.Property(d => d.ArrivalDate)
@@ -41,9 +41,9 @@ namespace Iter.Infrastrucure.Configurations
             builder.Property(d => d.IsOneDayTrip)
                 .IsRequired();
 
-            builder.Property(a => a.DateCreated).IsRequired();
+            builder.Property(a => a.CreatedAt).IsRequired();
 
-            builder.Property(a => a.DateCreated);
+            builder.Property(a => a.ModifiedAt).IsRequired();
 
             builder.Property(a => a.IsDeleted).IsRequired();
         }

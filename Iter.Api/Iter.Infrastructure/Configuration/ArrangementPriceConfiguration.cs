@@ -20,13 +20,13 @@ namespace Iter.Infrastrucure.Configurations
             builder.HasOne(d => d.Arrangement)
                 .WithMany(a => a.ArrangementPrices)
                 .HasForeignKey(d => d.ArrangementId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .HasConstraintName("FK_ArrangementPrice_Arrangement");
 
 
-            builder.Property(a => a.DateCreated).IsRequired();
+            builder.Property(a => a.CreatedAt).IsRequired();
 
-            builder.Property(a => a.DateCreated);
+            builder.Property(a => a.ModifiedAt).IsRequired();
 
             builder.Property(a => a.IsDeleted).IsRequired();
         }

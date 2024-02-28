@@ -8,8 +8,8 @@ part of 'dropdown_model.dart';
 
 DropdownModel _$DropdownModelFromJson(Map<String, dynamic> json) =>
     DropdownModel(
-      id: json['id'] as int,
-      name: json['name'] as String,
+      id: json['id'],
+      name: json['name'] as String?,
     );
 
 Map<String, dynamic> _$DropdownModelToJson(DropdownModel instance) =>

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:provider/provider.dart';
+import 'package:ui/helpers/scaffold_messenger_helper.dart';
 import 'package:ui/modals/Agency/insertAgencyModal.dart';
 import 'package:ui/models/agency.dart';
 import 'package:ui/services/agency_provider.dart';
@@ -36,6 +37,8 @@ class _AgencyPageState extends State<AgencyPage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
+                  name: "Agencije",
+      icon: Icons.business,
       body: Card(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(45.0, 10, 45.0, 10),
@@ -125,7 +128,7 @@ class _AgencyPageState extends State<AgencyPage> {
                                 (agency) => DataRow(
                                   cells: [
                                     DataCell(Text(agency.name)),
-                                    DataCell(Text(agency.address.city)),
+                                    DataCell(Text(agency.address!.city!)),
                                     DataCell(Text(agency.contactEmail)),
                                     DataCell(Text(agency.contactPhone)),
                                     DataCell(
@@ -137,7 +140,7 @@ class _AgencyPageState extends State<AgencyPage> {
                                           // Align to the end (right)
                                           children: <Widget>[
                                             IconButton(
-                                                icon: const Icon(Icons.details),
+                                                icon: const Icon(Icons.open_in_new_off),
                                                 onPressed: () {
                                                   Navigator.pushNamed(context,
                                                       '/agency/details',
@@ -255,10 +258,10 @@ class _AgencyPageState extends State<AgencyPage> {
         });
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Center(child: Text("Došlo je do greške na serveru")),
-        backgroundColor: Colors.red,
-      ));
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Došlo je do greške",
+          backgroundColor: Colors.red);
     } finally {
       setState(() {
         displayLoader = false;

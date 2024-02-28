@@ -2,7 +2,9 @@
 {
     public enum DropdownType
     {
-        AccommodationType = 1,
+        Agencies = 0,
+        Clients,
         ReservationStatus,
+        AccomodationTypes
     }
 }

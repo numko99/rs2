@@ -1,7 +1,9 @@
-﻿namespace Iter.Core.Requests
+﻿namespace Iter.Core
 {
     public class ImageUpsertRequest
     {
+        public string? Id { get; set; }
+
         public string Name { get; set; }
 
         public byte[]? Image { get; set; }

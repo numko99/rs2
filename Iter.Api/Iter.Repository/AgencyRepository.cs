@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using Iter.Core.EntityModels;
 using Iter.Core.Models;
-using Iter.Core.Requests;
-using Iter.Core.Responses;
+using Iter.Core;
 using Iter.Core.Search_Models;
 using Iter.Infrastrucure;
 using Iter.Repository.Interface;
@@ -34,11 +33,11 @@ namespace Iter.Repository
 
             query = query.Where(a => a.IsDeleted == false);
 
-            query = query.Include(nameof(Address));
+            query = query.Include(a => a.Address).Include(a => a.Image);
 
             result.Count = await query.CountAsync();
 
-            query = query.OrderByDescending(q => q.DateCreated);
+            query = query.OrderByDescending(q => q.CreatedAt);
 
             if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
             {
@@ -50,26 +49,16 @@ namespace Iter.Repository
             return result;
         }
 
-        public async override Task AddAsync(Agency entity)
-        {
-            var address = entity.Address;
-            await this.dbContext.Address.AddAsync(address);
-            await dbContext.SaveChangesAsync();
-
-            await this.dbContext.Agency.AddAsync(entity);
-            await dbContext.SaveChangesAsync();
-        }
 
         public async override Task<Agency?> GetById(Guid id)
         {
-            return await this.dbContext.Agency.Include(a => a.Address).FirstOrDefaultAsync(a => a.Id == id);
+            return await this.dbContext.Agency.Include(a => a.Address).Include(a => a.Image).FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public override async Task DeleteAsync(Agency entity)
         {
-            var address = entity.Address;
-            this.dbContext.Agency.Remove(entity);
-            this.dbContext.Address.Remove(address);
+            entity.IsDeleted = true;
+            dbContext.Agency.Update(entity);
             await this.dbContext.SaveChangesAsync();
         }
     }

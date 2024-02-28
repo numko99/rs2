@@ -29,9 +29,9 @@ namespace Iter.Infrastrucure.Configurations
             builder.Property(a => a.Country)
                 .HasMaxLength(50);
 
-            builder.Property(a => a.DateCreated).IsRequired();
+            builder.Property(a => a.CreatedAt).IsRequired();
 
-            builder.Property(a => a.DateCreated);
+            builder.Property(a => a.ModifiedAt).IsRequired();
 
             builder.Property(a => a.IsDeleted).IsRequired();
         }

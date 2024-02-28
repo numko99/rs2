@@ -1,12 +1,10 @@
-namespace Iter.Core.Requests
+namespace Iter.Core
 {    public class ArrangementUpsertRequest    {
-        //public Guid Id { get; set; }
-
-        //public Guid AgencyId { get; set; }
+        public string? AgencyId { get; set; }
 
         public string Name { get; set; }
 
-        public string StartDate { get; set; }        public string EndDate { get; set; }
+        public string StartDate { get; set; }        public string? EndDate { get; set; }
 
         public decimal? Price { get; set; }
 

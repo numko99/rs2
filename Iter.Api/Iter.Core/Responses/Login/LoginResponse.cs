@@ -1,4 +1,4 @@
-﻿namespace Iter.Core.Responses
+﻿namespace Iter.Core
 {
     public class LoginResponse
     {

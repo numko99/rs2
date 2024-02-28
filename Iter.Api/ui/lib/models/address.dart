@@ -5,11 +5,11 @@ part 'address.g.dart';
 @JsonSerializable()
 class Address {
   final String? id;
-  final String street;
-  final String houseNumber;
-  final String city;
-  final String postalCode;
-  final String country;
+  final String? street;
+  final String? houseNumber;
+  final String? city;
+  final String? postalCode;
+  final String? country;
 
   Address({
     this.id,

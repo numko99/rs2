@@ -15,7 +15,7 @@ $@"using Iter.API.Controllers;
 using Iter.Core;
 using Iter.Core.Enum;
 using Iter.Core.EntityModels;
-using Iter.Core.Requests;
+using Iter.Core;
 using Iter.Core.Responses;
 using Iter.Services.Interface;
 using Microsoft.AspNetCore.Authorization;

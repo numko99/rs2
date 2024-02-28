@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Iter.Core.Requests
+namespace Iter.Core
 {
     public class AddressInsertRequest
     {

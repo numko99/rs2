@@ -4,10 +4,11 @@ part 'arrangement_price.g.dart';
 
 @JsonSerializable()
 class ArrangementPrice {
+  String? id;
   String? accommodationType;
   double? price;
 
-  ArrangementPrice({this.accommodationType, this.price});
+  ArrangementPrice({this.id, this.accommodationType, this.price});
 
   factory ArrangementPrice.fromJson(Map<String, dynamic> json) =>
       _$ArrangementPriceFromJson(json);

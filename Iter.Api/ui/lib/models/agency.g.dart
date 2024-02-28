@@ -9,13 +9,17 @@ part of 'agency.dart';
 Agency _$AgencyFromJson(Map<String, dynamic> json) => Agency(
       id: json['id'] as String,
       name: json['name'] as String,
-      address: Address.fromJson(json['address'] as Map<String, dynamic>),
+      address: json['address'] == null
+          ? null
+          : Address.fromJson(json['address'] as Map<String, dynamic>),
       contactEmail: json['contactEmail'] as String,
       contactPhone: json['contactPhone'] as String,
       website: json['website'] as String,
       licenseNumber: json['licenseNumber'] as String,
       isActive: json['isActive'] as bool,
-      logo: json['logo'] as String?,
+      logo: json['logo'] == null
+          ? null
+          : ImageModel.fromJson(json['logo'] as Map<String, dynamic>),
       rating: (json['rating'] as num).toDouble(),
       isDeleted: json['isDeleted'] as bool,
       dateCreated: DateTime.parse(json['dateCreated'] as String),

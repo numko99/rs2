@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:ui/models/image_model.dart';
 import 'address.dart';
 
 part 'agency.g.dart';
@@ -7,12 +8,12 @@ part 'agency.g.dart';
 class Agency {
   final String id;
   final String name;
-  final Address address;
+  final Address? address;
   final String contactEmail;
   final String contactPhone;
   final String website;
   final String licenseNumber;
-  final String? logo;
+  final ImageModel? logo;
   final bool isActive;
   final double rating;
   final bool isDeleted;
@@ -22,7 +23,7 @@ class Agency {
   Agency({
     required this.id,
     required this.name,
-    required this.address,
+    this.address,
     required this.contactEmail,
     required this.contactPhone,
     required this.website,

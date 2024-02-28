@@ -1,4 +1,4 @@
-﻿namespace Iter.Core.Responses
+﻿namespace Iter.Core
 {
     public class AddressResponse
     {
@@ -13,12 +13,5 @@
         public string PostalCode { get; set; }
 
         public string Country { get; set; }
-
-
-        public bool IsDeleted { get; set; }
-
-        public DateTime DateCreated { get; set; }
-
-        public DateTime DateModified { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace Iter.Infrastrucure.Configurations
             builder.HasOne(a => a.Agency)
                    .WithMany(a => a.Arrangements)
                    .HasForeignKey(a => a.AgencyId)
-                   .OnDelete(DeleteBehavior.ClientSetNull)
+                   .OnDelete(DeleteBehavior.NoAction)
                    .HasConstraintName("FK_Arrangement_Agency");
 
             builder.Property(a => a.Name)
@@ -28,12 +28,11 @@ namespace Iter.Infrastrucure.Configurations
             builder.Property(a => a.StartDate)
                 .IsRequired();
 
-            builder.Property(a => a.EndDate)
-                .IsRequired();
+            builder.Property(a => a.EndDate);
 
-            builder.Property(a => a.DateCreated).IsRequired();
+            builder.Property(a => a.CreatedAt).IsRequired();
 
-            builder.Property(a => a.DateCreated);
+            builder.Property(a => a.ModifiedAt).IsRequired();
 
             builder.Property(a => a.IsDeleted).IsRequired();
         }

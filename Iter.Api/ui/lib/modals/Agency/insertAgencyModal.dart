@@ -6,7 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
+import 'package:ui/helpers/image_helper.dart';
+import 'package:ui/helpers/scaffold_messenger_helper.dart';
+import 'package:ui/models/address.dart';
 import 'package:ui/models/agency.dart';
+import 'package:ui/models/image_model.dart';
 
 import '../../services/agency_provider.dart';
 
@@ -25,32 +29,14 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
   Map<String, dynamic> _initialValue = {};
 
   AgencyProvider? _agencyProvider;
-  dynamic? _image;
+  ImageModel? _logo;
 
   @override
   void initState() {
     super.initState();
-
-    if (widget.agency != null) {
-      _initialValue = {
-        "name": widget.agency?.name,
-        "contactEmail": widget.agency?.contactEmail,
-        "contactPhone": widget.agency?.contactPhone,
-        "website": widget.agency?.website,
-        "licenseNumber": widget.agency?.licenseNumber,
-        "logo": widget.agency?.logo,
-        "street": widget.agency?.address?.street,
-        "houseNumber": widget.agency?.address?.houseNumber,
-        "city": widget.agency?.address?.city,
-        "postalCode": widget.agency?.address?.postalCode,
-        "country": widget.agency?.address?.country,
-      };
-      if (widget.agency?.logo != null) {
-        _image = Image.memory(base64Decode(widget.agency!.logo!));
-      }
-    }
-
     _agencyProvider = context.read<AgencyProvider>();
+
+    initialLoad();
   }
 
   @override
@@ -61,7 +47,7 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
           Text('Dodaj agenciju'),
           SizedBox(height: 10),
           Icon(
-            Icons.card_travel,
+            Icons.business,
             color: Colors.amber,
             size: 50,
           ),
@@ -253,7 +239,7 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
                         );
                       }),
                     )),
-                    if (_image != null) ...[
+                    if (_logo != null) ...[
                       const SizedBox(width: 60),
                       Expanded(
                         child: Row(
@@ -265,9 +251,8 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
                                 padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
                                 width: 100,
                                 height: 100,
-                                child: _image is File
-                                    ? Image.file(_image!)
-                                    : _image,
+                                child: Image.memory(
+                                    base64Decode(_logo?.image)),
                               ),
                             ),
                             Positioned(
@@ -275,7 +260,7 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
                                 icon: Icon(Icons.close),
                                 onPressed: () {
                                   setState(() {
-                                    _image = null;
+                                    _logo = null;
                                   });
                                 },
                               ),
@@ -327,34 +312,68 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
   Future<void> submit() async {
     try {
       var request = new Map.from(_formKey.currentState!.value);
-      request["Logo"] = base64Encode(_image.readAsBytesSync() ?? _image); // TODO FIX WHEN EDIT AGENCY BUT NOT SELECTING NEW IMAGE
+      request["logo"] = _logo?.toJson();
 
-      if (widget.agency?.id == null) {
+      request["address"] = Address(
+        city: request["city"],
+        country: request["country"],
+        postalCode: request["postalCode"],
+        street: request["street"],
+        houseNumber: request["houseNumber"],
+      ).toJson();
+
+      if (widget.agency == null) {
         await _agencyProvider?.insert(request);
       } else {
         await _agencyProvider?.update(widget.agency?.id, request);
       }
       widget.onCompleted();
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Center(child: Text("Nova agencija uspješno dodana!")),
-        backgroundColor: Colors.green,
-      ));
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Agencija uspješno dodana!",
+          backgroundColor: Colors.green);
     } catch (error) {
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Došlo je do greške",
+          backgroundColor: Colors.red);
+    }
+  }
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Center(
-            child: Text("Došlo je do greške prilikom dodavanja agencije.")),
-        backgroundColor: Colors.red,
-      ));
+  Future<void> initialLoad() async {
+    if (widget.agency != null) {
+      _initialValue = {
+        "name": widget.agency?.name,
+        "contactEmail": widget.agency?.contactEmail,
+        "contactPhone": widget.agency?.contactPhone,
+        "website": widget.agency?.website,
+        "licenseNumber": widget.agency?.licenseNumber,
+        "street": widget.agency?.address?.street,
+        "houseNumber": widget.agency?.address?.houseNumber,
+        "city": widget.agency?.address?.city,
+        "postalCode": widget.agency?.address?.postalCode,
+        "country": widget.agency?.address?.country,
+      };
+      if (widget.agency?.logo != null) {
+        _logo = widget.agency?.logo;
+      }
     }
   }
 
   Future getImage() async {
-    var result = await FilePicker.platform.pickFiles(type: FileType.image);
-    if (result != null && result.files.single.path != null) {
+    var result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: false,
+    );
+
+    if (result != null && result.files.isNotEmpty) {
+      var imagesTemp = await Future.wait(result.files.map((file) async {
+        return await ImageHelper.processImage(File(file.path!));
+      }));
+
       setState(() {
-        _image = File(result.files.single.path!);
+        _logo = imagesTemp[0];
       });
     }
   }

@@ -1,0 +1,2 @@
+namespace Iter.Core
+{    public class ReservationInsertRequest    {        public string? DeparturePlace { get; set; }        public string? Reminder { get; set; }                public string? ClientId { get; set; }        public string? ArrangmentId { get; set; }        public string? ArrangementPriceId { get; set; }        public decimal? TotalPaid { get; set; }    }}

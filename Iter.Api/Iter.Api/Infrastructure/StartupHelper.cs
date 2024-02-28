@@ -27,6 +27,10 @@ namespace Iter.Api.Infrastructure
 
         public static void ConfigureServices(this IServiceCollection services)
         {
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+
+
             services.AddScoped<IAccommodationService, AccommodationService>();
             services.AddScoped<IAccommodationRepository, AccommodationRepository>();
 
@@ -53,6 +57,8 @@ namespace Iter.Api.Infrastructure
             services.AddScoped<IAgencyRepository, AgencyRepository>();
 
             services.AddScoped<IDropdownRepository, DropdownRepository>();
+
+            services.AddTransient<IEmailService, EmailService>();
 
             services.AddSingleton(AutoMapperConfig.CreateMapping());
 
@@ -157,7 +163,9 @@ namespace Iter.Api.Infrastructure
                 .Configure<ApplicationOptions>(configuration)
                 .AddSingleton(x => x.GetRequiredService<IOptions<ApplicationOptions>>().Value)
                 .Configure<JwtConfiguration>(configuration.GetSection(nameof(ApplicationOptions.JwtConfiguration)))
-                .AddSingleton(x => x.GetRequiredService<IOptions<JwtConfiguration>>().Value);
+                .AddSingleton(x => x.GetRequiredService<IOptions<JwtConfiguration>>().Value)
+                .Configure<EmailSettings>(configuration.GetSection(nameof(ApplicationOptions.EmailSettings)))
+                .AddSingleton(x => x.GetRequiredService<IOptions<EmailSettings>>().Value);
         }
     }
 }

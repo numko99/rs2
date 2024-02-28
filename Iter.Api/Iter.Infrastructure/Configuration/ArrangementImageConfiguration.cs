@@ -17,20 +17,20 @@ namespace Iter.Infrastrucure.Configurations
             builder.HasOne(d => d.Image)
                 .WithMany(a => a.ArrangementImages)
                 .HasForeignKey(d => d.ImageId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .HasConstraintName("FK_ArrangementImage_Image");
 
             builder.HasOne(d => d.Arrangement)
                 .WithMany(a => a.ArrangementImages)
                 .HasForeignKey(d => d.ArrangementId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ArrangementPrice_Arrangement");
+                .OnDelete(DeleteBehavior.NoAction)
+                .HasConstraintName("FK_ArrangementImage_Arrangement");
 
             builder.Property(a => a.IsMainImage).IsRequired();
 
-            builder.Property(a => a.DateCreated).IsRequired();
+            builder.Property(a => a.CreatedAt).IsRequired();
 
-            builder.Property(a => a.DateCreated);
+            builder.Property(a => a.ModifiedAt).IsRequired();
 
             builder.Property(a => a.IsDeleted).IsRequired();
         }

@@ -15,17 +15,19 @@ namespace Iter.Services
     public sealed class UserAuthenticationService : IUserAuthenticationService
     {
         private readonly UserManager<User> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
         private readonly IMapper mapper;
         private readonly JwtConfiguration jwtConfiguration;
 
         private User? user;
 
         public UserAuthenticationService(
-        UserManager<User> userManager, IMapper mapper, JwtConfiguration jwtConfiguration)
+        UserManager<User> userManager, IMapper mapper, JwtConfiguration jwtConfiguration, RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userManager;
             this.mapper = mapper;
             this.jwtConfiguration = jwtConfiguration;
+            this.roleManager = roleManager;
         }
 
         public async Task<IdentityResult> RegisterUserAsync(UserRegistrationDto userRegistration)
@@ -33,6 +35,28 @@ namespace Iter.Services
             var user = mapper.Map<User>(userRegistration);
             var result = await userManager.CreateAsync(user, userRegistration.Password);
             return result;
+        }
+
+        public async Task<List<string>?> GetUserRoleIdsAsync(User user)
+        {
+            if (user == null)
+            {
+                return null;
+            }
+
+            var roleNames = await this.userManager.GetRolesAsync(user);
+            var roleIds = new List<string>();
+
+            foreach (var roleName in roleNames)
+            {
+                var role = await this.roleManager.FindByNameAsync(roleName);
+                if (role != null)
+                {
+                    roleIds.Add(role.Id);
+                }
+            }
+
+            return roleIds;
         }
 
         public async Task<bool> ValidateUserAsync(UserLoginDto loginDto)
@@ -64,7 +88,7 @@ namespace Iter.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+                //new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email)
             };
