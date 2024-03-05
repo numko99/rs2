@@ -1,6 +1,5 @@
 using Iter.Api.Mapping;
 using Iter.Core.Options;
-using Iter.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,14 +9,12 @@ using Microsoft.OpenApi.Models;
 
 using System.Text;
 using Iter.Services.Interface;
-using Iter.Services;
-using Iter.Infrastrucure;
+using Iter.Core.EntityModels;
 using Iter.Repository.Interface;
 using Iter.Repository;
-using Iter.Core.EntityModels;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Localization;
-using System.Globalization;
+using Iter.Services;
+using Iter.Infrastrucure;
+using Iter.Api.Services.Report;
 
 namespace Iter.Api.Infrastructure
 {
@@ -27,6 +24,9 @@ namespace Iter.Api.Infrastructure
 
         public static void ConfigureServices(this IServiceCollection services)
         {
+            services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IReportPathGetterService, ReportPathGetterService>();
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
 
@@ -155,7 +155,15 @@ namespace Iter.Api.Infrastructure
             });
         }
 
-        public static IServiceCollection AddCustomOptions(
+        public static IHostBuilder CreateHostBuilder(string[] args) => 
+            Host.CreateDefaultBuilder(args).
+                ConfigureWebHostDefaults(webBuilder =>
+        {
+            webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
+            webBuilder.UseWebRoot("wwwroot");
+        });
+
+    public static IServiceCollection AddCustomOptions(
                 this IServiceCollection services,
                 IConfiguration configuration)
         {

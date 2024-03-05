@@ -3,6 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:provider/provider.dart';
+import 'package:ui/enums/arrangement_status.dart';
 import 'package:ui/enums/dropdown_types.dart';
 import 'package:ui/helpers/dateTime_helper.dart';
 import 'package:ui/helpers/scaffold_messenger_helper.dart';
@@ -249,6 +250,9 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                       const DataColumn(
                           label: Text('Datum povratka',
                               style: TextStyle(fontWeight: FontWeight.bold))),
+                      const DataColumn(
+                          label: Text('Status prijava',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
                       const DataColumn(label: Text('')),
                     ],
                     rows: arrangements
@@ -264,6 +268,21 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                                   ? Text(DateFormat("dd.MM.yyyy")
                                       .format(arrangement.endDate!))
                                   : const Text("")),
+                              DataCell(
+                                Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  color: arrangement.arrangementStatusId ==
+                                          ArrangementStatus.inPreparation.index
+                                      ? Colors.grey
+                                      : arrangement.arrangementStatusId ==
+                                              ArrangementStatus
+                                                  .availableForReservation.index
+                                          ? Colors.amber
+                                          : Colors.green,
+                                  child:
+                                      Text(arrangement.arrangementStatusName ?? ""),
+                                ),
+                              ),
                               DataCell(
                                 SizedBox(
                                   width: double.infinity,
@@ -296,7 +315,7 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                                           tooltip: 'Uredi'),
                                       IconButton(
                                           icon: const Icon(Icons.list_alt),
-                                          onPressed: () {
+                                          onPressed: arrangement.arrangementStatusId == ArrangementStatus.availableForReservation.index ? () {
                                             showDialog(
                                               context: context,
                                               builder: (BuildContext context) {
@@ -307,8 +326,32 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                                                         search());
                                               },
                                             );
-                                          },
+                                          } : null,
                                           tooltip: 'Dodaj rezervaciju'),
+                                      IconButton(
+                                          icon: getArrangementIcon(
+                                              arrangement.arrangementStatusId),
+                                          onPressed: () {
+                                            showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return getConfirmationDialog(
+                                                      arrangement);
+                                                });
+                                          },
+                                          tooltip: arrangement
+                                                      .arrangementStatusId ==
+                                                  ArrangementStatus
+                                                      .inPreparation.index
+                                              ? 'Aktiviraj prijave'
+                                              : arrangement
+                                                          .arrangementStatusId ==
+                                                      ArrangementStatus
+                                                          .availableForReservation
+                                                          .index
+                                                  ? 'Zatvori prijave'
+                                                  : "Reaktiviraj prijave"),
                                       IconButton(
                                           icon: const Icon(Icons.delete),
                                           onPressed: () {
@@ -369,6 +412,88 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
           )
         ])
       ],
+    );
+  }
+
+  Icon getArrangementIcon(int? status) {
+    var arrangementStatus = ArrangementStatus.values[status!];
+    switch (arrangementStatus) {
+      case ArrangementStatus.inPreparation:
+        return const Icon(
+          Icons.event_available,
+          color: Colors.blue,
+        );
+      case ArrangementStatus.availableForReservation:
+        return const Icon(
+          Icons.close,
+          color: Colors.green,
+        );
+      case ArrangementStatus.reservationsClosed:
+        return const Icon(
+          Icons.event_available,
+          color: Colors.red,
+        );
+      default:
+        return const Icon(
+          Icons.error,
+          color: Colors.grey,
+        );
+    }
+  }
+
+CustomConfirmationDialog getConfirmationDialog(Arrangement arrangement) {
+    String title;
+    String content;
+    ArrangementStatus nextStatus;
+
+    var currentStatus =
+        ArrangementStatus.values[arrangement.arrangementStatusId!];
+
+    switch (currentStatus) {
+      case ArrangementStatus.inPreparation:
+        title = 'Aktivacija prijava';
+        content = 'Da li ste sigurni da želite aktivirati prijave?';
+        nextStatus = ArrangementStatus.availableForReservation;
+        break;
+      case ArrangementStatus.availableForReservation:
+        title = 'Deaktivacija prijava';
+        content = 'Da li ste sigurni da želite zatvoriti rezervacije?';
+        nextStatus = ArrangementStatus.reservationsClosed;
+        break;
+      case ArrangementStatus.reservationsClosed:
+        title = 'Ponovna aktivacija prijava';
+        content = 'Da li ste sigurni da želite ponovo aktivirati prijave?';
+        nextStatus = ArrangementStatus.availableForReservation;
+        break;
+      default:
+        throw 'Nepoznati status aranžmana';
+    }
+
+    return CustomConfirmationDialog(
+      title: title,
+      content: content,
+      onConfirm: () async {
+        try {
+          setState(() => _displayLoader = true);
+          await _arrangementProvider?.changeStatus(
+              arrangement.id, nextStatus.index);
+          await search();
+          ScaffoldMessengerHelper.showCustomSnackBar(
+            context: context,
+            message: "Uspješno ste promijenili status aranžmana",
+            backgroundColor: Colors.green,
+          );
+        } catch (error) {
+          final errorMessage = error.toString();
+          ScaffoldMessengerHelper.showCustomSnackBar(
+            context: context,
+            message: "Došlo je do greške",
+            backgroundColor: Colors.red,
+          );
+        } finally {
+          setState(() => _displayLoader = false);
+        }
+      },
     );
   }
 

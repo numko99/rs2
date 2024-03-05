@@ -8,5 +8,7 @@ namespace Iter.Services.Interface
     public interface IArrangementService : IBaseCrudService<Arrangement, ArrangementUpsertRequest, ArrangementUpsertRequest, ArrangementResponse, ArrangmentSearchModel>
     {
         Task<ArrangementPriceResponse> GetArrangementPriceAsync(Guid id);
+
+        Task ChangeStatus(Guid id, int status);
     }
 }

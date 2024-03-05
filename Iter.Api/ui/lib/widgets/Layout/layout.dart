@@ -39,7 +39,7 @@ class Layout extends StatelessWidget {
     {
       'text': 'Izvještaji',
       'icon': Icons.description,
-      'link': '/agency',
+      'link': '/reports',
     },
   ];
 

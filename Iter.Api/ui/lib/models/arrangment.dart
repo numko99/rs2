@@ -18,7 +18,8 @@ class Arrangement {
   final List<ArrangementPrice> prices;
   final List<ImageModel> images;
   final List<Destination> destinations;
-
+  final int? arrangementStatusId;
+  final String? arrangementStatusName;
 
   Arrangement({
     required this.id,
@@ -30,6 +31,8 @@ class Arrangement {
     required this.prices,
     required this.images,
     required this.destinations,
+    required this.arrangementStatusId,
+    required this.arrangementStatusName,
   });
   factory Arrangement.fromJson(Map<String, dynamic> json) =>
       _$ArrangementFromJson(json);

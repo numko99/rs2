@@ -5,6 +5,8 @@
         Agencies = 0,
         Clients,
         ReservationStatus,
-        AccomodationTypes
+        AccomodationTypes,
+        Arrangments,
+        ArrangementStatus,
     }
 }

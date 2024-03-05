@@ -46,7 +46,6 @@ namespace Iter.Services
                 user = entity.User;
             }
 
-            await this.userRepository.AddAsync(user);
             await this.userManager.CreateAsync(user, password);
             var role = (Roles)request.Role;
             await this.userManager.AddToRoleAsync(user, role.ToString());
@@ -78,7 +77,7 @@ namespace Iter.Services
                 user = client.User;
             }
 
-            await this.userRepository.UpdateAsync(user);
+            //await this.userRepository.UpdateAsync(user);
             await this.userManager.UpdateAsync(user);
             var role = (Roles)request.Role;
             await this.userManager.AddToRoleAsync(user, role.ToString());

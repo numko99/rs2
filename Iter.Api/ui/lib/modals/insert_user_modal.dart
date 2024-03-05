@@ -281,7 +281,14 @@ class _InsertUserModalState extends State<InsertUserModal> {
                             setState(() {
                               selectedUserType = value;
                             });
-                          }),
+                          },
+                          validator: (value) {
+                          if (value == null) {
+                            return 'Polje je obavezno';
+                          }
+                          return null;
+                        },
+                          ),
                     ),
                     const SizedBox(width: 60),
                     if (selectedUserType == 2 ||

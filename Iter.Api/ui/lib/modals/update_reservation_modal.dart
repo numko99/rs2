@@ -91,7 +91,8 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
       title: Column(
         children: [
           const Text('Uređivanje rezervacije'),
-          Text(reservation?.reservationNumber ?? "", style: const TextStyle(fontSize: 30)),
+          Text(reservation?.reservationNumber ?? "",
+              style: const TextStyle(fontSize: 30)),
           const SizedBox(height: 10),
           const Icon(
             Icons.list_alt,
@@ -119,17 +120,18 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  "${reservation?.user?.firstName} ${reservation?.user?.lastName}", style: const TextStyle(fontSize: 18))
+                                  "${reservation?.user?.firstName} ${reservation?.user?.lastName}",
+                                  style: const TextStyle(fontSize: 18))
                             ],
                           )),
                         ],
                       ),
-                      if ((accomodationTypes!.length == 2 &&
-                              accomodationTypes?[1].name == null) ==
-                          false) ...[
-                        const SizedBox(height: 30),
-                        Row(
-                          children: [
+                      Row(
+                        children: [
+                          if ((accomodationTypes!.length == 2 &&
+                                  accomodationTypes?[1].name == null) ==
+                              false) ...[
+                            const SizedBox(height: 30),
                             Expanded(
                               flex: 1,
                               child: DropdownButtonFormField<dynamic?>(
@@ -150,9 +152,10 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
                                     }
                                     return null;
                                   },
-                                  onChanged: (value) async{
-                                      var totalPriceTemp = await _arrangmentProvider
-                                        ?.getArrangementPrice(value);
+                                  onChanged: (value) async {
+                                    var totalPriceTemp =
+                                        await _arrangmentProvider
+                                            ?.getArrangementPrice(value);
                                     setState(() {
                                       totalPrice = totalPriceTemp?.price;
                                       selectedAccomodationType = value;
@@ -160,22 +163,22 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
                                   }),
                             ),
                             const SizedBox(width: 60),
-                            Expanded(
-                              child: FormBuilderTextField(
-                                name: 'departurePlace',
-                                decoration: const InputDecoration(
-                                    labelText: 'Grad polaska'),
-                                validator: FormBuilderValidators.compose([
-                                  FormBuilderValidators.required(
-                                      errorText: "Polje je obavezno"),
-                                  FormBuilderValidators.maxLength(30,
-                                      errorText: "Neispravan unos")
-                                ]),
-                              ),
-                            ),
                           ],
-                        ),
-                      ],
+                          Expanded(
+                            child: FormBuilderTextField(
+                              name: 'departurePlace',
+                              decoration: const InputDecoration(
+                                  labelText: 'Grad polaska'),
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(
+                                    errorText: "Polje je obavezno"),
+                                FormBuilderValidators.maxLength(30,
+                                    errorText: "Neispravan unos")
+                              ]),
+                            ),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 30),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -206,9 +209,10 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
                               ],
                             ),
                           ),
-                           Expanded(
-                            child: Center(child: Text("Cijena aranžmana: $totalPrice KM"))
-                          ),
+                          Expanded(
+                              child: Center(
+                                  child: Text(
+                                      "Cijena aranžmana: $totalPrice KM"))),
                         ],
                       ),
                       const SizedBox(height: 30),
@@ -305,7 +309,7 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
       request["arrangementPriceId"] = selectedAccomodationType;
       request["reservationStatusId"] = selectedReservationStatus;
       request["totalPaid"] = double.parse(request["totalPaid"]);
-
+      request["reminder"] = request["reminder"] ?? "";
       await _reservationProvider?.update(reservation?.id, request);
       widget.onCompleted();
 

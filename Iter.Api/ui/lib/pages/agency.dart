@@ -5,6 +5,7 @@ import 'package:ui/helpers/scaffold_messenger_helper.dart';
 import 'package:ui/modals/Agency/insertAgencyModal.dart';
 import 'package:ui/models/agency.dart';
 import 'package:ui/services/agency_provider.dart';
+import 'package:ui/services/report_provider.dart';
 import 'package:ui/widgets/Layout/layout.dart';
 import 'package:ui/widgets/search_button.dart';
 
@@ -19,6 +20,8 @@ class AgencyPage extends StatefulWidget {
 
 class _AgencyPageState extends State<AgencyPage> {
   AgencyProvider? _agencyProvider;
+  ReportProvider? _reportProvider;
+
   List<Agency> agencies = [];
   int? agencyCount;
   bool displayLoader = true;
@@ -31,6 +34,8 @@ class _AgencyPageState extends State<AgencyPage> {
   void initState() {
     super.initState();
     _agencyProvider = context.read<AgencyProvider>();
+    _reportProvider = context.read<ReportProvider>();
+
     loadData();
   }
 
@@ -239,6 +244,7 @@ class _AgencyPageState extends State<AgencyPage> {
       setState(() {
         displayLoader = true;
       });
+      
       var searchResultAgencies = await _agencyProvider?.get({
         "currentPage": _currentPage,
         "pageSize": pageSize,

@@ -30,6 +30,12 @@ namespace Iter.Infrastrucure.Configurations
 
             builder.Property(a => a.EndDate);
 
+            builder.HasOne(a => a.ArrangementStatus)
+                           .WithMany(a => a.Arrangements)
+                           .HasForeignKey(a => a.ArrangementStatusId)
+                           .OnDelete(DeleteBehavior.NoAction)
+                           .HasConstraintName("FK_Arrangement_ArrangementStatus");
+
             builder.Property(a => a.CreatedAt).IsRequired();
 
             builder.Property(a => a.ModifiedAt).IsRequired();

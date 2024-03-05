@@ -137,7 +137,7 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
           ],
         ),
         const SizedBox(height: 20),
-        if (arangmentType == 1)
+        if (arangmentType == 1 && 1 != 1)
           Column(
             children: [
               Column(

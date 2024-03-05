@@ -220,6 +220,7 @@ class _InsertReservationModalState extends State<InsertReservationModal> {
       var request = Map.from(_formKey.currentState!.value);
       request["clientId"] = selectedUser;
       request["arrangmentId"] = widget.arrangementId;
+      request["reminder"] = request["reminder"] ?? "";
 
       if (prices?.length == 2 && prices?[1].name == null) {
         selectedAccomodationType = prices?[1].id;

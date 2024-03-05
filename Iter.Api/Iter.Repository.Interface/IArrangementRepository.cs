@@ -7,5 +7,7 @@ namespace Iter.Repository.Interface
     public interface IArrangementRepository : IBaseCrudRepository<Arrangement, ArrangementUpsertRequest, ArrangementUpsertRequest, ArrangementResponse, ArrangmentSearchModel>
     {
         Task<ArrangementPrice> GetArrangementPriceAsync(Guid id);
+
+        Task SmartUpdateAsync(Arrangement arrangement);
     }
 }

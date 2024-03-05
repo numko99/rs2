@@ -308,6 +308,26 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                               ),
                             ),
                           ),
+                           Container(
+                            width: double.infinity,
+                            height: 35,
+                            margin: const EdgeInsets.only(top: 8.0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return ArrangementReservationsModal(
+                                        arrangementId: widget.id);
+                                  },
+                                );
+                              },
+                              child: const Text(
+                                "Preuzmi spisak putnika",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     )

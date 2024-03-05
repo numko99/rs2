@@ -192,8 +192,13 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
             message: "Aranžman uspješno dodan!",
             backgroundColor: Colors.green);
 
-        Navigator.pushNamed(context, '/agency/details',
-            arguments: {'id': widget.agencyId});
+        if (widget.agencyId == null){
+           Navigator.pushNamed(context, '/arrangements');
+        }
+        else{
+          Navigator.pushNamed(context, '/agency/details',
+              arguments: {'id': widget.agencyId});
+        }
       }
     } catch (error) {
       ScaffoldMessengerHelper.showCustomSnackBar(

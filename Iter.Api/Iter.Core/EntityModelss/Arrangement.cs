@@ -14,6 +14,9 @@
 
         public DateTime? EndDate { get; set; }
 
+        public int? ArrangementStatusId { get; set; }
+
+        public ArrangementStatus? ArrangementStatus { get; set; }
 
         public List<Reservation> Reservations { get; set; }
 

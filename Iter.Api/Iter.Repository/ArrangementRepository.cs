@@ -52,7 +52,7 @@ namespace Iter.Repository
             query = query.Where(q => q.IsDeleted == false);
 
 
-            query = query.Include(nameof(Agency));
+            query = query.Include(nameof(Agency)).Include(nameof(ArrangementStatus));
 
             result.Count = await query.CountAsync();
 
@@ -70,6 +70,7 @@ namespace Iter.Repository
         {
             var arrangement = await dbContext.Arrangement
                     .Include(a => a.Agency)
+                    .Include(a => a.ArrangementStatus)
                     .Include(a => a.ArrangementPrices)
                     .Include(a => a.ArrangementImages)
                         .ThenInclude(ai => ai.Image)
@@ -82,10 +83,11 @@ namespace Iter.Repository
 
             return arrangement;
         }
-        public async override Task UpdateAsync(Arrangement entity)
+        public async Task SmartUpdateAsync(Arrangement entity)
         {
-            var existingPrices = dbContext.ArrangementPrice
-               .Where(ap => ap.ArrangementId == entity.Id)
+            var pricesIds = entity.ArrangementPrices.Select(a => a.Id).ToList();
+            var pricesToDelete = dbContext.ArrangementPrice
+               .Where(ap => ap.ArrangementId == entity.Id && !pricesIds.Contains(ap.Id))
                .ToList();
 
             var existingImages = dbContext.ArrangementImage
@@ -99,12 +101,11 @@ namespace Iter.Repository
 
 
             var destinationIds = entity.Destinations.Select(des => des.Id).ToList();
-
             var destinationsToDelete = dbContext.Destination
                 .Where(d => d.ArrangementId == entity.Id && !destinationIds.Contains(d.Id)).AsNoTracking()
                 .ToList();
 
-            dbContext.ArrangementPrice.RemoveRange(existingPrices);
+            dbContext.ArrangementPrice.RemoveRange(pricesToDelete);
             dbContext.ArrangementImage.RemoveRange(existingImages.ToList());
             dbContext.Image.RemoveRange(imagesToDelete.ToList());
             dbContext.Destination.RemoveRange(destinationsToDelete.ToList());
@@ -122,7 +123,19 @@ namespace Iter.Repository
                     dbContext.Destination.Add(destination);
                 }
             }
-            dbContext.ArrangementPrice.AddRange(entity.ArrangementPrices);
+
+            foreach (var price in entity.ArrangementPrices)
+            {
+                var existingPrice = dbContext.ArrangementPrice.AsNoTracking().FirstOrDefault(d => d.Id == price.Id);
+                if (existingPrice != null)
+                {
+                    dbContext.ArrangementPrice.Update(price);
+                }
+                else
+                {
+                    dbContext.ArrangementPrice.Add(price);
+                }
+            }
             dbContext.ArrangementImage.AddRange(entity.ArrangementImages);
 
             dbContext.Arrangement.Update(entity);
@@ -149,6 +162,13 @@ namespace Iter.Repository
 
             dbContext.Arrangement.Update(entity);
             await this.dbContext.SaveChangesAsync();
+        }
+
+        public async Task<ArrangementPrice> GetArrangementPriceAsync(Guid id)
+        {
+            var arrangementPrice = await this.dbContext.ArrangementPrice.Where(a => a.Id == id).FirstOrDefaultAsync();
+
+            return arrangementPrice;
         }
 
         private void AddPricesAndImages(Arrangement entity)
@@ -182,13 +202,6 @@ namespace Iter.Repository
                 .ToListAsync();
             dbContext.ArrangementImage.RemoveRange(existingImages);
             dbContext.Image.RemoveRange(imagesToDelete);
-        }
-
-        public async Task<ArrangementPrice> GetArrangementPriceAsync(Guid id)
-        {
-            var arrangementPrice = await this.dbContext.ArrangementPrice.Where(a => a.Id == id).FirstOrDefaultAsync();
-
-            return arrangementPrice;
         }
     }
 }

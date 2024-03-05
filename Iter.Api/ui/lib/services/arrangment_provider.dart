@@ -26,4 +26,11 @@ class ArrangmentProvider extends BaseProvider<Arrangement> {
     }
   }
 
+  Future<void> changeStatus(var arrangementId, var arrangementStatusId) async {
+    var url = Uri.parse("$baseUrl$endpoint/changeStatus/$arrangementId");
+
+    Map<String, String>? headers = await createHeaders();
+
+    await http!.put(url, headers: headers, body: jsonEncode(arrangementStatusId));
+  }
 }

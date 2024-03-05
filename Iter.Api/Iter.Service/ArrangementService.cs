@@ -17,6 +17,19 @@ namespace Iter.Services
             _arrangementRepository = arrangementRepository;
         }
 
+        public async Task ChangeStatus(Guid id, int status)
+        {
+            var arrangement = await  _arrangementRepository.GetById(id);
+
+            if (arrangement == null)
+            {
+                return;
+            }
+
+            arrangement.ArrangementStatusId = status;
+            await _arrangementRepository.UpdateAsync(arrangement);
+        }
+
         public async Task<ArrangementPriceResponse> GetArrangementPriceAsync(Guid id)
         {
             var arrangementPrices = await _arrangementRepository.GetArrangementPriceAsync(id);
@@ -31,7 +44,6 @@ namespace Iter.Services
                 var arrangement = this._mapper.Map<Arrangement>(request);
 
                 ProcesMainImageAndPrices(request, arrangement);
-                arrangement.AgencyId = new Guid("66F20B4E-9E6D-4C95-6A66-08DC298D67DA");
                 await this._arrangementRepository.AddAsync(arrangement);
             }
             catch (Exception ex)
@@ -76,8 +88,9 @@ namespace Iter.Services
             this._mapper.Map(request, arrangement);
             ProcesMainImageAndPrices(request, arrangement);
 
-            await this._arrangementRepository.UpdateAsync(arrangement);
+            await this._arrangementRepository.SmartUpdateAsync(arrangement);
         }
+
         private void ProcesMainImageAndPrices(ArrangementUpsertRequest request, Arrangement arrangement)
         {
             var mainImage = this._mapper.Map<ArrangementImage>(request.MainImage);

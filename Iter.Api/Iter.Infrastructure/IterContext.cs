@@ -19,6 +19,8 @@ namespace Iter.Infrastrucure
 
         public virtual DbSet<Arrangement> Arrangement { get; set; }
 
+        public virtual DbSet<ArrangementStatus> ArrangementStatus { get; set; }
+
         public virtual DbSet<ArrangementPrice> ArrangementPrice { get; set; }
 
         public virtual DbSet<ArrangementImage> ArrangementImage { get; set; }

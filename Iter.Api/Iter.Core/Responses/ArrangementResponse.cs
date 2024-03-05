@@ -14,6 +14,10 @@ namespace Iter.Core
 
         public string? Description { get; set; }
 
+        public int ArrangementStatusId { get; set; }
+
+        public string ArrangementStatusName { get; set; }
+
         public List<ImageResponse> Images { get; set; }
 
         public ImageResponse? MainImage { get; set; }

@@ -22,5 +22,12 @@ namespace Iter.Api.Controllers
         {
             return Ok(await this.arrangementService.GetArrangementPriceAsync(new Guid(id)));
         }
+
+        [HttpPut("changeStatus/{id}")]
+        public virtual async Task<IActionResult> ChangeStatus(string id, [FromBody] int status)
+        {
+            await this.arrangementService.ChangeStatus(new Guid(id), status);
+            return Ok();
+        }
     }
 }

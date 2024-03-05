@@ -2,5 +2,6 @@ enum DropdownTypes {
   agencies,
   clients,
   reservationStatus,
-  accomodationTypes
+  accomodationTypes,
+  arrangements,
 }

@@ -175,6 +175,9 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<Guid>("AgencyId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("ArrangementStatusId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -204,6 +207,8 @@ namespace Iter.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AgencyId");
+
+                    b.HasIndex("ArrangementStatusId");
 
                     b.ToTable("Arrangement", (string)null);
                 });
@@ -636,6 +641,23 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Iter.Core.EntityModelss.ArrangementStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ArrangementStatus");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -810,7 +832,15 @@ namespace Iter.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Arrangement_Agency");
 
+                    b.HasOne("Iter.Core.EntityModelss.ArrangementStatus", "ArrangementStatus")
+                        .WithMany("Arrangements")
+                        .HasForeignKey("ArrangementStatusId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_Arrangement_ArrangementStatus");
+
                     b.Navigation("Agency");
+
+                    b.Navigation("ArrangementStatus");
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.ArrangementImage", b =>
@@ -1085,6 +1115,11 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Agencies");
 
                     b.Navigation("ArrangementImages");
+                });
+
+            modelBuilder.Entity("Iter.Core.EntityModelss.ArrangementStatus", b =>
+                {
+                    b.Navigation("Arrangements");
                 });
 #pragma warning restore 612, 618
         }
