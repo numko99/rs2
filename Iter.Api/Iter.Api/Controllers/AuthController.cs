@@ -41,7 +41,7 @@ namespace Iter.Api.Controllers
         [HttpPost("login")]
         [SwaggerResponse(StatusCodes.Status200OK, "User has been succesfully authenticated")]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Problem with data sent with the request")]
-        public async Task<IActionResult> Authenticate([FromBody] UserLoginDto user)
+        public async Task<IActionResult> Authenticate(UserLoginDto user)
         {
             if (!await this.userAuthenticationService.ValidateUserAsync(user))
             {
