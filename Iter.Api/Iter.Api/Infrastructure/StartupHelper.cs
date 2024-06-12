@@ -57,6 +57,7 @@ namespace Iter.Api.Infrastructure
             services.AddScoped<IAgencyRepository, AgencyRepository>();
 
             services.AddScoped<IDropdownRepository, DropdownRepository>();
+            services.AddScoped<IVerificationTokenRepository, VerificationTokenRepository>();
 
             services.AddTransient<IEmailService, EmailService>();
 

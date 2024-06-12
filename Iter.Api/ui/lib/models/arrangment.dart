@@ -13,6 +13,7 @@ class Arrangement {
   final String name;
   final Agency agency;
   final String description;
+  final String shortDescription;
   final DateTime startDate;
   final DateTime? endDate;
   final List<ArrangementPrice> prices;
@@ -26,6 +27,7 @@ class Arrangement {
     required this.name,
     required this.agency,
     required this.description,
+    required this.shortDescription,
     required this.startDate,
     required this.endDate,
     required this.prices,

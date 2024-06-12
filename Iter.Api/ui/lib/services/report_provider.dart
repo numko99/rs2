@@ -3,7 +3,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'base_provider.dart';
 
-class ReportProvider extends BaseProvider<dynamic> {
+class ReportProvider extends BaseProvider<dynamic, dynamic> {
   ReportProvider() : super("Report");
 
   Future<void> getUserPaymentReport(String arrangementId, String? arrangementName) async {

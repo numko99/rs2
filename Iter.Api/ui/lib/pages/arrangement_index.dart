@@ -10,6 +10,7 @@ class ArrangementIndexPage extends StatefulWidget {
 }
 
 class _ArrangementIndexPageState extends State<ArrangementIndexPage> {
+  String? agencyId;
   @override
   void initState() {
     super.initState();

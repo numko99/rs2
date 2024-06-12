@@ -1,7 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:ui/models/agency.dart';
-import 'package:ui/models/address.dart';
-
 part 'user.g.dart';
 
 @JsonSerializable()
@@ -12,9 +10,8 @@ class User {
   final String? email;
   final String? phoneNumber;
   final DateTime birthDate;
-  final String birthPlace;
+  final String residencePlace;
   final int role;
-  final Address? address;
   final Agency? agency;
   final bool isActive;
 
@@ -26,9 +23,8 @@ class User {
     required this.email,
     required this.phoneNumber,
     required this.birthDate,
-    required this.birthPlace,
+    required this.residencePlace,
     required this.role,
-    required this.address,
     required this.agency,
     required this.isActive
   });

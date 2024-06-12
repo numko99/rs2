@@ -14,6 +14,8 @@ namespace Iter.Core
 
         public string? Description { get; set; }
 
+        public string? ShortDescription { get; set; }
+
         public int ArrangementStatusId { get; set; }
 
         public string ArrangementStatusName { get; set; }
@@ -23,4 +25,7 @@ namespace Iter.Core
         public ImageResponse? MainImage { get; set; }
 
         public List<DestinationResponse> Destinations { get; set; }
+
+        public DateTime? ModifiedAt { get; set; }
+
     }}

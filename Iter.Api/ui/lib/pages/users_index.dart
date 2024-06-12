@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/enums/dropdown_types.dart';
+import 'package:ui/enums/roles.dart';
 import 'package:ui/helpers/role_helper.dart';
 import 'package:ui/helpers/scaffold_messenger_helper.dart';
 import 'package:ui/modals/Agency/insertAgencyModal.dart';
 import 'package:ui/modals/insert_user_modal.dart';
 import 'package:ui/models/dropdown_model.dart';
 import 'package:ui/models/user.dart';
+import 'package:ui/services/auth_storage_provider.dart';
 import 'package:ui/services/dropdown_provider.dart';
 import 'package:ui/services/user_provider.dart';
 import 'package:ui/widgets/Layout/layout.dart';
@@ -31,25 +33,29 @@ class _UsersIndexPageState extends State<UsersIndexPage> {
   bool displayLoader = true;
 
   int _currentPage = 1;
-  int pageSize = 3;
+  int pageSize = 10;
   TextEditingController searchController = TextEditingController();
 
-  int? selectedUserType;
-  final List<Map<int?, String>> userTypeDropdown = [
+  Roles? selectedUserType;
+  final List<Map<Roles?, String>> userTypeDropdown = [
     {null: "Nije odabrano"},
-    {2: "Koordinator"},
-    {3: "Vodič"},
-    {4: "Klijent"},
+    {Roles.coordinator: "Koordinator"},
+    {Roles.touristGuide: "Vodič"},
+    {Roles.client: "Klijent"},
   ];
 
   String? selectedAgency;
   List<DropdownModel>? agenciesDropdown;
 
+  String? currentUserAgencyId = AuthStorageProvider.getAuthData()?["agencyId"];
+  Roles? currentUserRole = AuthStorageProvider.getAuthData()?["role"];
+  int filterFlexSize = 2;
   @override
   void initState() {
     super.initState();
     _userProvider = context.read<UserProvider>();
     _dropdownProvider = context.read<DropdownProvider>();
+    filterFlexSize = currentUserRole == Roles.admin ? 2 : 1;
     initialLoad();
   }
 
@@ -71,8 +77,7 @@ class _UsersIndexPageState extends State<UsersIndexPage> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
                         Expanded(
-                          flex:
-                              2,
+                          flex: filterFlexSize,
                           child: TextFormField(
                             controller: searchController,
                             decoration: const InputDecoration(
@@ -83,59 +88,63 @@ class _UsersIndexPageState extends State<UsersIndexPage> {
                             },
                           ),
                         ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          flex: 2,
-                          child: DropdownButtonFormField<int?>(
-                              decoration: const InputDecoration(
-                                labelText: 'Izaberite tip korisnik',
-                              ),
-                              value: selectedUserType,
-                              items: userTypeDropdown.expand((item) {
-                                return item.entries.map((entry) {
-                                  return DropdownMenuItem<int?>(
-                                    value: entry.key,
-                                    child: Text(entry.value),
-                                  );
-                                });
-                              }).toList(),
-                              onChanged: (int? value) {
-                                setState(() {
-                                  selectedUserType = value;
-                                });
-                              }),
-                        ),
-                        const SizedBox(width: 20),
-                       Expanded(
-                          flex: 2,
-                          child: DropdownButtonFormField<dynamic>(
-                            decoration: const InputDecoration(
-                              labelText: 'Izaberite agenciju',
-                            ),
-                            value:
-                                selectedAgency,
-                            items: agenciesDropdown?.map((DropdownModel item) {
-                              return DropdownMenuItem<dynamic>(
-                                value: item.id,
-                                child: Text(item.name ?? ""),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedAgency = value;
-                              });
-                            },
+                        if (currentUserRole == Roles.admin) ...[
+                          const SizedBox(width: 50),
+                          Expanded(
+                            flex: filterFlexSize,
+                            child: DropdownButtonFormField<Roles?>(
+                                decoration: const InputDecoration(
+                                  labelText: 'Izaberite tip korisnik',
+                                ),
+                                value: selectedUserType,
+                                items: userTypeDropdown.expand((item) {
+                                  return item.entries.map((entry) {
+                                    return DropdownMenuItem<Roles?>(
+                                      value: entry.key,
+                                      child: Text(entry.value),
+                                    );
+                                  });
+                                }).toList(),
+                                onChanged: (Roles? value) {
+                                  setState(() {
+                                    selectedUserType = value;
+                                  });
+                                }),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          flex: 1,
+                          const SizedBox(width: 50),
+                          Expanded(
+                            flex: filterFlexSize,
+                            child: DropdownButtonFormField<dynamic>(
+                              decoration: const InputDecoration(
+                                labelText: 'Izaberite agenciju',
+                              ),
+                              value: selectedAgency,
+                              items:
+                                  agenciesDropdown?.map((DropdownModel item) {
+                                return DropdownMenuItem<dynamic>(
+                                  value: item.id,
+                                  child: Text(item.name ?? ""),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedAgency = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                        const SizedBox(width: 50),
+                        Container(
                           child: SearchButton(
                             onSearch: () => search(),
                           ),
                         ),
-                        const Spacer(),
-                        const Spacer(),
+                        if (currentUserRole == Roles.coordinator)
+                        ...[
+                          const Spacer(),
+                          const Spacer()
+                        ]
                       ],
                     ),
                   )
@@ -153,7 +162,10 @@ class _UsersIndexPageState extends State<UsersIndexPage> {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return InsertUserModal(onCompleted: () => initialLoad(), userTypeDropdown: userTypeDropdown, agenciesDropdown: agenciesDropdown);
+                            return InsertUserModal(
+                                onCompleted: () => initialLoad(),
+                                userTypeDropdown: userTypeDropdown,
+                                agenciesDropdown: agenciesDropdown);
                           },
                         );
                       },
@@ -231,7 +243,8 @@ class _UsersIndexPageState extends State<UsersIndexPage> {
                                           // Align to the end (right)
                                           children: <Widget>[
                                             IconButton(
-                                                icon: const Icon(Icons.open_in_new_off),
+                                                icon: const Icon(
+                                                    Icons.open_in_new_off),
                                                 onPressed: () {
                                                   Navigator.pushNamed(
                                                       context, '/user/details',
@@ -249,16 +262,20 @@ class _UsersIndexPageState extends State<UsersIndexPage> {
                                                     builder:
                                                         (BuildContext context) {
                                                       return InsertUserModal(
-                                                          onCompleted: () => search(),
-                                                          agenciesDropdown: agenciesDropdown,
-                                                          userTypeDropdown: userTypeDropdown,
+                                                          onCompleted: () =>
+                                                              search(),
+                                                          agenciesDropdown:
+                                                              agenciesDropdown,
+                                                          userTypeDropdown:
+                                                              userTypeDropdown,
                                                           user: user);
                                                     },
                                                   );
                                                 },
                                                 tooltip: 'Uredi'),
-                                                IconButton(
-                                                icon: const Icon(Icons.password_outlined),
+                                            IconButton(
+                                                icon: const Icon(
+                                                    Icons.password_outlined),
                                                 onPressed: () {
                                                   showDialog(
                                                     context: context,
@@ -276,7 +293,7 @@ class _UsersIndexPageState extends State<UsersIndexPage> {
                                                     },
                                                   );
                                                 },
-                                                tooltip: 'Promijena lozinke'),  
+                                                tooltip: 'Promijena lozinke'),
                                             IconButton(
                                                 icon: const Icon(Icons.delete),
                                                 onPressed: () {
@@ -315,18 +332,16 @@ class _UsersIndexPageState extends State<UsersIndexPage> {
                         child: Align(
                           alignment: Alignment.center,
                           child: Container(
-                            constraints: const BoxConstraints(maxWidth: 300),
+                            constraints: const BoxConstraints(maxWidth: 400),
                             child: Visibility(
                               visible:
                                   userCount != null && userCount! > pageSize,
                               child: NumberPaginator(
-                                //TODO FIX NUMBER PAGINATOR
                                 initialPage: 0,
                                 numberPages:
                                     (((userCount == 0 || userCount == null)
                                                 ? 1
-                                                : userCount!) /
-                                            (pageSize ?? 1))
+                                                : userCount!) / (pageSize))
                                         .ceil(),
                                 onPageChange: (int index) {
                                   loadPage(index, pageSize);
@@ -348,6 +363,11 @@ class _UsersIndexPageState extends State<UsersIndexPage> {
   }
 
   Future<void> initialLoad() async {
+    if (currentUserAgencyId != null) {
+      selectedAgency = currentUserAgencyId;
+      selectedUserType = Roles.touristGuide; // dropdown value for Tourist guide
+    }
+
     try {
       await search();
 
@@ -380,7 +400,7 @@ class _UsersIndexPageState extends State<UsersIndexPage> {
         "currentPage": _currentPage,
         "pageSize": pageSize,
         "name": searchController.text,
-        "roleId": selectedUserType,
+        "roleId": selectedUserType != null ? (selectedUserType!.index + 1) : null,
         "agencyId": selectedAgency
       });
 

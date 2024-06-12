@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/modals/arrangement_reservations_modal.dart';
+import 'package:ui/modals/arrangement_tourist_guide_edit.dart';
 import 'package:ui/models/arrangment.dart';
 import 'package:ui/services/reservation_provider.dart';
 import 'package:ui/widgets/Layout/layout.dart';
@@ -251,29 +252,56 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                     child: Column(
                   children: [
                     Card(
-                      child: Container(
-                        padding: const EdgeInsets.all(8.0),
-                        width: double.infinity,
-                        child: const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(16.0, 16, 8, 8),
-                              child: Text("Vodiči: ",
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8.0),
+                            width: double.infinity,
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(16.0, 16, 8, 8),
+                                  child: Text("Vodiči: ",
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                ),
+                                ListTile(
+                                  leading: Icon(Icons.person_outline,
+                                      color: Colors.amber),
+                                  title: Text("Admir Numanović"),
+                                ),
+                                ListTile(
+                                  leading: Icon(Icons.person_outline,
+                                      color: Colors.amber),
+                                  title: Text("Dalila Bajrić"),
+                                ),
+                              ],
                             ),
-                            ListTile(
-                              leading: Icon(Icons.person_outline,
-                                  color: Colors.amber),
-                              title: Text("Admir Numanović"),
+                          ),
+                                                    Container(
+                            width: double.infinity,
+                            height: 35,
+                            margin: const EdgeInsets.only(top: 8.0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return ArrangementTouristGuideModal(
+                                        arrangementId: widget.id,
+                                        dateFrom: arrangement?.startDate,
+                                        dateTo: arrangement?.endDate);
+                                  },
+                                );
+                              },
+                              child: const Text(
+                                "Dodaj vodiče",
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
-                            ListTile(
-                              leading: Icon(Icons.person_outline,
-                                  color: Colors.amber),
-                              title: Text("Dalila Bajrić"),
-                            ),
-                          ],
-                        ),
+                          ),
+                          SizedBox(height: 3)
+                        ],
                       ),
                     ),
                     const SizedBox(height: 10),

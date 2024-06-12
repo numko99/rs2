@@ -82,6 +82,28 @@ class _DescriptionImageFormPageState extends State<DescriptionImageFormPage> {
         ],
       ),
       const SizedBox(height: 20),
+            Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 6, 0, 0),
+              child: FormBuilderTextField(
+                  name: 'shortDescription',
+                  maxLines: 2,
+                  minLines: 1,
+                  decoration: const InputDecoration(labelText: 'Kratki opis'),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(
+                        errorText: "Polje je obavezno"),
+                        FormBuilderValidators.maxLength(500,
+                        errorText: "Prevelik unos")
+                  ])),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 20),
       Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

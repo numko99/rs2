@@ -27,8 +27,8 @@ namespace Iter.Services
             var list = await this.reservationService.Get(new Core.Search_Models.ReservationSearchModel() { ArrangementId = arrangementId });
             var parameters = new Dictionary<string, string>
             {
-                { "agencyName", list.Result.FirstOrDefault()?.Arrangement.Agency.Name },
-                { "arrangementNameParameter", list.Result.FirstOrDefault()?.Arrangement.Name },
+                { "agencyName", list.Result.FirstOrDefault()?.AgencyName },
+                { "arrangementNameParameter", list.Result.FirstOrDefault()?.ArrangementName },
                 { "currentDateParameter", DateTime.UtcNow.ToString("dd.MM.yyyy") }
 
             };
@@ -47,7 +47,7 @@ namespace Iter.Services
             var list = await this.reservationService.Get(new Core.Search_Models.ReservationSearchModel() { AgencyId = agencyId });
             var parameters = new Dictionary<string, string>
             {
-                { "agencyName", list.Result.FirstOrDefault()?.Arrangement.Agency.Name },
+                { "agencyName", list.Result.FirstOrDefault()?.AgencyName },
                 { "currentDateParameter", DateTime.UtcNow.ToString("dd.MM.yyyy") }
 
             };

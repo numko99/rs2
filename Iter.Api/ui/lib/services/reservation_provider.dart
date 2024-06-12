@@ -1,14 +1,20 @@
 import 'dart:convert';
 
 import 'package:ui/models/reservation.dart';
+import 'package:ui/models/reservation_search_respose.dart';
 import 'base_provider.dart';
 
-class ReservationProvider extends BaseProvider<Reservation> {
+class ReservationProvider extends BaseProvider<Reservation, ReservationSearchResponse> {
   ReservationProvider() : super("Reservation");
 
   @override
   Reservation fromJson(data) {
     return Reservation.fromJson(data);
+  }
+
+    @override
+  ReservationSearchResponse fromJsonSearch(data) {
+    return ReservationSearchResponse.fromJson(data);
   }
 
    Future<int> getCount(var arrangementId) async {

@@ -1,6 +1,6 @@
 ﻿namespace Iter.Services.Interfaces
 {
-    public interface IBaseCrudService<T, TInsert, TUpdate, TGet, TSearch> : IBaseReadService<T, TGet, TSearch> where TInsert : class where T : class where TGet : class
+    public interface IBaseCrudService<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> : IBaseReadService<T, TGet, TSearchRequest, TSearchResponse> where TInsert : class where T : class where TGet : class where TSearchResponse : class
     {
         Task Insert(TInsert request);
 

@@ -7,13 +7,13 @@ import 'package:ui/enums/arrangement_status.dart';
 import 'package:ui/enums/dropdown_types.dart';
 import 'package:ui/helpers/dateTime_helper.dart';
 import 'package:ui/helpers/scaffold_messenger_helper.dart';
-import 'package:ui/modals/Agency/insertAgencyModal.dart';
 import 'package:ui/modals/insert_reservation_modal.dart';
+import 'package:ui/models/arrangement_search_response.dart';
 import 'package:ui/models/dropdown_model.dart';
+import 'package:ui/services/auth_storage_provider.dart';
 import 'package:ui/services/dropdown_provider.dart';
 
 import '../../modals/customConfirmationModal.dart';
-import '../../models/arrangment.dart';
 import '../../services/arrangment_provider.dart';
 import '../search_button.dart';
 
@@ -38,13 +38,13 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
   String? selectedAgency;
   List<DropdownModel>? agenciesDropdown;
 
-  List<Arrangement> arrangements = [];
+  List<ArrangementSearchResponse> arrangements = [];
   int? arrangementsCount;
-
+  String? currentUserAgencyId;
   bool _displayLoader = true;
 
   int _currentPage = 1;
-  int _pageSize = 5;
+  int _pageSize = 10;
 
   @override
   void initState() {
@@ -55,8 +55,9 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
   }
 
   Future<void> initialLoad() async {
+    currentUserAgencyId = AuthStorageProvider.getAuthData()?["agencyId"];
     try {
-      if (widget.agencyId == null) {
+      if (widget.agencyId == null && currentUserAgencyId == null) {
         var agenciesDropdownTemp = await _dropdownProvider!
             .get({"dropdownType": DropdownTypes.agencies});
         agenciesDropdownTemp.result
@@ -68,7 +69,7 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
         }
       } else {
         setState(() {
-          selectedAgency = widget.agencyId;
+          selectedAgency = widget.agencyId ?? currentUserAgencyId;
         });
       }
       await search();
@@ -141,7 +142,7 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                 },
               ),
             ),
-            if (widget.agencyId == null) ...[
+            if (widget.agencyId == null && currentUserAgencyId == null) ...[
               const SizedBox(width: 20),
               Expanded(
                 flex: 1,
@@ -163,6 +164,7 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                   },
                 ),
               ),
+            ],
               const SizedBox(width: 20),
               Expanded(
                 flex: 2,
@@ -202,14 +204,13 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                             })
                       },
                   child: const Text("Očisti filter",
-                      style: TextStyle(color: Colors.white)))
-            ],
+                      style: TextStyle(color: Colors.white))),
             const SizedBox(width: 20),
             SearchButton(
               onSearch: search,
             ),
-            const Spacer(),
-            const Spacer(),
+            if (widget.agencyId == null) ...[const Spacer(), const Spacer()],
+            if (currentUserAgencyId != null) const Spacer()
           ],
         ),
         Row(
@@ -240,15 +241,16 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                       const DataColumn(
                           label: Text('Putovanje',
                               style: TextStyle(fontWeight: FontWeight.bold))),
-                      if (widget.agencyId == null)
+                      if (widget.agencyId == null && currentUserAgencyId == null)
                         const DataColumn(
                             label: Text('Agencija',
                                 style: TextStyle(fontWeight: FontWeight.bold))),
                       const DataColumn(
-                          label: Text('Datum polaska',
+                          label: Text('Polazak',
                               style: TextStyle(fontWeight: FontWeight.bold))),
+                      if (widget.agencyId == null)
                       const DataColumn(
-                          label: Text('Datum povratka',
+                          label: Text('Povratak',
                               style: TextStyle(fontWeight: FontWeight.bold))),
                       const DataColumn(
                           label: Text('Status prijava',
@@ -260,18 +262,19 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                           (arrangement) => DataRow(
                             cells: [
                               DataCell(Text(arrangement.name)),
-                              if (widget.agencyId == null)
-                                DataCell(Text(arrangement.agency.name)),
+                              if (widget.agencyId == null && currentUserAgencyId == null)
+                                DataCell(Text(arrangement.agencyName)),
                               DataCell(Text(DateFormat("dd.MM.yyyy")
                                   .format(arrangement.startDate))),
+                              if (widget.agencyId == null)
                               DataCell(arrangement.endDate != null
                                   ? Text(DateFormat("dd.MM.yyyy")
                                       .format(arrangement.endDate!))
                                   : const Text("")),
                               DataCell(
-                                Container(
+                                Chip(
                                   padding: const EdgeInsets.all(8.0),
-                                  color: arrangement.arrangementStatusId ==
+                                  backgroundColor: arrangement.arrangementStatusId ==
                                           ArrangementStatus.inPreparation.index
                                       ? Colors.grey
                                       : arrangement.arrangementStatusId ==
@@ -279,8 +282,8 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                                                   .availableForReservation.index
                                           ? Colors.amber
                                           : Colors.green,
-                                  child:
-                                      Text(arrangement.arrangementStatusName ?? ""),
+                                  label:
+                                      Text(arrangement.arrangementStatusName ?? "", style: TextStyle(color: Colors.white)),
                                 ),
                               ),
                               DataCell(
@@ -387,7 +390,7 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
             child: Align(
               alignment: Alignment.center,
               child: Container(
-                constraints: const BoxConstraints(maxWidth: 300),
+                constraints: const BoxConstraints(maxWidth: 400),
                 child: Visibility(
                   visible: arrangementsCount != null &&
                       arrangementsCount! > _pageSize,
@@ -397,7 +400,7 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                         (((arrangementsCount == 0 || arrangementsCount == null)
                                     ? 1
                                     : arrangementsCount!) /
-                                (_pageSize ?? 1))
+                                _pageSize)
                             .ceil(),
                     onPageChange: (int index) {
                       setState(() {
@@ -441,7 +444,7 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
     }
   }
 
-CustomConfirmationDialog getConfirmationDialog(Arrangement arrangement) {
+CustomConfirmationDialog getConfirmationDialog(ArrangementSearchResponse arrangement) {
     String title;
     String content;
     ArrangementStatus nextStatus;

@@ -8,5 +8,6 @@
         AccomodationTypes,
         Arrangments,
         ArrangementStatus,
+        Employee,
     }
 }

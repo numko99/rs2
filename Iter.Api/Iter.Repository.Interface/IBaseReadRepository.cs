@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace Iter.Repository
 {
-    public interface IBaseReadRepository<T, TGet, TSearch> where TGet : class where TSearch : BaseSearchModel
+    public interface IBaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> where TGet : class where TSearchResponse : class where TSearchRequest : BaseSearchModel
     {
         Task<T?> GetById(Guid id);
 
-        Task<PagedResult<TGet>> Get(TSearch? searchObject);
+        Task<PagedResult<TSearchResponse>> Get(TSearchRequest? searchObject);
 
         Task<IEnumerable<T>> GetAll();
     }

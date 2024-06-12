@@ -43,6 +43,9 @@ namespace Iter.Repository
                 case DropdownType.ArrangementStatus:
                     list = this.mapper.Map<List<DropdownModel>>(await dbContext.ArrangementStatus.ToListAsync());
                     break;
+                case DropdownType.Employee:
+                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.EmployeeArrangment.Where(x => x.Arrangement.AgencyId.ToString() == agencyId).ToListAsync());
+                    break;
                 default:
                     break;
             }

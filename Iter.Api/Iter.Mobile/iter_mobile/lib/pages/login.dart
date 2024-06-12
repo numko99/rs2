@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:iter_mobile/enums/roles.dart';
 import 'package:iter_mobile/models/auth_request.dart';
+import 'package:iter_mobile/pages/forgot_password/forgot_password.dart';
+import 'package:iter_mobile/pages/sign_up/sign_up.dart';
 import 'package:iter_mobile/providers/auth_provider.dart';
+import 'package:iter_mobile/providers/auth_storage_provider.dart';
 import 'package:iter_mobile/widgets/layout.dart';
 import 'package:iter_mobile/widgets/logo.dart';
 import 'package:provider/provider.dart';
-// import 'package:provider/provider.dart';
 
 class Login extends StatelessWidget {
+  const Login({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: SingleChildScrollView(
         child: Center(
           child: LoginContainer(),
@@ -20,6 +25,8 @@ class Login extends StatelessWidget {
 }
 
 class LoginContainer extends StatefulWidget {
+  const LoginContainer({super.key});
+
   @override
   _LoginContainerState createState() => _LoginContainerState();
 }
@@ -44,12 +51,15 @@ class _LoginContainerState extends State<LoginContainer> {
     }
 
     var isValidLogin = await _authProvider!.loginUserAsync(AuthRequest(_usernameController.text, _passwordController.text));
-    if (isValidLogin != null && isValidLogin == true) {
+    if (isValidLogin == true) {
       setState(() {
         displayInvalidLoginMsg = false;
       });
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (context) => const Layout()));
+      var role = AuthStorageProvider.getAuthData()?["role"];
+
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const Layout()));
+
     } else {
       setState(() {
         displayInvalidLoginMsg = true;
@@ -97,7 +107,7 @@ class _LoginContainerState extends State<LoginContainer> {
                             prefixIcon: const Icon(Icons.person),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                  5.0), // Možete prilagoditi radijus zaobljenja
+                                  5.0),
                             )),
                         controller: _usernameController,
                         validator: (value) {
@@ -142,8 +152,8 @@ class _LoginContainerState extends State<LoginContainer> {
                     const SizedBox(height: 10),
                     GestureDetector(
                       onTap: () {
-                        // Implementirajte funkcionalnost za "zaboravljenu lozinku" ovdje
-                      },
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const ForgotPassword()));                        },
                       child: const Text(
                         'Zaboravljena lozinka?',
                         style: TextStyle(
@@ -161,8 +171,9 @@ class _LoginContainerState extends State<LoginContainer> {
                   const SizedBox(width: 5),
                   GestureDetector(
                     onTap: () {
-                      // Implementirajte funkcionalnost za "zaboravljena lozinka" ovdje
-                    },
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const SignUpPage()));     
+                     },
                     child: const Text(
                       'Registrujte se?',
                       style: TextStyle(

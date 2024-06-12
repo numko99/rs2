@@ -10,11 +10,15 @@
 
         public string Description { get; set; }
 
+        public string ShortDescription { get; set; }
+
         public DateTime StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
 
         public int? ArrangementStatusId { get; set; }
+
+        public decimal Rating { get; set; }
 
         public ArrangementStatus? ArrangementStatus { get; set; }
 

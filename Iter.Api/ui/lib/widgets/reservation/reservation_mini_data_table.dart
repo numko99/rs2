@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/enums/dropdown_types.dart';
-import 'package:ui/helpers/reservation_status_helper.dart';
 import 'package:ui/helpers/scaffold_messenger_helper.dart';
 import 'package:ui/modals/customConfirmationModal.dart';
 import 'package:ui/modals/details_reservation_modal.dart';
 import 'package:ui/modals/update_reservation_modal.dart';
 import 'package:ui/models/dropdown_model.dart';
-import 'package:ui/models/reservation.dart';
+import 'package:ui/models/reservation_search_respose.dart';
 import 'package:ui/services/dropdown_provider.dart';
 import 'package:ui/services/reservation_provider.dart';
 import 'package:ui/widgets/reservation_status.dart';
@@ -31,16 +30,18 @@ class ReservationDataTableState extends State<ReservationDataTable> {
   ReservationProvider? _reservationProvider;
   DropdownProvider? _dropdownProvider;
 
-  List<Reservation> reservation = [];
+  List<ReservationSearchResponse> reservation = [];
   int? reservationCount;
 
   String? selectedAgency;
+  String? selectedReservationStatus;
   List<DropdownModel>? agenciesDropdown;
+  List<DropdownModel>? reservationStatusDropdown;
 
   bool _displayLoader = true;
 
   int _currentPage = 1;
-  int _pageSize = 5;
+  int _pageSize = 10;
 
   @override
   void initState() {
@@ -70,6 +71,17 @@ class ReservationDataTableState extends State<ReservationDataTable> {
           agenciesDropdown = agenciesDropdownTemp.result;
         });
       }
+
+      var reservationStatusDropdownTemp = await _dropdownProvider!
+          .get({"dropdownType": DropdownTypes.reservationStatus.index});
+      reservationStatusDropdownTemp.result
+          .insert(0, new DropdownModel(id: null, name: "Nije odabrano"));
+      if (reservationStatusDropdownTemp.result.isNotEmpty) {
+        setState(() {
+          reservationStatusDropdown = reservationStatusDropdownTemp.result;
+        });
+      }
+
     } catch (error) {
       ScaffoldMessengerHelper.showCustomSnackBar(
           context: context,
@@ -87,6 +99,8 @@ class ReservationDataTableState extends State<ReservationDataTable> {
       "currentPage": _currentPage,
       "pageSize": _pageSize,
       "agencyId": selectedAgency,
+      "reservationStatusId": selectedReservationStatus,
+      "userId": widget.userId,
       "name": searchController.text,
     });
 
@@ -145,13 +159,37 @@ class ReservationDataTableState extends State<ReservationDataTable> {
                   },
                 ),
               ),
+              const SizedBox(width: 20),
+              Expanded(
+                flex: 1,
+                child: DropdownButtonFormField<dynamic>(
+                  decoration: const InputDecoration(
+                    labelText: 'Izaberite status',
+                  ),
+                  value: selectedReservationStatus,
+                  items: reservationStatusDropdown?.map((DropdownModel item) {
+                    return DropdownMenuItem<dynamic>(
+                      value: item.id,
+                      child: Text(item.name ?? ""),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedReservationStatus = value;
+                    });
+                  },
+                ),
+              ),
             ],
             const SizedBox(width: 20),
             SearchButton(
               onSearch: search,
             ),
+            if (widget.userId == null)
+            ...[
             const Spacer(),
             const Spacer()
+            ]
           ],
         ),
         SizedBox(height: 20),
@@ -185,14 +223,14 @@ class ReservationDataTableState extends State<ReservationDataTable> {
                         .map(
                           (reservation) => DataRow(
                             cells: [
-                              DataCell(Text(reservation.reservationNumber!)),
-                              DataCell(Text("${reservation.user?.firstName} ${reservation.user!.lastName!}")),
+                              DataCell(Text(reservation.reservationNumber)),
                               if (widget.userId == null)
-                              DataCell(Text(reservation.arrangement.name)),
+                              DataCell(Text("${reservation.firstName} ${reservation.lastName}")),
+                              DataCell(Text(reservation.arrangementName)),
                               if (widget.agencyId == null)
-                              DataCell(Text(reservation.arrangement.agency.name)),
+                              DataCell(Text(reservation.agencyName)),
                               DataCell(
-                                reservationStatus(statusId: reservation.reservationStatusId, status: reservation.reservationStatusName)),
+                                ReservationStatus(statusId: reservation.reservationStatusId, status: reservation.reservationStatusName)),
                               DataCell(
                                 SizedBox(
                                   width: double.infinity,
@@ -206,7 +244,7 @@ class ReservationDataTableState extends State<ReservationDataTable> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return ReservationDetailsModal(
-                                                    reservationId: reservation.id);
+                                                    reservationId: reservation.reservationId);
                                               },
                                             );
                                           },
@@ -219,7 +257,7 @@ class ReservationDataTableState extends State<ReservationDataTable> {
                                               builder: (BuildContext context) {
                                                 return UpdateReservationModal(
                                                     onCompleted: () => search(),
-                                                    reservationId: reservation.id);
+                                                    reservationId: reservation.reservationId);
                                               },
                                             );
                                           },
@@ -235,7 +273,7 @@ class ReservationDataTableState extends State<ReservationDataTable> {
                                                   content:
                                                       "Da li ste sigurni da želite obrisati rezervaciju ${reservation.reservationNumber}?",
                                                   onConfirm: () async {
-                                                    await delete(reservation.id);
+                                                    await delete(reservation.reservationId);
                                                   },
                                                 );
                                               },
@@ -258,7 +296,7 @@ class ReservationDataTableState extends State<ReservationDataTable> {
             child: Align(
               alignment: Alignment.center,
               child: Container(
-                constraints: const BoxConstraints(maxWidth: 300),
+                constraints: const BoxConstraints(maxWidth: 400),
                 child: Visibility(
                   visible:
                       reservationCount != null && reservationCount! > _pageSize,
@@ -268,7 +306,7 @@ class ReservationDataTableState extends State<ReservationDataTable> {
                         (((reservationCount == 0 || reservationCount == null)
                                     ? 1
                                     : reservationCount!) /
-                                (_pageSize ?? 1))
+                                _pageSize)
                             .ceil(),
                     onPageChange: (int index) {
                       setState(() {

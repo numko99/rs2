@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:ui/enums/arrangement_type.dart';
 import 'package:ui/helpers/scaffold_messenger_helper.dart';
 import 'package:ui/models/accomodation_type_form_controllers.dart';
 import 'package:ui/models/arrangement_price.dart';
@@ -12,6 +13,8 @@ import 'package:ui/models/destination.dart';
 import 'package:ui/models/destinatios_form_controllers.dart';
 import 'package:ui/models/image_model.dart';
 import 'package:ui/services/arrangment_provider.dart';
+import 'package:ui/services/auth_provider.dart';
+import 'package:ui/services/auth_storage_provider.dart';
 import 'package:ui/widgets/Layout/layout.dart';
 import 'package:ui/widgets/arrangement_add_edit/basic_data_form.dart';
 import 'package:ui/widgets/arrangement_add_edit/description_images_form.dart';
@@ -47,9 +50,10 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
   var destinationsFormControllers = DestinatiosFormControllers();
 
   int currentStep = 0;
-  int initialArrangemetType = 1;
-  int arrangementType = 1;
-  late Arrangement? arrangement;
+  ArrangementType initialArrangemetType = ArrangementType.multiDayTrip;
+  ArrangementType arrangementType = ArrangementType.multiDayTrip;
+  String? agencyId;
+  Arrangement? arrangement;
   Map<String, dynamic> _initialValue1 = {};
   Map<String, dynamic> _initialValue2 = {};
   
@@ -123,8 +127,11 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
                             key: formKeys[0],
                             initialValue: _initialValue1,
                             child: BasicDataFormPage(
+                                agencyId: widget.agencyId ?? arrangement?.agency.id,
                                 controllers: accomodationTypeFormControllers,
                                 setArrangementType: setArrangementType,
+                                setAgencyId: setAgency,
+                                arrangementStatus: arrangement?.arrangementStatusId,
                                 initialArrangementType: initialArrangemetType)),
                         isActive: currentStep == 0,
                       ),
@@ -192,13 +199,8 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
             message: "Aranžman uspješno dodan!",
             backgroundColor: Colors.green);
 
-        if (widget.agencyId == null){
            Navigator.pushNamed(context, '/arrangements');
-        }
-        else{
-          Navigator.pushNamed(context, '/agency/details',
-              arguments: {'id': widget.agencyId});
-        }
+
       }
     } catch (error) {
       ScaffoldMessengerHelper.showCustomSnackBar(
@@ -212,7 +214,7 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
 
   Map<dynamic, dynamic> processBasicData(Map<dynamic, dynamic> formData) {
     List<ArrangementPrice> prices = [];
-    if (arrangementType == 1) {
+    if (arrangementType == ArrangementType.multiDayTrip) {
       for (int i = 0;
           i < accomodationTypeFormControllers.accomodationTypePrices.length;
           i++) {
@@ -233,8 +235,8 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
       formData["endDate"] = endDate.toIso8601String();
     }
     formData["prices"] = prices;
-    formData["price"] = arrangementType == 1 ? null : formData["price"];
-    formData["agencyId"] = widget.agencyId;
+    formData["price"] = arrangementType == ArrangementType.multiDayTrip ? null : formData["price"];
+    formData["agencyId"] = agencyId ?? widget.agencyId;
 
     return formData;
   }
@@ -308,9 +310,15 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
     });
   }
 
-  void setArrangementType(int? value){
+  void setArrangementType(ArrangementType? value){
     setState(() {
       arrangementType = value!;
+    });
+  }
+
+  void setAgency(String? agency) {
+    setState(() {
+      agencyId = agency!;
     });
   }
 
@@ -342,7 +350,7 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
         displayLoader = true;
       });
       arrangement = await _arrangmentProvider?.getById(widget.arrangementId);
-
+      agencyId = arrangement!.agency.id;
       setInitialBasicData();
       setInitialDescriptionAndImagesData();
       setInitialDestinationsData();
@@ -415,6 +423,7 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
   void setInitialDescriptionAndImagesData() {
     _initialValue2 = {
       "description": arrangement?.description,
+      "shortDescription": arrangement?.shortDescription,
     };
 
     mainImage = arrangement!.images
@@ -427,7 +436,7 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
 
   void setInitialBasicData() {
     var pricess = arrangement!.prices;
-    initialArrangemetType = pricess.length == 1 && pricess[0].accommodationType == null ? 2 : 1;
+    initialArrangemetType = pricess.length == 1 && pricess[0].accommodationType == null ? ArrangementType.oneDayTrip : ArrangementType.multiDayTrip;
     setArrangementType(initialArrangemetType);
     _initialValue1 = {
       "name": arrangement?.name,
@@ -436,7 +445,7 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
       "price": initialArrangemetType == 2 ? pricess[0].price.toString() : null
     };
 
-    if (initialArrangemetType == 1) {
+    if (initialArrangemetType == ArrangementType.multiDayTrip) {
       for (int i = 0; i < pricess.length; i++) {
           accomodationTypeFormControllers.addArrangementPrices();
         accomodationTypeFormControllers.accomodationTypePrices[i].text =

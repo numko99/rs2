@@ -4,12 +4,12 @@ using Iter.Repository;
 
 namespace Iter.Services
 {
-    public class BaseCrudService<T, TInsert, TUpdate, TGet, TSearch> : BaseReadService<T, TGet, TSearch> where TInsert : class where T : class where TGet : class where TSearch : BaseSearchModel
+    public class BaseCrudService<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> : BaseReadService<T, TGet, TSearchRequest, TSearchResponse> where TInsert : class where T : class where TGet : class where TSearchResponse : class where TSearchRequest : BaseSearchModel
     {
-        private readonly IBaseCrudRepository<T, TInsert, TUpdate, TGet, TSearch> baseCrudRepository;
+        private readonly IBaseCrudRepository<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> baseCrudRepository;
         private readonly IMapper mapper;
 
-        public BaseCrudService(IBaseCrudRepository<T, TInsert, TUpdate, TGet, TSearch> baseCrudRepository, IMapper mapper)
+        public BaseCrudService(IBaseCrudRepository<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> baseCrudRepository, IMapper mapper)
             : base(baseCrudRepository, mapper)
         {
             this.baseCrudRepository = baseCrudRepository;

@@ -5,8 +5,12 @@ using Iter.Services.Interfaces;
 
 namespace Iter.Services.Interface
 {
-    public interface IReservationService : IBaseCrudService<Reservation, ReservationInsertRequest, ReservationUpdateRequest, ReservationResponse, ReservationSearchModel>
+    public interface IReservationService : IBaseCrudService<Reservation, ReservationInsertRequest, ReservationUpdateRequest, ReservationResponse, ReservationSearchModel, ReservationSearchResponse>
     {
         public Task<int> GetCount(Guid arrangementId);
+
+        public Task AddReview(Guid reservationId, int? rating);
+
+        public Task CancelReservation(Guid reservationId);
     }
 }

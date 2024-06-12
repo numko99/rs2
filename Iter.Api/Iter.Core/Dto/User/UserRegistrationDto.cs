@@ -10,9 +10,6 @@ namespace Iter.Core.Dto
         [Required(ErrorMessage = "LastName is required")]
         public string? LastName { get; init; }
 
-        [Required(ErrorMessage = "UserName is required")]
-        public string? UserName { get; init; }
-
         [Required(ErrorMessage = "Password is required")]
         public string? Password { get; init; }
 
@@ -23,9 +20,11 @@ namespace Iter.Core.Dto
         public string? PhoneNumber { get; init; }
 
         [Required(ErrorMessage = "BirthDate is required")]
-        public DateTime BirthDate { get; set; }
+        public string? BirthDate { get; set; }
 
         [Required(ErrorMessage = "BirthPlace is required")]
-        public string BirthPlace { get; set; }
+        public string? ResidencePlace { get; set; }
+
+        public string? Token { get; set; }
     }
 }

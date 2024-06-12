@@ -7,10 +7,10 @@ namespace Iter.Core.EntityModels{    public class UserResponse    {
 
         public DateTime BirthDate { get; set; }
 
-        public string BirthPlace { get; set; }
+        public string ResidencePlace { get; set; }
 
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }
 
-        public AddressResponse Address { get; set; }        public bool IsActive { get; set; }        public Roles Role { get; set; }    }}
+        public bool IsActive { get; set; }        public Roles Role { get; set; }    }}

@@ -15,6 +15,7 @@ import 'package:ui/pages/agency.dart';
 import 'package:ui/services/arrangment_provider.dart';
 import 'package:ui/services/auth_provider.dart';
 import 'package:ui/services/dropdown_provider.dart';
+import 'package:ui/services/employee_arrangment_provider.dart';
 import 'package:ui/services/report_provider.dart';
 import 'package:ui/services/reservation_provider.dart';
 import 'package:ui/services/user_provider.dart';
@@ -27,7 +28,8 @@ void main() {
     ChangeNotifierProvider(create: (_) => DropdownProvider()),
     ChangeNotifierProvider(create: (_) => UserProvider()),
     ChangeNotifierProvider(create: (_) => ReservationProvider()),
-    ChangeNotifierProvider(create: (_) => ReportProvider())
+    ChangeNotifierProvider(create: (_) => ReportProvider()),
+    ChangeNotifierProvider(create: (_) => EmployeeArrangmentProvider())
   ], child: IterApp()));
 }
 

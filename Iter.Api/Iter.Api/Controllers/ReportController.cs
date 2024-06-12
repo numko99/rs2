@@ -8,11 +8,9 @@ namespace Iter.Api.Controllers
     [ApiController]
     public class ReportController : ControllerBase
     {
-        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IReportService reportService;
-        public ReportController(IWebHostEnvironment webHostEnvironment, IReportService reportService)
+        public ReportController(IReportService reportService)
         {
-            _webHostEnvironment = webHostEnvironment;
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             this.reportService = reportService;
         }

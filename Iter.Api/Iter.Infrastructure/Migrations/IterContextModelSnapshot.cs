@@ -183,8 +183,7 @@ namespace Iter.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
@@ -200,6 +199,14 @@ namespace Iter.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ShortDescription")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -280,22 +287,31 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("ArrangementPrice", (string)null);
                 });
 
+            modelBuilder.Entity("Iter.Core.EntityModels.ArrangementStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ArrangementStatus");
+                });
+
             modelBuilder.Entity("Iter.Core.EntityModels.Client", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AddressId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("BirthPlace")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -316,9 +332,12 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.Property<string>("ResidencePlace")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
-                    b.HasIndex("AddressId");
+                    b.HasKey("Id");
 
                     b.ToTable("Client", (string)null);
                 });
@@ -379,19 +398,11 @@ namespace Iter.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AddressId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("AgencyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("BirthPlace")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -412,9 +423,12 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.Property<string>("ResidencePlace")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
-                    b.HasIndex("AddressId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AgencyId");
 
@@ -641,7 +655,7 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Iter.Core.EntityModelss.ArrangementStatus", b =>
+            modelBuilder.Entity("Iter.Core.EntityModelss.VerificationToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -649,13 +663,28 @@ namespace Iter.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Name")
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("VerificationTokenType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ArrangementStatus");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("VerificationToken", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -832,7 +861,7 @@ namespace Iter.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Arrangement_Agency");
 
-                    b.HasOne("Iter.Core.EntityModelss.ArrangementStatus", "ArrangementStatus")
+                    b.HasOne("Iter.Core.EntityModels.ArrangementStatus", "ArrangementStatus")
                         .WithMany("Arrangements")
                         .HasForeignKey("ArrangementStatusId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -876,18 +905,6 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Arrangement");
                 });
 
-            modelBuilder.Entity("Iter.Core.EntityModels.Client", b =>
-                {
-                    b.HasOne("Iter.Core.EntityModels.Address", "Address")
-                        .WithMany("Clients")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired()
-                        .HasConstraintName("FK_Client_Address");
-
-                    b.Navigation("Address");
-                });
-
             modelBuilder.Entity("Iter.Core.EntityModels.Destination", b =>
                 {
                     b.HasOne("Iter.Core.EntityModels.Accommodation", "Accommodation")
@@ -910,21 +927,12 @@ namespace Iter.Infrastructure.Migrations
 
             modelBuilder.Entity("Iter.Core.EntityModels.Employee", b =>
                 {
-                    b.HasOne("Iter.Core.EntityModels.Address", "Address")
-                        .WithMany("Employees")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired()
-                        .HasConstraintName("FK_Employee_Address");
-
                     b.HasOne("Iter.Core.EntityModels.Agency", "Agency")
                         .WithMany("Employees")
                         .HasForeignKey("AgencyId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_Employee_Agency");
-
-                    b.Navigation("Address");
 
                     b.Navigation("Agency");
                 });
@@ -1004,6 +1012,18 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("Iter.Core.EntityModelss.VerificationToken", b =>
+                {
+                    b.HasOne("Iter.Core.EntityModels.User", "User")
+                        .WithMany("VerificationTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_VerificationToken_User");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1065,10 +1085,6 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Accommodations");
 
                     b.Navigation("Agencies");
-
-                    b.Navigation("Clients");
-
-                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.Agency", b =>
@@ -1096,6 +1112,11 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Reservations");
                 });
 
+            modelBuilder.Entity("Iter.Core.EntityModels.ArrangementStatus", b =>
+                {
+                    b.Navigation("Arrangements");
+                });
+
             modelBuilder.Entity("Iter.Core.EntityModels.Client", b =>
                 {
                     b.Navigation("Reservations");
@@ -1117,9 +1138,9 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("ArrangementImages");
                 });
 
-            modelBuilder.Entity("Iter.Core.EntityModelss.ArrangementStatus", b =>
+            modelBuilder.Entity("Iter.Core.EntityModels.User", b =>
                 {
-                    b.Navigation("Arrangements");
+                    b.Navigation("VerificationTokens");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,10 +4,12 @@ using Iter.Core.Search_Models;
 
 namespace Iter.Repository.Interface
 {
-    public interface IReservationRepository : IBaseCrudRepository<Reservation, ReservationInsertRequest, ReservationUpdateRequest, ReservationResponse, ReservationSearchModel>
+    public interface IReservationRepository : IBaseCrudRepository<Reservation, ReservationInsertRequest, ReservationUpdateRequest, ReservationResponse, ReservationSearchModel, ReservationSearchResponse>
     {
         Task<string> GetLatestReservationNumber();
 
         Task<int> GetCount(Guid arrangementId);
+
+        Task UpdateRatingAsync(Guid reservationId, int? rating);
     }
 }

@@ -5,9 +5,9 @@ import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ui/models/search_result.dart';
-import 'package:ui/services/token_storage_provider.dart';
+import 'package:ui/services/auth_storage_provider.dart';
 
-abstract class BaseProvider<T> with ChangeNotifier {
+abstract class BaseProvider<T, TSearchResponse> with ChangeNotifier {
   String? baseUrl;
   String? endpoint;
 
@@ -41,7 +41,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
   }
 
-  Future<SearchResult<T>> get([dynamic search]) async {
+  Future<SearchResult<TSearchResponse>> get([dynamic search]) async {
     var url = "$baseUrl$endpoint";
 
     if (search != null) {
@@ -55,9 +55,9 @@ abstract class BaseProvider<T> with ChangeNotifier {
     var response = await http!.get(uri, headers: headers);
     if (isValidResponseCode(response)) {
       var data = jsonDecode(response.body);
-      return SearchResult<T>()
+      return SearchResult<TSearchResponse>()
         ..count = data['count']
-        ..result = data['result'].map((x) => fromJson(x)).cast<T>().toList();
+        ..result = data['result'].map((x) => fromJsonSearch(x)).cast<TSearchResponse>().toList();
     } else {
       throw Exception("Exception... handle this gracefully");
     }
@@ -111,7 +111,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
   }
 
   Future<Map<String, String>?> createHeaders() async {
-    String? basicAuth = await TokenStorageProvider.readToken();
+    String? basicAuth = await AuthStorageProvider.readToken();
     if (basicAuth == null) {
       return null;
     }
@@ -125,6 +125,10 @@ abstract class BaseProvider<T> with ChangeNotifier {
   }
 
   T fromJson(data) {
+    throw Exception("Override method");
+  }
+
+   TSearchResponse fromJsonSearch(data) {
     throw Exception("Override method");
   }
 

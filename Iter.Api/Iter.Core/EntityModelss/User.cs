@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Iter.Core.EntityModelss;
+using Microsoft.AspNetCore.Identity;
 
 namespace Iter.Core.EntityModels
 {
@@ -15,6 +16,8 @@ namespace Iter.Core.EntityModels
         public bool IsActive { get; set; }
 
         public int Role { get; set; }
+
+        public List<VerificationToken> VerificationTokens { get; set; }
 
     }
 }

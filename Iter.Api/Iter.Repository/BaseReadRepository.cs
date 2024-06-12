@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Iter.Repository
 {
-    public class BaseReadRepository<T, TGet, TSearch> : IBaseReadRepository<T, TGet, TSearch> where T : class where TGet : class where TSearch : BaseSearchModel
+    public class BaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> : IBaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> where T : class where TGet : class where TSearchResponse : class where TSearchRequest : BaseSearchModel
     {
         private readonly IterContext dbContext;
         private readonly DbSet<T> dbSet;
@@ -30,11 +30,11 @@ namespace Iter.Repository
             return await this.dbSet.ToListAsync();
         }
 
-        public virtual async Task<PagedResult<TGet>> Get(TSearch? search = null)
+        public virtual async Task<PagedResult<TSearchResponse>> Get(TSearchRequest? search = null)
         {
             var query = dbContext.Set<T>().AsQueryable();
 
-            PagedResult<TGet> result = new PagedResult<TGet>();
+            PagedResult<TSearchResponse> result = new PagedResult<TSearchResponse>();
 
             query = AddFilter(query, search);
 
@@ -49,17 +49,17 @@ namespace Iter.Repository
 
             var list = await query.ToListAsync();
 
-            var tmp = mapper.Map<List<TGet>>(list);
+            var tmp = mapper.Map<List<TSearchResponse>>(list);
             result.Result = tmp;
             return result;
         }
 
-        public virtual IQueryable<T> AddInclude(IQueryable<T> query, TSearch? search = null)
+        public virtual IQueryable<T> AddInclude(IQueryable<T> query, TSearchRequest? search = null)
         {
             return query;
         }
 
-        public virtual IQueryable<T> AddFilter(IQueryable<T> query, TSearch? search = null)
+        public virtual IQueryable<T> AddFilter(IQueryable<T> query, TSearchRequest? search = null)
         {
             return query;
         }

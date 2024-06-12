@@ -17,6 +17,15 @@ builder.Services.ConfigureJWT(builder.Configuration);
 builder.Services.AddCustomOptions(builder.Configuration);
 
 builder.Services.ConfigureDb(builder.Configuration);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("MyCorsPolicy", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
@@ -25,7 +34,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
 }
+app.UseCors("MyCorsPolicy");
 
 app.UseStaticFiles();
 app.UseHttpsRedirection();

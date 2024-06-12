@@ -22,8 +22,12 @@ namespace Iter.Infrastrucure.Configurations
             builder.Property(a => a.Name)
                 .HasMaxLength(100);
 
-            builder.Property(a => a.Description)
-                .HasMaxLength(500);
+            builder.Property(a => a.Description);
+
+            builder.Property(a => a.Rating);
+
+            builder.Property(a => a.ShortDescription)
+            .HasMaxLength(500);
 
             builder.Property(a => a.StartDate)
                 .IsRequired();

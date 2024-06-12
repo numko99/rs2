@@ -87,7 +87,7 @@ class _DestinationFormPageState extends State<DestinationFormPage> {
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () {
-                        if (index > 0) {
+                        if (widget.controllers.destinationControllers.length > 1) {
                           _removeDestinationRow(index);
                         }
                       },

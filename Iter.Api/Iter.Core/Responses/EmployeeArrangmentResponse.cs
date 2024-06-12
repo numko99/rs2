@@ -1,4 +1,5 @@
 using Iter.Core.EntityModels;
+using Iter.Core.Models;
 
 namespace Iter.Core
-{    public class EmployeeArrangmentResponse    {        public Guid Id { get; set; }        public User Employee { get; set; }        public string EmployeeId { get; set; }        public ArrangementResponse Arrangement { get; set; }        public Guid ArrangementId { get; set; }        public decimal Rating { get; set; }        public bool IsDeleted { get; set; }        public DateTime DateCreated { get; set; }        public DateTime DateModified { get; set; }    }}
+{    public class EmployeeArrangmentResponse    {        public Guid Id { get; set; }        public DropdownModel Employee { get; set; }        public ArrangementSearchResponse Arrangement { get; set; }        public decimal Rating { get; set; }    }}

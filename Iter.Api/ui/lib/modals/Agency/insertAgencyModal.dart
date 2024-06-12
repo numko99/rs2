@@ -42,11 +42,11 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Column(
+      title: Column(
         children: [
-          Text('Dodaj agenciju'),
-          SizedBox(height: 10),
-          Icon(
+          Text(widget.agency == null ?'Dodaj agenciju' : 'Uredi agenciju'),
+          const SizedBox(height: 10),
+          const Icon(
             Icons.business,
             color: Colors.amber,
             size: 50,
@@ -228,12 +228,12 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
                       builder: ((field) {
                         return InputDecorator(
                           decoration: InputDecoration(
-                              label: Text('Odaberite logo'),
+                              label: const Text('Odaberite logo'),
                               errorText: field.errorText),
                           child: ListTile(
-                            leading: Icon(Icons.photo),
-                            title: Text("Logo agencije"),
-                            trailing: Icon(Icons.file_upload),
+                            leading: const Icon(Icons.photo),
+                            title: const Text("Logo agencije"),
+                            trailing: const Icon(Icons.file_upload),
                             onTap: getImage,
                           ),
                         );
@@ -248,7 +248,7 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
                           children: [
                             Center(
                               child: Container(
-                                padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                                padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
                                 width: 100,
                                 height: 100,
                                 child: Image.memory(
@@ -257,7 +257,7 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
                             ),
                             Positioned(
                               child: IconButton(
-                                icon: Icon(Icons.close),
+                                icon: const Icon(Icons.close),
                                 onPressed: () {
                                   setState(() {
                                     _logo = null;

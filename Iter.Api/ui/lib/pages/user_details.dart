@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,9 +5,7 @@ import 'package:ui/helpers/dateTime_helper.dart';
 import 'package:ui/models/user.dart';
 import 'package:ui/services/user_provider.dart';
 import 'package:ui/widgets/Layout/layout.dart';
-import 'package:ui/widgets/agency_details/arrangement_data_table.dart';
 import 'package:ui/widgets/reservation/reservation_mini_data_table.dart';
-import '../models/agency.dart';
 
 class UserDetailsPage extends StatefulWidget {
   const UserDetailsPage({super.key, required this.id});
@@ -99,10 +96,10 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             Flexible(
               child: ListTile(
                 leading: const Tooltip(
-                  message: 'Mjesto rođenja',
+                  message: 'Mjesto prebivališta',
                   child: Icon(Icons.location_city, color: Colors.amber),
                 ),
-                title: Text(user.birthPlace),
+                title: Text(user.residencePlace),
               ),
             ),
           ],
@@ -129,53 +126,6 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             )),
           ],
         ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Flexible(
-              child: ListTile(
-                leading: const Tooltip(
-                  message: 'Država',
-                  child:
-                      Icon(Icons.location_city_outlined, color: Colors.amber),
-                ),
-                title: Text(user.address?.country ?? ""),
-              ),
-            ),
-            Flexible(
-              child: ListTile(
-                leading: const Tooltip(
-                  message: 'Grad',
-                  child: Icon(Icons.location_city, color: Colors.amber),
-                ),
-                title: Text(user.address?.city ?? ""),
-              ),
-            )
-          ],
-        ),
-        Row(
-          children: [
-            Flexible(
-              child: ListTile(
-                leading: const Tooltip(
-                  message: 'Poštanski broj',
-                  child: Icon(Icons.numbers, color: Colors.amber),
-                ),
-                title: Text(user.address?.postalCode ?? ""),
-              ),
-            ),
-            Flexible(
-              child: ListTile(
-                leading: const Tooltip(
-                  message: 'Ulica',
-                  child: Icon(Icons.home, color: Colors.amber),
-                ),
-                title: Text(
-                    '${user.address?.street} ${user.address?.houseNumber}'),
-              ),
-            )
-          ],
-        )
       ],
     );
   }

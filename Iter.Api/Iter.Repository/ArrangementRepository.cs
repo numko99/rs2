@@ -7,10 +7,11 @@ using Iter.Infrastrucure;
 using Iter.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using Iter.Core.Enum;
 
 namespace Iter.Repository
 {
-    public class ArrangementRepository : BaseCrudRepository<Arrangement, ArrangementUpsertRequest, ArrangementUpsertRequest, ArrangementResponse, ArrangmentSearchModel>, IArrangementRepository
+    public class ArrangementRepository : BaseCrudRepository<Arrangement, ArrangementUpsertRequest, ArrangementUpsertRequest, ArrangementResponse, ArrangmentSearchModel, ArrangementSearchResponse>, IArrangementRepository
     {
         private readonly IterContext dbContext;
         private readonly IMapper mapper;
@@ -21,15 +22,13 @@ namespace Iter.Repository
             this.mapper = mapper;
         }
 
-        public async override Task<PagedResult<ArrangementResponse>> Get(ArrangmentSearchModel? search)
+        public async override Task<PagedResult<ArrangementSearchResponse>> Get(ArrangmentSearchModel? search)
         {
             var query = dbContext.Set<Arrangement>().AsQueryable();
 
-            PagedResult<ArrangementResponse> result = new PagedResult<ArrangementResponse>();
-
             if (!string.IsNullOrEmpty(search?.Name))
             {
-                query = query.Where(a => a.Name.Contains(search.Name));
+                query = query.Where(a => a.Name.Contains(search.Name) || a.Destinations.Any(x => x.City.Contains(search.Name)));
             }
 
             if (!string.IsNullOrEmpty(search?.AgencyId))
@@ -37,39 +36,67 @@ namespace Iter.Repository
                 var guid = new Guid(search.AgencyId);
                 query = query.Where(a => a.AgencyId == guid);
             }
+
             if (search?.DateFrom != null)
             {
                 var dateFrom = DateTime.ParseExact(search.DateFrom, "dd.MM.yyyy", CultureInfo.InvariantCulture);
-                query = query.Where(a => a.StartDate >= dateFrom);
+                query = query.Where(a => a.StartDate.Date >= dateFrom.Date);
             }
 
             if (search?.DateTo != null)
             {
                 var dateTo = DateTime.ParseExact(search.DateTo, "dd.MM.yyyy", CultureInfo.InvariantCulture);
-                query = query.Where(a => a.EndDate < dateTo || (a.EndDate == null && dateTo > a.StartDate ));
+                query = query.Where(a => dateTo.Date >= a.StartDate.Date);
+            }
+
+            if (search?.ArrangementStatus != null)
+            {
+                query = query.Where(a => a.ArrangementStatusId == search.ArrangementStatus).AsQueryable();
+            }
+
+            if (search?.Rating != null)
+            {
+                query = query.Where(a => a.Agency.Rating >= search.Rating).AsQueryable();
             }
 
             query = query.Where(q => q.IsDeleted == false);
 
-
-            query = query.Include(nameof(Agency)).Include(nameof(ArrangementStatus));
-
-            result.Count = await query.CountAsync();
+            var count = await query.CountAsync();
 
             if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
             {
                 query = query.Skip((search.CurrentPage.Value - 1) * search.PageSize.Value).Take(search.PageSize.Value);
             }
-            var list = await query.OrderByDescending(q => q.CreatedAt).ToListAsync();
-            var tmp = mapper.Map<List<ArrangementResponse>>(list);
-            result.Result = tmp;
-            return result;
+
+            query = query.Include(a => a.Agency).Include(a => a.ArrangementStatus).Include(a => a.ArrangementImages).ThenInclude(a => a.Image);
+
+            var result = await query.OrderByDescending(q => q.CreatedAt).Select(a => new ArrangementSearchResponse{
+                Id = a.Id,
+                StartDate = a.StartDate,
+                EndDate = a.EndDate,
+                Name = a.Name,
+                AgencyName = a.Agency.Name,
+                AgencyRating = a.Agency.Rating,
+                ArrangementStatusId = a.ArrangementStatusId, 
+                ArrangementStatusName = a.ArrangementStatus.Name, 
+                MainImage = this.mapper.Map<ImageResponse>(a.ArrangementImages.Where(a => a.IsMainImage).FirstOrDefault()),
+                IsReserved = search.CurrentUserId != null ? this.dbContext.Reservation.Any(r => r.ArrangmentId == a.Id && r.ClientId == search.CurrentUserId && (r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Confirmed || r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Pending)) : false
+            }).ToListAsync();
+
+            return new PagedResult<ArrangementSearchResponse>()
+            {
+                Count = count,
+                Result = result
+            };
         }
 
         public override async Task<Arrangement?> GetById(Guid id)
         {
             var arrangement = await dbContext.Arrangement
                     .Include(a => a.Agency)
+                        .ThenInclude(a => a.Image)
+                    .Include(a => a.Agency)
+                        .ThenInclude(a => a.Address)
                     .Include(a => a.ArrangementStatus)
                     .Include(a => a.ArrangementPrices)
                     .Include(a => a.ArrangementImages)
@@ -85,31 +112,41 @@ namespace Iter.Repository
         }
         public async Task SmartUpdateAsync(Arrangement entity)
         {
-            var pricesIds = entity.ArrangementPrices.Select(a => a.Id).ToList();
-            var pricesToDelete = dbContext.ArrangementPrice
-               .Where(ap => ap.ArrangementId == entity.Id && !pricesIds.Contains(ap.Id))
-               .ToList();
+            try
+            {
+                if (entity.ArrangementStatusId == (int)Core.Enum.ArrangementStatus.InPreparation)
+                {
+                    var pricesIds = entity.ArrangementPrices.Select(a => a.Id).ToList();
+                    var pricesToDelete = dbContext.ArrangementPrice
+                       .Where(ap => ap.ArrangementId == entity.Id && !pricesIds.Contains(ap.Id))
+                       .ToList();
+                    dbContext.ArrangementPrice.RemoveRange(pricesToDelete);
+                }
 
-            var existingImages = dbContext.ArrangementImage
-                .Where(ai => ai.ArrangementId == entity.Id)
-                .ToList();
+                var existingImages = dbContext.ArrangementImage
+                    .Where(ai => ai.ArrangementId == entity.Id)
+                    .ToList();
 
-            var imageIds = existingImages.Select(ai => ai.ImageId).ToList();
-            var imagesToDelete = dbContext.Image
-                .Where(i => imageIds.Contains(i.Id))
-                .ToList();
+                var imageIds = existingImages.Select(ai => ai.ImageId).ToList();
+                var imagesToDelete = dbContext.Image
+                    .Where(i => imageIds.Contains(i.Id))
+                    .ToList();
 
 
-            var destinationIds = entity.Destinations.Select(des => des.Id).ToList();
-            var destinationsToDelete = dbContext.Destination
-                .Where(d => d.ArrangementId == entity.Id && !destinationIds.Contains(d.Id)).AsNoTracking()
-                .ToList();
+                var destinationIds = entity.Destinations.Select(des => des.Id).ToList();
+                var destinationsToDelete = dbContext.Destination
+                    .Where(d => d.ArrangementId == entity.Id && !destinationIds.Contains(d.Id)).AsNoTracking()
+                    .ToList();
 
-            dbContext.ArrangementPrice.RemoveRange(pricesToDelete);
-            dbContext.ArrangementImage.RemoveRange(existingImages.ToList());
-            dbContext.Image.RemoveRange(imagesToDelete.ToList());
-            dbContext.Destination.RemoveRange(destinationsToDelete.ToList());
-            await dbContext.SaveChangesAsync();
+                dbContext.ArrangementImage.RemoveRange(existingImages.ToList());
+                dbContext.Image.RemoveRange(imagesToDelete.ToList());
+                dbContext.Destination.RemoveRange(destinationsToDelete.ToList());
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
 
             foreach (var destination in entity.Destinations)
             {
@@ -124,18 +161,22 @@ namespace Iter.Repository
                 }
             }
 
-            foreach (var price in entity.ArrangementPrices)
+            if (entity.ArrangementStatusId == (int)Core.Enum.ArrangementStatus.InPreparation)
             {
-                var existingPrice = dbContext.ArrangementPrice.AsNoTracking().FirstOrDefault(d => d.Id == price.Id);
-                if (existingPrice != null)
+                foreach (var price in entity.ArrangementPrices)
                 {
-                    dbContext.ArrangementPrice.Update(price);
-                }
-                else
-                {
-                    dbContext.ArrangementPrice.Add(price);
+                    var existingPrice = dbContext.ArrangementPrice.AsNoTracking().FirstOrDefault(d => d.Id == price.Id);
+                    if (existingPrice != null)
+                    {
+                        dbContext.ArrangementPrice.Update(price);
+                    }
+                    else
+                    {
+                        dbContext.ArrangementPrice.Add(price);
+                    }
                 }
             }
+
             dbContext.ArrangementImage.AddRange(entity.ArrangementImages);
 
             dbContext.Arrangement.Update(entity);

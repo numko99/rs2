@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import 'package:ui/enums/roles.dart';
 import 'package:ui/services/agency_provider.dart';
 import 'package:ui/services/auth_provider.dart';
+import 'package:ui/services/auth_storage_provider.dart';
 import '../widgets/inputField.dart';
 import '../widgets/logo.dart';
 
@@ -49,12 +51,21 @@ class _LoginContainerState extends State<LoginContainer> {
       return;
     }
 
-    var isValidLogin = await _authProvider?.loginUserAsync(_usernameController.text, _passwordController.text);
+    var isValidLogin = await _authProvider?.loginUserAsync(
+        _usernameController.text, _passwordController.text);
     if (isValidLogin != null && isValidLogin == true) {
       setState(() {
         displayInvalidLoginMsg = false;
       });
-      Navigator.pushReplacementNamed(context, '/agency');
+      var authData = AuthStorageProvider.getAuthData();
+
+      if (authData?["role"] == Roles.admin) {
+        Navigator.pushReplacementNamed(context, '/agency');
+      }
+
+      if (authData?["role"] == Roles.coordinator) {
+        Navigator.pushReplacementNamed(context, '/users');
+      }
     } else {
       setState(() {
         displayInvalidLoginMsg = true;

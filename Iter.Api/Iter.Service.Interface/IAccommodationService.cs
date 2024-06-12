@@ -5,7 +5,7 @@ using Iter.Services.Interfaces;
 
 namespace Iter.Services.Interface
 {
-    public interface IAccommodationService : IBaseCrudService<Accommodation, AccommodationUpsertRequest, AccommodationUpsertRequest, AccommodationResponse, AgencySearchModel>
+    public interface IAccommodationService : IBaseCrudService<Accommodation, AccommodationUpsertRequest, AccommodationUpsertRequest, AccommodationResponse, AgencySearchModel, AccommodationResponse>
     {
     }
 }

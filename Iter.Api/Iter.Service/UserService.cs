@@ -7,55 +7,72 @@ using Iter.Core;
 using Iter.Core.Helper;
 using Iter.Core.Enum;
 using Microsoft.AspNetCore.Identity;
-using Org.BouncyCastle.Asn1.Ocsp;
+using Iter.Core.Responses;
+using Iter.Core.Dto;
+using System.Data;
 
 namespace Iter.Services
 {
-    public class UserService : BaseCrudService<User, UserUpsertRequest, UserUpsertRequest, UserResponse, UserSearchModel>, IUserService
+    public class UserService : BaseCrudService<User, UserUpsertRequest, UserUpsertRequest, UserResponse, UserSearchModel, UserResponse>, IUserService
     {
         private readonly IMapper mapper;
         private readonly IUserRepository userRepository;
+        private readonly IUserAuthenticationService userAuthenticationService;
         private readonly IEmailService emailService;
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
-        public UserService(IUserRepository clientRepository, IMapper mapper, IUserRepository userRepository, IEmailService emailService, UserManager<User> userManager, RoleManager<IdentityRole> roleManager) : base(clientRepository, mapper)
+        public UserService(IUserRepository clientRepository, IMapper mapper, IUserRepository userRepository, IEmailService emailService, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IUserAuthenticationService userAuthenticationService) : base(clientRepository, mapper)
         {
             this.mapper = mapper;
             this.userRepository = userRepository;
             this.emailService = emailService;
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.userAuthenticationService = userAuthenticationService;
         }
 
         public override async Task Insert(UserUpsertRequest request)
         {
-            var password = PasswordGeneratorHelper.GenerateRandomPassword();
-            var user = new User();
-            if ((Roles)request.Role == Roles.TouristGuide || (Roles)request.Role == Roles.Coordinator)
+            try
             {
-                var entity = this.mapper.Map<Employee>(request);
-                entity.User.Employee = entity;
-                user = entity.User;
+
+                var password = PasswordGeneratorHelper.GenerateRandomPassword();
+                var user = new User();
+                if ((Roles)request.Role == Roles.TouristGuide || (Roles)request.Role == Roles.Coordinator)
+                {
+                    var entity = this.mapper.Map<Employee>(request);
+                    entity.User.Employee = entity;
+                    user = entity.User;
+
+                }
+
+                if ((Roles)request.Role == Roles.Client)
+                {
+                    var entity = this.mapper.Map<Client>(request);
+                    entity.User.Client = entity;
+                    user = entity.User;
+                }
+
+                var result = await this.userManager.CreateAsync(user, password);
+
+                if (!result.Succeeded) {
+                    throw new DuplicateNameException(result.Errors.ToString());
+                }
+                var role = (Roles)request.Role;
+                await this.userManager.AddToRoleAsync(user, role.ToString());
+
+                await emailService.SendEmailAsync(request.Email,
+                    "Korisnički račun platforme ITer",
+                    "<p>Obavještavamo Vas da je korisnički račun za pristup ITer platformi kreiran. Kako bismo vam omogućili korištenje naše platforme, u nastavku su navedeni vaši pristupni podaci:</p>" +
+                       $"<p style='margin-bottom:5px'>Email: <b>{request.Email}</b></p>" +
+                       $"<p style='margin-top:0px'>Lozinka: <b>{password}</b></p>" +
+                       "<p>Iz sigurnosnih razloga, molimo Vas da prilikom prve prijave promijenite ovu privremenu lozinku. To možete učiniti prateći upute u sekciji \"Postavke računa\" nakon što se prijavite.</p>");
 
             }
-
-            if ((Roles)request.Role == Roles.Client)
+            catch (Exception ex)
             {
-                var entity = this.mapper.Map<Client>(request);
-                entity.User.Client = entity;
-                user = entity.User;
+                throw;
             }
-
-            await this.userManager.CreateAsync(user, password);
-            var role = (Roles)request.Role;
-            await this.userManager.AddToRoleAsync(user, role.ToString());
-            
-            await emailService.SendEmailAsync(request.Email, 
-                "Korisnički račun platforme ITer", 
-                "<p>Obavještavamo Vas da je korisnički račun za pristup ITer platformi kreiran. Kako bismo vam omogućili korištenje naše platforme, u nastavku su navedeni vaši pristupni podaci:</p>" +
-                   $"<p style='margin-bottom:5px'>Email: <b>{request.Email}</b></p>" +
-                   $"<p style='margin-top:0px'>Lozinka: <b>{password}</b></p>" +
-                   "<p>Iz sigurnosnih razloga, molimo Vas da prilikom prve prijave promijenite ovu privremenu lozinku. To možete učiniti prateći upute u sekciji \"Postavke računa\" nakon što se prijavite.</p>");
         }
 
         public override async Task Update(Guid id, UserUpsertRequest request)
@@ -102,6 +119,60 @@ namespace Iter.Services
                  "<p>Iz sigurnosnih razloga, molimo Vas da prilikom prve prijave promijenite ovu privremenu lozinku. To možete učiniti prateći upute u sekciji \"Postavke računa\" nakon što se prijavite.</p>");
 
 
+        }
+
+        public async Task UpdateCurrentUser(CurrentUserUpsertRequest request)
+        {
+            var currentUser = await this.userAuthenticationService.GetCurrentUserAsync();
+            var user = await this.userRepository.GetById(new Guid(currentUser.Id));
+            if ((Roles)user.Role == Roles.TouristGuide || (Roles)user.Role == Roles.Coordinator)
+            {
+                var employee = user.Employee;
+                this.mapper.Map(request, employee);
+                employee.User.Employee = employee;
+                user = employee.User;
+            }
+
+            if ((Roles)user.Role == Roles.Client)
+            {
+                var client = user.Client;
+                this.mapper.Map(request, client);
+                client.User.Client = client;
+                user = client.User;
+            }
+
+            //await this.userRepository.UpdateAsync(user);
+            await this.userManager.UpdateAsync(user);
+        }
+
+
+        public async Task<UserStatisticResponse> GetCurrentUserStatistic()
+        {
+            var currentUser = await this.userAuthenticationService.GetCurrentUserAsync();
+            if (currentUser.ClientId != null)
+            {
+                return await this.userRepository.GetCurrentUserStatistic(currentUser.Id);
+            }
+
+            if (currentUser.EmployeeId != null)
+            {
+                return await this.userRepository.GetCurrentEmployeeStatistic(currentUser.Id);
+            }
+
+            return null;
+        }
+
+        public async Task InsertClient(UserRegistrationDto userRegistration)
+        {
+            if (userRegistration == null)
+            {
+                return;
+            }
+
+            var user = await this.userManager.FindByEmailAsync(userRegistration.Email);
+            var client = this.mapper.Map<Client>(userRegistration);
+            client.User = user;
+            await this.userRepository.InsertClient(client);
         }
     }
 }

@@ -199,6 +199,8 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
                                           errorText: "Polje je obavezno"),
                                       FormBuilderValidators.numeric(
                                           errorText: "Unesite validan broj"),
+                                      FormBuilderValidators.max(500,
+                                          errorText: "Unesite validan broj"),
                                     ]),
                                   ),
                                 ),

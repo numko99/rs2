@@ -19,13 +19,7 @@ namespace Iter.Infrastrucure.Configurations
 
             builder.Property(a => a.BirthDate).IsRequired();
 
-            builder.Property(a => a.BirthPlace).HasMaxLength(30).IsRequired();
-
-            builder.HasOne(a => a.Address)
-                     .WithMany(a => a.Clients)
-                     .HasForeignKey(a => a.AddressId)
-                     .OnDelete(DeleteBehavior.NoAction)
-                     .HasConstraintName("FK_Client_Address");
+            builder.Property(a => a.ResidencePlace).HasMaxLength(30).IsRequired();
 
             builder
              .HasOne(e => e.User)

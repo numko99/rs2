@@ -2,11 +2,10 @@
 {
     public enum ReservationStatus
     {
-        OnHold = 1,
-        Canceled,
+        Pending = 1,
         Rejected,
-        PaidIncomplete,
-        Paid,
+        Cancelled,
+        Confirmed,
         Expired
     }
 }

@@ -1,20 +1,23 @@
 ﻿using AutoMapper;
 using Iter.Core;
 using Iter.Core.EntityModels;
+using Iter.Core.Models;
 using Iter.Core.Search_Models;
 using Iter.Repository.Interface;
 using Iter.Services.Interface;
 
 namespace Iter.Services
 {
-    public class ArrangementService : BaseCrudService<Arrangement, ArrangementUpsertRequest, ArrangementUpsertRequest, ArrangementResponse, ArrangmentSearchModel>, IArrangementService
+    public class ArrangementService : BaseCrudService<Arrangement, ArrangementUpsertRequest, ArrangementUpsertRequest, ArrangementResponse, ArrangmentSearchModel, ArrangementSearchResponse>, IArrangementService
     {
         private readonly IMapper _mapper;
         private readonly IArrangementRepository _arrangementRepository;
-        public ArrangementService(IArrangementRepository arrangementRepository, IMapper mapper) : base(arrangementRepository, mapper)
+        private readonly IUserAuthenticationService userAuthenticationService;
+        public ArrangementService(IArrangementRepository arrangementRepository, IMapper mapper, IUserAuthenticationService userAuthenticationService) : base(arrangementRepository, mapper)
         {
             _mapper = mapper;
             _arrangementRepository = arrangementRepository;
+            this.userAuthenticationService = userAuthenticationService;
         }
 
         public async Task ChangeStatus(Guid id, int status)
@@ -28,6 +31,13 @@ namespace Iter.Services
 
             arrangement.ArrangementStatusId = status;
             await _arrangementRepository.UpdateAsync(arrangement);
+        }
+
+        public override async Task<PagedResult<ArrangementSearchResponse>> Get(ArrangmentSearchModel searchObject)
+        {
+            var currentUser = await this.userAuthenticationService.GetCurrentUserAsync();
+            searchObject.CurrentUserId = currentUser.ClientId;
+            return await this._arrangementRepository.Get(searchObject);
         }
 
         public async Task<ArrangementPriceResponse> GetArrangementPriceAsync(Guid id)

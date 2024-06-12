@@ -16,17 +16,11 @@ namespace Iter.Infrastrucure.Configurations
 
             builder.Property(a => a.BirthDate).IsRequired();
 
-            builder.Property(a => a.BirthPlace).HasMaxLength(30).IsRequired();
+            builder.Property(a => a.ResidencePlace).HasMaxLength(30).IsRequired();
 
             builder.Property(a => a.FirstName).HasMaxLength(30).IsRequired();
 
             builder.Property(a => a.LastName).HasMaxLength(30).IsRequired();
-
-            builder.HasOne(a => a.Address)
-                     .WithMany(a => a.Employees)
-                     .HasForeignKey(a => a.AddressId)
-                     .OnDelete(DeleteBehavior.NoAction)
-                     .HasConstraintName("FK_Employee_Address");
 
             builder.HasOne(a => a.Agency)
                  .WithMany(a => a.Employees)

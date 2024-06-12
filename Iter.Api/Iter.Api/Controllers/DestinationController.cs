@@ -14,7 +14,7 @@ namespace Iter.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DestinationController : BaseCRUDController<Destination, DestinationUpsertRequest, DestinationUpsertRequest, DestinationResponse, AgencySearchModel>
+    public class DestinationController : BaseCRUDController<Destination, DestinationUpsertRequest, DestinationUpsertRequest, DestinationResponse, AgencySearchModel, DestinationResponse>
     {
         public DestinationController(IDestinationService destinationService) : base(destinationService)
         {

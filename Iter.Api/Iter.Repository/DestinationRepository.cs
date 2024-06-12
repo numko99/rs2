@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Iter.Repository
 {
-    public class DestinationRepository : BaseCrudRepository<Destination, DestinationUpsertRequest, DestinationUpsertRequest, DestinationResponse, AgencySearchModel>, IDestinationRepository
+    public class DestinationRepository : BaseCrudRepository<Destination, DestinationUpsertRequest, DestinationUpsertRequest, DestinationResponse, AgencySearchModel, DestinationResponse>, IDestinationRepository
     {
         public DestinationRepository(IterContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {

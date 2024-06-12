@@ -3,8 +3,18 @@ import 'dart:convert';
 import 'package:ui/models/user.dart';
 import 'base_provider.dart';
 
-class UserProvider extends BaseProvider<User> {
+class UserProvider extends BaseProvider<User, User> {
   UserProvider() : super("User");
+
+  @override
+  User fromJson(data) {
+    return User.fromJson(data);
+  }
+
+  @override
+  User fromJsonSearch(data) {
+    return User.fromJson(data);
+  }
 
   Future<User?> newPassword(var id) async {
     var url = Uri.parse("$baseUrl$endpoint/new-password/$id");
@@ -18,10 +28,5 @@ class UserProvider extends BaseProvider<User> {
     } else {
       return null;
     }
-  }
-
-  @override
-  User fromJson(data) {
-    return User.fromJson(data);
   }
 }

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:iter_mobile/enums/roles.dart';
+import 'package:iter_mobile/pages/employee_previous_arrangements.dart';
+import 'package:iter_mobile/pages/employee_home.dart';
 import 'package:iter_mobile/pages/home.dart';
+import 'package:iter_mobile/pages/my_arrangements.dart';
 import 'package:iter_mobile/pages/profile.dart';
-import 'package:iter_mobile/pages/search.dart';
+import 'package:iter_mobile/providers/auth_storage_provider.dart';
 
 class Layout extends StatefulWidget {
   const Layout({super.key});
@@ -10,20 +14,26 @@ class Layout extends StatefulWidget {
   State<Layout> createState() => _LayoutState();
 }
 
-
 class _LayoutState extends State<Layout> {
-  int _selectedIndex = 0; // Varijabla koja prati trenutno odabrani tab
+  int _selectedIndex = 0;
 
-  // Lista widgeta koji predstavljaju stranice za svaki tab
-  final List<Widget> _pages = [
-    HomePage(), // Stranica za prvi tab
-    SearchPage(), // Stranica za drugi tab
-    ProfilePage(), // Stranica za treći tab
+  final List<WidgetBuilder> _pages = [
+    (context) => HomePage(),
+    (context) => HomePage(),
+    (context) => const MyArrangementsPage(),
+    (context) => ProfilePage(),
+  ];
+
+    final List<WidgetBuilder> _employePages = [
+    (context) => const EmployeeHomePage(),
+    (context) => HomePage(),
+    (context) => const EmployeePreviousArrangementsPage(),
+    (context) => ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index; // Ažuriranje indeksa na temelju odabranog taba
+      _selectedIndex = index;
     });
   }
 
@@ -31,26 +41,35 @@ class _LayoutState extends State<Layout> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: _pages.elementAt(
-            _selectedIndex),
+        child:AuthStorageProvider.getAuthData()?["role"] == Roles.client
+              ? _pages.elementAt(_selectedIndex)(context)
+              : _employePages.elementAt(_selectedIndex)(context) ,
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Početna',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: 'Search',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt),
+            label: 'Putovanja',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Profile',
+            label: 'Profil',
           ),
         ],
         currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber, // Boja za odabrane stavke
+        unselectedItemColor: Colors.grey, // Boja za neodabrane stavke
+        backgroundColor: Colors.white, // Boja pozadine
         onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed, // Osigurava da je layout fiksiran
       ),
     );
   }

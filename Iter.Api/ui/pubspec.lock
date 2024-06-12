@@ -545,10 +545,10 @@ packages:
     dependency: "direct main"
     description:
       name: number_paginator
-      sha256: e9a21f876b09ad41db5fb994883f52ceb54c5b18f611bf6015495487eb7300b1
+      sha256: b87ff99e4f52d7ae91301adaaa311b0c3f45ec14e81fbcad13ab97b5683970d2
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.0"
+    version: "0.0.3"
   package_config:
     dependency: transitive
     description:

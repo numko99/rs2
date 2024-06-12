@@ -9,10 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Iter.Services.Interfaces;
 
 namespace Iter.Services
 {
-    public class AccommodationService : BaseCrudService<Accommodation, AccommodationUpsertRequest, AccommodationUpsertRequest, AccommodationResponse, AgencySearchModel>, IAccommodationService
+    public class AccommodationService : BaseCrudService<Accommodation, AccommodationUpsertRequest, AccommodationUpsertRequest, AccommodationResponse, AgencySearchModel, AccommodationResponse>, IAccommodationService
     {
         private readonly IAccommodationRepository accommodationRepository;
         private readonly IMapper mapper;

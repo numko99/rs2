@@ -2,7 +2,7 @@
 
 namespace Iter.Repository
 {
-    public interface IBaseCrudRepository<T, TInsert, TUpdate, TGet, TSearch> : IBaseReadRepository<T, TGet, TSearch> where TInsert : class where T : class where TGet : class where TSearch : BaseSearchModel
+    public interface IBaseCrudRepository<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> : IBaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> where TInsert : class where T : class where TGet : class where TSearchResponse : class where TSearchRequest : BaseSearchModel
     {
         Task AddAsync(T entity);
         

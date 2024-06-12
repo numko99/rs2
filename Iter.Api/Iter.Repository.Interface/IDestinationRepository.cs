@@ -4,7 +4,7 @@ using Iter.Core.Search_Models;
 
 namespace Iter.Repository.Interface
 {
-    public interface IDestinationRepository : IBaseCrudRepository<Destination, DestinationUpsertRequest, DestinationUpsertRequest, DestinationResponse, AgencySearchModel>
+    public interface IDestinationRepository : IBaseCrudRepository<Destination, DestinationUpsertRequest, DestinationUpsertRequest, DestinationResponse, AgencySearchModel, DestinationResponse>
     {
     }
 }

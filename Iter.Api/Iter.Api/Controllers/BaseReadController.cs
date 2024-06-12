@@ -7,10 +7,10 @@ namespace Iter.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class BaseReadController<T, TGet, TSearch> : ControllerBase where T : class where TGet : class
+    public class BaseReadController<T, TGet, TSearchRequest, TSearchResponse> : ControllerBase where T : class where TGet : class where TSearchResponse : class
     {
-        protected readonly IBaseReadService<T, TGet, TSearch> baseReadService;
-        public BaseReadController(IBaseReadService<T, TGet, TSearch> baseReadService)
+        protected readonly IBaseReadService<T, TGet, TSearchRequest, TSearchResponse> baseReadService;
+        public BaseReadController(IBaseReadService<T, TGet, TSearchRequest, TSearchResponse> baseReadService)
         {
             this.baseReadService = baseReadService;
         }
@@ -22,7 +22,7 @@ namespace Iter.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] TSearch searchModel)
+        public async Task<IActionResult> Get([FromQuery] TSearchRequest searchModel)
         {
             var agencies = await baseReadService.Get(searchModel);
 

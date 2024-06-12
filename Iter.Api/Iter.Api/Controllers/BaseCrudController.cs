@@ -1,16 +1,17 @@
 ﻿using Iter.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Iter.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BaseCRUDController<T, TInsert, TUpdate, TGet, TSearch> : BaseReadController<T, TGet, TSearch> where TInsert : class where T : class where TGet : class
+    public class BaseCRUDController<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> : BaseReadController<T, TGet, TSearchRequest, TSearchResponse> where TInsert : class where T : class where TGet : class where TSearchResponse : class
     {
-        private readonly IBaseCrudService<T, TInsert, TUpdate, TGet, TSearch> baseCrudService;
+        private readonly IBaseCrudService<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> baseCrudService;
 
-        public BaseCRUDController(IBaseCrudService<T, TInsert, TUpdate, TGet, TSearch> baseCrudService) : base(baseCrudService)
+        public BaseCRUDController(IBaseCrudService<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> baseCrudService) : base(baseCrudService)
         {
             this.baseCrudService = baseCrudService;
         }

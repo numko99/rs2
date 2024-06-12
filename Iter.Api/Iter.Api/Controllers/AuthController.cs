@@ -6,6 +6,8 @@ using Swashbuckle.AspNetCore.Annotations;
 using Iter.Services.Interface;
 using Iter.Services;
 using Iter.Core;
+using Iter.Core.Helper;
+using Iter.Core.Requests;
 
 namespace Iter.Api.Controllers
 {
@@ -15,13 +17,17 @@ namespace Iter.Api.Controllers
     {
         private readonly ILogger<AuthController> logger;
         private readonly IUserAuthenticationService userAuthenticationService;
-        public AuthController(ILogger<AuthController> logger, IUserAuthenticationService userAuthenticationService)
+        private readonly IUserService userService;
+        private readonly IAgencyService agencyService;
+        public AuthController(ILogger<AuthController> logger, IUserAuthenticationService userAuthenticationService, IUserService userService, IAgencyService agencyService)
         {
             this.logger = logger;
             this.userAuthenticationService = userAuthenticationService;
+            this.userService = userService;
+            this.agencyService = agencyService;
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         [SwaggerResponse(StatusCodes.Status201Created, "User has been succesfully created")]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Problem with data sent with the request")]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationDto userRegistration)
@@ -31,7 +37,9 @@ namespace Iter.Api.Controllers
             if (!userResult.Succeeded)
             {
                 this.logger.LogError("Failed to register user: {ErrorMessage}", userResult.Errors.ToString());
-                return this.BadRequest(userResult);
+
+                var statusCode = userResult.Errors.Any(x => x.Code == "DuplicateEmail") ? 409 : 400;
+                return this.StatusCode(statusCode, userResult);
             }
 
             this.logger.LogInformation("User registered successfully");
@@ -43,7 +51,8 @@ namespace Iter.Api.Controllers
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Problem with data sent with the request")]
         public async Task<IActionResult> Authenticate(UserLoginDto user)
         {
-            if (!await this.userAuthenticationService.ValidateUserAsync(user))
+            var result = await this.userAuthenticationService.ValidateUserAsync(user);
+            if (result == null)
             {
                 this.logger.LogWarning("User validation failed for username: {Username}", user.UserName);
                 return Unauthorized();
@@ -52,15 +61,84 @@ namespace Iter.Api.Controllers
             this.logger.LogInformation("User validated successfully");
 
             var token = await this.userAuthenticationService.CreateTokenAsync();
-
+            string agencyId = string.Empty;
             if (string.IsNullOrEmpty(token))
             {
                 return Unauthorized();
             }
 
+            if (result.EmployeeId != null)
+            {
+                var agency = await this.agencyService.GetByEmployeeId(result.EmployeeId.Value);
+
+                if (agency != null)
+                {
+                    agencyId = agency.Id.ToString();
+                }
+            }
+
             this.logger.LogInformation("Token created successfully");
 
-            return Ok(new LoginResponse() { Token = token });
+            return Ok(new LoginResponse() { Token = token, Role = result.Role, AgencyId = agencyId });
+        }
+
+        [HttpPost("verify-email-token")]
+        public async Task<IActionResult> VerifyEmailVerificationToken([FromBody] UserRegistrationDto userRegistration)
+        {
+            if (!await this.userAuthenticationService.IsValidVerificationToken(userRegistration?.Email, userRegistration?.Token))
+            {
+                this.logger.LogWarning("User verification failed for username: {email}, invalid token", userRegistration.Email);
+                return BadRequest();
+            }
+
+            await this.userService.InsertClient(userRegistration);
+
+            this.logger.LogInformation("User verification was successfully");
+
+
+            return Ok();
+        }
+
+        [HttpGet("send-forgot-password-token")]
+        public async Task<IActionResult> SendForgotPasswordVerificationToken([FromQuery] string email)
+        {
+            var user = await this.userAuthenticationService.GetUserByEmail(email);
+
+            if (user == null)
+            {
+                return this.NotFound();
+            }
+
+            await this.userAuthenticationService.CreateAndSendToken(user, EmailHelper.FORGOT_PASSWORD);
+
+            return Ok();
+        }
+
+        [HttpGet("verify-forgot-password-token")]
+        public async Task<IActionResult> VerifyForgotPasswordVerificationToken([FromQuery] string email,[FromQuery] string token)
+        {
+            if (!await this.userAuthenticationService.IsValidVerificationToken(email, token))
+            {
+                this.logger.LogWarning("Forgot password verification failed for username: {email}, invalid token", email);
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest userRegistration)
+        {
+            await this.userAuthenticationService.ResetPassword(userRegistration);
+            return Ok();
+        }
+
+
+        [HttpGet("resend-token")]
+        public async Task<IActionResult> ResendToken([FromQuery] string email)
+        {
+            await this.userAuthenticationService.ResendToken(email);
+            return Ok();
         }
     }
 }

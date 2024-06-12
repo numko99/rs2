@@ -2,7 +2,7 @@
 {
     public enum ArrangementStatus
     {
-        InPreparation = 1,
+        InPreparation = 0,
         AvailableForReservation,
         ReservationsClosed
     }

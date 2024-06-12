@@ -12,6 +12,8 @@ namespace Iter.Core
 
         public string? Description { get; set; }
 
+        public string? ShortDescription { get; set; }
+
         public List<ImageUpsertRequest> Images { get; set; }
 
         public ImageUpsertRequest? MainImage { get; set; }

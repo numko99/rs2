@@ -1,15 +1,20 @@
 import 'dart:convert';
 
 import 'package:ui/models/arrangement_price.dart';
+import 'package:ui/models/arrangement_search_response.dart';
 import 'package:ui/models/arrangment.dart';
 import 'base_provider.dart';
 
-class ArrangmentProvider extends BaseProvider<Arrangement> {
+class ArrangmentProvider extends BaseProvider<Arrangement, ArrangementSearchResponse> {
   ArrangmentProvider() : super("Arrangement");
 
   @override
   Arrangement fromJson(data) {
     return Arrangement.fromJson(data);
+  }
+  @override
+  ArrangementSearchResponse fromJsonSearch(data) {
+    return ArrangementSearchResponse.fromJson(data);
   }
 
   Future<ArrangementPrice> getArrangementPrice(var arrangementId) async {

@@ -7,10 +7,12 @@ using Iter.Core.EntityModels;
 using Iter.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Iter.Core.Responses;
+using Iter.Core.Enum;
 
 namespace Iter.Repository
 {
-    public class UserRepository : BaseCrudRepository<User, UserUpsertRequest, UserUpsertRequest, UserResponse, UserSearchModel>, IUserRepository
+    public class UserRepository : BaseCrudRepository<User, UserUpsertRequest, UserUpsertRequest, UserResponse, UserSearchModel, UserResponse>, IUserRepository
     {
         private readonly IterContext dbContext;
         private readonly IMapper mapper;
@@ -29,9 +31,6 @@ namespace Iter.Repository
         {
             var user = await dbContext.Users
            .Include(u => u.Client)
-           .ThenInclude(u => u.Address)
-           .Include(u => u.Employee)
-           .ThenInclude(u => u.Address)
            .Include(u => u.Employee)
            .ThenInclude(u => u.Agency)
            .Where(u => u.Id == id.ToString()).FirstOrDefaultAsync();
@@ -40,11 +39,11 @@ namespace Iter.Repository
         }
         public async override Task<PagedResult<UserResponse>> Get(UserSearchModel search)
         {
+            try
+            {
             var query = dbContext.Users
                 .Include(u => u.Client)
-                .ThenInclude(u => u.Address)
                 .Include(u => u.Employee)
-                .ThenInclude(u => u.Address)
                 .Include(u => u.Employee)
                 .ThenInclude(u => u.Agency)
                 .AsQueryable();
@@ -89,6 +88,12 @@ namespace Iter.Repository
 
             result.Result = userReponses;
             return result;
+            }
+            catch (Exception ex)
+            {
+                return null;
+                throw;
+            }
         }
 
         public async virtual Task DeleteAsync(User entity)
@@ -103,6 +108,41 @@ namespace Iter.Repository
                 entity.Client.IsDeleted = true;
             }
             this.dbContext.User.Update(entity);
+            await this.dbContext.SaveChangesAsync();
+        }
+
+        public async Task<UserStatisticResponse> GetCurrentUserStatistic(string id)
+        {
+            var user = await this.dbContext.User.Where(u => u.Id == id).Include(nameof(Client)).FirstOrDefaultAsync();
+            var reservationCount = await this.dbContext.Reservation.Where(r => r.ClientId == user.ClientId && r.ReservationStatusId != (int)Core.Enum.ReservationStatus.Cancelled).CountAsync();
+            var arrangementCount = await this.dbContext.Arrangement.Where(a => (a.StartDate < DateTime.Now) && a.Reservations.Any(x => x.ClientId == user.ClientId && x.ReservationStatusId == (int)Core.Enum.ReservationStatus.Confirmed)).CountAsync();
+            return new UserStatisticResponse()
+            {
+                ArrangementsCount = arrangementCount,
+                ReservationCount = reservationCount,
+                FirstName = user.Client.FirstName,
+                LastName = user.Client.LastName,
+            };
+        }
+
+        public async Task<UserStatisticResponse> GetCurrentEmployeeStatistic(string id)
+        {
+            var user = await this.dbContext.User.Where(u => u.Id == id).Include(nameof(Employee)).FirstOrDefaultAsync();
+            var arrangementsQuery = this.dbContext.EmployeeArrangment.Where(r => r.EmployeeId == user.EmployeeId && r.IsDeleted == false && r.Arrangement.StartDate < DateTime.Now).AsQueryable();
+            var count = arrangementsQuery.Count();
+            var avgRating = arrangementsQuery.Include(a => a.Arrangement).Select(x => x.Arrangement.Rating).Average();
+            return new UserStatisticResponse()
+            {
+                AvgRating = avgRating,
+                ArrangementsCount = arrangementsQuery.Count(),
+                FirstName = user.Employee.FirstName,
+                LastName = user.Employee.LastName,
+            };
+        }
+
+        public async Task InsertClient(Client client)
+        {
+            await this.dbContext.Client.AddAsync(client);
             await this.dbContext.SaveChangesAsync();
         }
     }

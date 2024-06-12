@@ -2,11 +2,11 @@
 
 namespace Iter.Services.Interfaces
 {
-    public interface IBaseReadService<T, TGet, TSearch> where TGet : class
+    public interface IBaseReadService<T, TGet, TSearchRequest, TSearchResponse> where TGet : class where TSearchResponse : class
     {
         Task<List<TGet>> GetAll();
 
-        Task<PagedResult<TGet>> Get(TSearch searchObject);
+        Task<PagedResult<TSearchResponse>> Get(TSearchRequest searchObject);
 
         Task<TGet> GetById(Guid id);
     }

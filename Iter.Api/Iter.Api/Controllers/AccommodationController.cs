@@ -9,7 +9,7 @@ namespace Iter.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccommodationController : BaseCRUDController<Accommodation, AccommodationUpsertRequest, AccommodationUpsertRequest, AccommodationResponse, AgencySearchModel>
+    public class AccommodationController : BaseCRUDController<Accommodation, AccommodationUpsertRequest, AccommodationUpsertRequest, AccommodationResponse, AgencySearchModel, AccommodationResponse>
     {
         public AccommodationController(IAccommodationService accommodationService) : base(accommodationService)
         {

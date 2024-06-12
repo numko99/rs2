@@ -7,7 +7,7 @@ using Iter.Services.Interface;
 
 namespace Iter.Services
 {
-    public class DestinationService : BaseCrudService<Destination, DestinationUpsertRequest, DestinationUpsertRequest, DestinationResponse, AgencySearchModel>, IDestinationService
+    public class DestinationService : BaseCrudService<Destination, DestinationUpsertRequest, DestinationUpsertRequest, DestinationResponse, AgencySearchModel, DestinationResponse>, IDestinationService
     {
         public DestinationService(IDestinationRepository destinationRepository, IMapper mapper) : base(destinationRepository, mapper)
         {

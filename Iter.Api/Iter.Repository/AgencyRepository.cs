@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Iter.Repository
 {
-    public class AgencyRepository : BaseCrudRepository<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel>, IAgencyRepository
+    public class AgencyRepository : BaseCrudRepository<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel, AgencyResponse>, IAgencyRepository
     {
         private readonly IterContext dbContext;
         private readonly IMapper mapper;
@@ -53,6 +53,11 @@ namespace Iter.Repository
         public async override Task<Agency?> GetById(Guid id)
         {
             return await this.dbContext.Agency.Include(a => a.Address).Include(a => a.Image).FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        public async Task<Agency?> GetByEmployeeId(Guid employeeId)
+        {
+            return await this.dbContext.Employee.Include(x => x.Agency).Where(e =>e.Id == employeeId).Select(a => a.Agency).FirstOrDefaultAsync();
         }
 
         public override async Task DeleteAsync(Agency entity)

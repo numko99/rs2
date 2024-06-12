@@ -7,11 +7,11 @@ namespace Iter.Core{    public class UserUpsertRequest    {
 
         public string? BirthDate { get; set; }
 
-        public string BirthPlace { get; set; }
+        public string ResidencePlace { get; set; }
 
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }
 
-        public AddressInsertRequest Address { get; set; }        public bool? IsActive { get; set; }        public int Role { get; set; }
+        public bool? IsActive { get; set; }        public int? Role { get; set; }
     }}

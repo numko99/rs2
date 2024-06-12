@@ -1,4 +1,5 @@
 ﻿using Iter.Core.EntityModels;
+using Iter.Core.EntityModelss;
 using Iter.Infrastrucure.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,8 @@ namespace Iter.Infrastrucure
 
         public virtual DbSet<Client> Client { get; set; }
 
+        public virtual DbSet<VerificationToken> VerificationToken { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -63,6 +66,7 @@ namespace Iter.Infrastrucure
             builder.ApplyConfiguration(new ImageConfiguration());
             builder.ApplyConfiguration(new EmployeeConfiguration());
             builder.ApplyConfiguration(new ClientConfiguration());
+            builder.ApplyConfiguration(new VerificationTokenConfiguration());
         }
     }
 }

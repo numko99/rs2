@@ -1,45 +1,76 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ui/enums/roles.dart';
+import 'package:ui/services/auth_storage_provider.dart';
 import 'package:ui/widgets/Layout/sidebarItem.dart';
 import 'package:ui/widgets/logo.dart';
 
-class Layout extends StatelessWidget {
+class Layout extends StatefulWidget {
+  const Layout({
+    super.key,
+    required this.body,
+    required this.name,
+    required this.icon,
+  });
+
   final Widget body;
   final String name;
   final IconData icon;
 
-  Layout({required this.body, required this.name, required this.icon});
+  @override
+  State<Layout> createState() => _LayoutState();
+}
+
+class _LayoutState extends State<Layout> {
+  Roles? role;
+  @override
+  void initState() {
+    super.initState();
+
+    role = AuthStorageProvider.getAuthData()?["role"];
+    
+    sidebarItems = sidebarItems.where((item) {
+      var roles = item['roles'] as List<Roles>?;
+      return roles?.contains(role) ?? false;
+    }).toList();
+  }
 
   var sidebarItems = [
     {
       'text': 'Početna',
       'icon': Icons.home,
       'link': '/home',
+      'roles': [Roles.admin]
     },
     {
       'text': 'Korisnici',
       'icon': Icons.beach_access_outlined,
       'link': '/users',
+      'roles': [Roles.admin, Roles.coordinator]
     },
     {
       'text': 'Agencije',
       'icon': Icons.business,
       'link': '/agency',
+      'roles': [Roles.admin]
     },
-        {
+    {
       'text': 'Aranžmani',
       'icon': Icons.beach_access_outlined,
       'link': '/arrangements',
+      'roles': [Roles.admin, Roles.coordinator]
     },
     {
       'text': 'Rezervacije',
       'icon': Icons.list_alt,
       'link': '/reservations',
+      'roles': [Roles.admin, Roles.coordinator]
     },
     {
       'text': 'Izvještaji',
       'icon': Icons.description,
       'link': '/reports',
+      'roles': [Roles.admin, Roles.coordinator]
     },
   ];
 
@@ -58,20 +89,20 @@ class Layout extends StatelessWidget {
           children: <Widget>[
             const SizedBox(height: 40),
             Container(
-              child:  Card(
+              child: Card(
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
                   child: Row(
                     children: [
                       Text(
-                        name,
+                        widget.name,
                         style: TextStyle(color: Colors.amber, fontSize: 30),
                       ),
                       Expanded(
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Icon(
-                            icon,
+                            widget.icon,
                             color: Colors.amber,
                             size: 70.0,
                           ),
@@ -83,7 +114,7 @@ class Layout extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Expanded(child: SingleChildScrollView(child: body))
+            Expanded(child: SingleChildScrollView(child: widget.body))
           ],
         ),
       ),

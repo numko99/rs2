@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Iter.Repository
 {
-    public class BaseCrudRepository<T, TInsert, TUpdate, TGet, TSearch> : BaseReadRepository<T, TGet, TSearch> where TInsert : class where T : class where TGet : class where TSearch : BaseSearchModel
+    public class BaseCrudRepository<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> : BaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> where TInsert : class where T : class where TGet : class where TSearchResponse : class where TSearchRequest : BaseSearchModel
     {
         private readonly IterContext dbContext;
         private readonly DbSet<T> dbSet;
@@ -19,8 +19,16 @@ namespace Iter.Repository
 
         public async virtual Task AddAsync(T entity)
         {
-            await dbSet.AddAsync(entity);
-            await dbContext.SaveChangesAsync();
+            try
+            {
+                await dbSet.AddAsync(entity);
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         public async virtual Task UpdateAsync(T entity)

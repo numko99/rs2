@@ -27,7 +27,7 @@ class _AgencyPageState extends State<AgencyPage> {
   bool displayLoader = true;
 
   int _currentPage = 1;
-  int pageSize = 3;
+  int pageSize = 10;
   TextEditingController searchController = TextEditingController();
 
   @override
@@ -209,16 +209,16 @@ class _AgencyPageState extends State<AgencyPage> {
                         child: Align(
                           alignment: Alignment.center,
                           child: Container(
-                            constraints: const BoxConstraints(maxWidth: 300),
+                            constraints: const BoxConstraints(maxWidth: 400),
                             child: Visibility(
                               visible: agencyCount != null && agencyCount! > pageSize,
-                              child: NumberPaginator( //TODO FIX NUMBER PAGINATOR
+                              child: NumberPaginator(
                                 initialPage: 0,
                                 numberPages:
                                     (((agencyCount == 0 || agencyCount == null)
                                                 ? 1
                                                 : agencyCount!) /
-                                            (pageSize ?? 1))
+                                            pageSize)
                                         .ceil(),
                                 onPageChange: (int index) {
                                   loadPage(index, pageSize);

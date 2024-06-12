@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ui/helpers/dateTime_helper.dart';
-import 'package:ui/models/reservation.dart';
+import 'package:ui/enums/reservation_status.dart';
+import 'package:ui/models/reservation_search_respose.dart';
 import 'package:ui/services/reservation_provider.dart';
 import 'package:ui/widgets/reservation_status.dart';
 
@@ -18,7 +18,7 @@ class ArrangementReservationsModalState
     extends State<ArrangementReservationsModal> {
   ReservationProvider? _reservationProvider;
   bool _displayLoader = true;
-  List<Reservation>? reservations;
+  List<ReservationSearchResponse>? reservations;
   @override
   void initState() {
     super.initState();
@@ -34,6 +34,8 @@ class ArrangementReservationsModalState
 
     var searchReservations = await _reservationProvider?.get({
       "arrangementId": widget.arrangementId,
+            "reservationStatusId":
+          (ReservationStatusEnum.confirmed.index + 1).toString(),
     });
 
     setState(() {
@@ -73,9 +75,9 @@ class ArrangementReservationsModalState
                           .map(
                             (reservation) => DataRow(
                               cells: [
-                                DataCell(Text(reservation.user!.firstName!)),
-                                DataCell(Text(reservation.user!.lastName!)),
-                                DataCell(reservationStatus(statusId: reservation.reservationStatusId, status: reservation.reservationStatusName))
+                                DataCell(Text(reservation.firstName)),
+                                DataCell(Text(reservation.lastName)),
+                                DataCell(ReservationStatus(statusId: reservation.reservationStatusId, status: reservation.reservationStatusName))
                               ],
                             ),
                           )

@@ -4,7 +4,8 @@ using Iter.Core.Search_Models;
 
 namespace Iter.Repository.Interface
 {
-    public interface IAgencyRepository : IBaseCrudRepository<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel>
+    public interface IAgencyRepository : IBaseCrudRepository<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel, AgencyResponse>
     {
+        Task<Agency?> GetByEmployeeId(Guid employeeId);
     }
 }

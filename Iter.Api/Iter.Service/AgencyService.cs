@@ -8,7 +8,7 @@ using Iter.Services.Interface;
 
 namespace Iter.Services
 {
-    public class AgencyService: BaseCrudService<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel>, IAgencyService
+    public class AgencyService: BaseCrudService<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel, AgencyResponse>, IAgencyService
     {
         private readonly IAgencyRepository agencyRepository;
         private readonly IMapper mapper;
@@ -29,6 +29,12 @@ namespace Iter.Services
             }
 
             await this.agencyRepository.UpdateAsync(agency);
+        }
+
+        public async Task<AgencyResponse?> GetByEmployeeId(Guid employeeId)
+        {
+            var agency = await this.agencyRepository.GetByEmployeeId(employeeId);
+            return this.mapper.Map<AgencyResponse>(agency);
         }
     }
 }

@@ -6,20 +6,20 @@ using Iter.Services.Interfaces;
 
 namespace Iter.Services
 {
-    public class BaseReadService<T, TGet, TSearch> : IBaseReadService<T, TGet, TSearch> where T : class where TGet : class where TSearch: BaseSearchModel
+    public class BaseReadService<T, TGet, TSearchRequest, TSearchResponse> : IBaseReadService<T, TGet, TSearchRequest, TSearchResponse> where T : class where TGet : class where TSearchResponse : class where TSearchRequest: BaseSearchModel
     {
-        protected readonly IBaseReadRepository<T, TGet, TSearch> baseReadRepository;
+        protected readonly IBaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> baseReadRepository;
         private readonly IMapper mapper;
 
 
-        public BaseReadService(IBaseReadRepository<T, TGet, TSearch> baseReadRepository, IMapper mapper)
+        public BaseReadService(IBaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> baseReadRepository, IMapper mapper)
         {
             this.baseReadRepository = baseReadRepository;
             this.mapper = mapper;
 
         }
 
-        public virtual async Task<PagedResult<TGet>> Get(TSearch searchObject)
+        public virtual async Task<PagedResult<TSearchResponse>> Get(TSearchRequest searchObject)
         {
             return await this.baseReadRepository.Get(searchObject);
         }

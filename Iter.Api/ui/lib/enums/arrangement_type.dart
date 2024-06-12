@@ -1,0 +1,4 @@
+enum ArrangementType {
+  multiDayTrip,
+  oneDayTrip,
+}

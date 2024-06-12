@@ -16,9 +16,5 @@
         public List<Accommodation> Accommodations { get; set; }
 
         public List<Agency> Agencies { get; set; }
-
-        public List<Employee> Employees { get; set; }
-
-        public List<Client> Clients { get; set; }
     }
 }

@@ -11,6 +11,7 @@ Arrangement _$ArrangementFromJson(Map<String, dynamic> json) => Arrangement(
       name: json['name'] as String,
       agency: Agency.fromJson(json['agency'] as Map<String, dynamic>),
       description: json['description'] as String,
+      shortDescription: json['shortDescription'] as String,
       startDate: DateTime.parse(json['startDate'] as String),
       endDate: json['endDate'] == null
           ? null
@@ -34,6 +35,7 @@ Map<String, dynamic> _$ArrangementToJson(Arrangement instance) =>
       'name': instance.name,
       'agency': instance.agency,
       'description': instance.description,
+      'shortDescription': instance.shortDescription,
       'startDate': instance.startDate.toIso8601String(),
       'endDate': instance.endDate?.toIso8601String(),
       'prices': instance.prices,

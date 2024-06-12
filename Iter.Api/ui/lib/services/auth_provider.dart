@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:ui/services/token_storage_provider.dart';
+import 'package:ui/services/auth_storage_provider.dart';
 import '../apiConfig.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -27,7 +27,11 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final String token = responseData['token'];
-        TokenStorageProvider.saveToken(token);
+        final int role = responseData['role'] as int;
+        final String? agencyId =
+            responseData['agencyId'] == "" ? null : responseData['agencyId'];
+        AuthStorageProvider.saveToken(token);
+        AuthStorageProvider.saveAuthData(role, agencyId);
 
         return true;
       } else {

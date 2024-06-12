@@ -12,15 +12,11 @@ namespace Iter.Core.EntityModels
 
         public DateTime BirthDate { get; set; }
 
-        public string BirthPlace { get; set; }
+        public string ResidencePlace { get; set; }
 
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }
-
-        public Guid AddressId { get; set; }
-
-        public Address Address { get; set; }
 
         public User? User { get; set; }
 
