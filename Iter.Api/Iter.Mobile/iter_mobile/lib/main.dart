@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:iter_mobile/helpers/http_overrides.dart';
 import 'package:iter_mobile/pages/login.dart';
 import 'package:iter_mobile/providers/arrangment_provider.dart';
@@ -13,6 +14,7 @@ import 'package:provider/provider.dart';
 
 void main() {
     HttpOverrides.global = MyHttpOverrides();
+    Stripe.publishableKey = 'pk_test_51PQwmlBosSiX3Jj5zh5WMM48KhAoi2jYvFrZp1RWL7KZq6rJMgVeMcO2XoVMTE3OB5HZT95ZSv8XFoHzBHxmDQ1B000kN7XgrH';
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => AuthProvider()),

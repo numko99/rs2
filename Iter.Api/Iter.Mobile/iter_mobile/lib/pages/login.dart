@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:iter_mobile/enums/roles.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
+import 'package:http/http.dart' as http;
 import 'package:iter_mobile/models/auth_request.dart';
 import 'package:iter_mobile/pages/forgot_password/forgot_password.dart';
 import 'package:iter_mobile/pages/sign_up/sign_up.dart';
@@ -35,6 +39,7 @@ class _LoginContainerState extends State<LoginContainer> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool displayLoader = false;
 
   bool displayInvalidLoginMsg = false;
     AuthProvider? _authProvider = null;
@@ -43,6 +48,9 @@ class _LoginContainerState extends State<LoginContainer> {
   void initState() {
     super.initState();
     _authProvider = context.read<AuthProvider>();
+
+    _usernameController.text = "adnan_numanovic@hotmail.com";
+    _passwordController.text = "Mostar_123";
   }
 
   Future<void> submit() async {
@@ -64,6 +72,71 @@ class _LoginContainerState extends State<LoginContainer> {
       setState(() {
         displayInvalidLoginMsg = true;
       });
+    }
+  }
+
+     showPaymentSheet() async {
+    setState(() {
+      displayLoader = true;
+    });
+    var paymentIntentData =
+        await createPaymentIntent((123*100).round().toString(), "BAM");
+    print("paymentIntentData['id']");
+    print(paymentIntentData['id']);
+    // reservationProvider!.SetTransactionId(paymentIntentData['id']);
+    await stripe.Stripe.instance
+        .initPaymentSheet(
+      paymentSheetParameters: stripe.SetupPaymentSheetParameters(
+        paymentIntentClientSecret: paymentIntentData['client_secret'],
+        merchantDisplayName: 'ITer',
+        appearance: const stripe.PaymentSheetAppearance(
+          primaryButton: stripe.PaymentSheetPrimaryButtonAppearance(
+              colors: stripe.PaymentSheetPrimaryButtonTheme(
+                  light: stripe.PaymentSheetPrimaryButtonThemeColors(
+                      background: Colors.cyan))),
+        ),
+      ),
+    )
+        .then((value) {
+      print(value);
+    }).onError((error, stackTrace) {
+      print(error);
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+                content: Text("Došlo je do greške"),
+              ));
+    });
+
+    try {
+      await stripe.Stripe.instance.presentPaymentSheet();
+      // await reservate();
+    } catch (e) {
+      //silent
+    }
+    setState(() {
+      displayLoader = false;
+    });
+  }
+
+  createPaymentIntent(String amount, String currency) async {
+    try {
+      Map<String, dynamic> body = {
+        'amount': amount,
+        'currency': currency,
+        'payment_method_types[]': 'card'
+      };
+      var response = await http.post(
+          Uri.parse('https://api.stripe.com/v1/payment_intents'),
+          body: body,
+          headers: {
+            'Authorization':
+                'Bearer sk_test_51PQwmlBosSiX3Jj5LSDOx1OhPtIEvx5nVNYOUvnHxFPF1pRskUols4f51eNGzYV1HCNKlQcLGdSYoMK343iOOeB3007ucSXi2z',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          });
+      return jsonDecode(response.body);
+    } catch (err) {
+      //silent
     }
   }
 

@@ -1,7 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:intl/intl.dart';
 import 'package:iter_mobile/enums/reservation_status.dart';
 import 'package:iter_mobile/models/reservation.dart';
@@ -75,7 +76,7 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
                           ),
                         ],
                       ),
-                    Card(
+                     Card(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -136,6 +137,63 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
         bottomNavigationBar: getBottomNavigationBar());
   }
 
+   showPaymentSheet() async {
+    setState(() { displayLoader = true; });
+    var paymentIntentData = await createPaymentIntent("17418", "BAM");
+    print("paymentIntentData['id']");
+    print(paymentIntentData['id']);
+    // reservationProvider!.SetTransactionId(paymentIntentData['id']);
+    await stripe.Stripe.instance
+        .initPaymentSheet(
+      paymentSheetParameters: stripe.SetupPaymentSheetParameters(
+        paymentIntentClientSecret: paymentIntentData['client_secret'],
+        merchantDisplayName: 'ITer',
+        appearance: const stripe.PaymentSheetAppearance(
+          primaryButton: stripe.PaymentSheetPrimaryButtonAppearance(
+              colors: stripe.PaymentSheetPrimaryButtonTheme(
+                  light: stripe.PaymentSheetPrimaryButtonThemeColors(
+                      background: Colors.cyan))),
+        ),
+      ),
+    )
+        .then((value) {print(value);})
+        .onError((error, stackTrace) {
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            content: Text("Došlo je do greške"),
+          ));
+    });
+
+    try {
+      await stripe.Stripe.instance.presentPaymentSheet();
+      // await reservate();
+    } catch (e) {
+      //silent
+    }
+    setState(() { displayLoader = false; });
+  }
+
+  createPaymentIntent(String amount, String currency) async {
+    try {
+      Map<String, dynamic> body = {
+        'amount': amount,
+        'currency': currency,
+        'payment_method_types[]': 'card'
+      };
+      var response = await http.post(
+          Uri.parse('https://api.stripe.com/v1/payment_intents'),
+          body: body,
+          headers: {
+            'Authorization': 'Bearer sk_test_51PQwmlBosSiX3Jj5LSDOx1OhPtIEvx5nVNYOUvnHxFPF1pRskUols4f51eNGzYV1HCNKlQcLGdSYoMK343iOOeB3007ucSXi2z',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          });
+      return jsonDecode(response.body);
+    } catch (err) {
+      //silent
+    }
+  }
+
   Widget? getBottomNavigationBar() {
     if (reservation!.reservationStatusId ==
         ReservationStatusEnum.pending.index + 1) {
@@ -146,7 +204,7 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
           children: [
             ElevatedButton(
               onPressed: () {
-                // openPaylap();
+                showPaymentSheet();
               },
               child: const Text('Izvrši plaćanje',
                   style: TextStyle(color: Colors.white)),
