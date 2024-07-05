@@ -20,7 +20,7 @@ namespace Iter.Api.Services.Report
             {   
                 case ReportType.UserPayment:
 
-                    reportPath = $"{_webHostEnvironment.WebRootPath}\\Reports\\UserPaymentsReport.rdlc";
+                    reportPath = GeneratePathForReport("UserPaymentsReport.rdlc");
 
                     if (!System.IO.File.Exists(reportPath))
                     {
@@ -29,7 +29,7 @@ namespace Iter.Api.Services.Report
                     break;
                 case ReportType.ArrangementEarnings:
 
-                    reportPath = $"{_webHostEnvironment.WebRootPath}\\Reports\\ArrangementEarning.rdlc";
+                    reportPath = GeneratePathForReport("ArrangementEarning.rdlc");
 
                     if (!System.IO.File.Exists(reportPath))
                     {
@@ -41,6 +41,27 @@ namespace Iter.Api.Services.Report
 
             }
             return reportPath;
+        }
+
+        public string GeneratePathForReport(string path)
+        {
+            // Ensure the web root path is set
+            if (string.IsNullOrWhiteSpace(_webHostEnvironment.WebRootPath))
+            {
+                _webHostEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            }
+
+            // Use Path.DirectorySeparatorChar to ensure cross-platform compatibility
+            string reportsFolder = "Reports" + Path.DirectorySeparatorChar;
+
+#if DEBUG
+            string reportPath = Path.Combine(_webHostEnvironment.ContentRootPath, "Iter.RdlcDesign", reportsFolder + path);
+            return reportPath.Replace("Iter.Api" + Path.DirectorySeparatorChar + "Iter.Api", "Iter.Api");
+#else
+    string reportPath = Path.Combine(_webHostEnvironment.WebRootPath, reportsFolder, path);
+    Console.WriteLine(reportPath);
+    return reportPath;
+#endif
         }
     }
 }

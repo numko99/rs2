@@ -19,7 +19,7 @@
         <DataProvider>System.Data.DataSet</DataProvider>
         <ConnectString>/* Local Connection */</ConnectString>
       </ConnectionProperties>
-      <rd:DataSourceID>2a7fa664-9592-4ad6-a01e-58effa682757</rd:DataSourceID>
+      <rd:DataSourceID>328a11db-c441-45cf-95b3-be906bf9e9aa</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
@@ -43,7 +43,27 @@
         <rd:TableAdapterName />
       </rd:DataSetInfo>
     </DataSet>
+    <DataSet Name="DataSet2">
+      <Query>
+        <DataSourceName>dataSet</DataSourceName>
+        <CommandText>/* Local Query */</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="Id">
+          <DataField>Id</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>dataSet</rd:DataSetName>
+        <rd:SchemaPath>C:\Projects\rs2\Iter.Api\Iter.RdlcDesign\datasets\dataSet.xsd</rd:SchemaPath>
+        <rd:TableName>Numko</rd:TableName>
+        <rd:TableAdapterFillMethod />
+        <rd:TableAdapterGetDataMethod />
+        <rd:TableAdapterName />
+      </rd:DataSetInfo>
+    </DataSet>
   </DataSets>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportID>1fe56ed4-dd2c-4aa4-84a4-1417b510fa5a</rd:ReportID>
+  <rd:ReportID>c0dfced7-5297-4ab5-b60d-a5a3757ed323</rd:ReportID>
 </Report>

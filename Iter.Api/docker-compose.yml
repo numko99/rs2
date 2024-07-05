@@ -35,11 +35,11 @@ services:
         RABBITMQ_USERNAME: guest
         RABBITMQ_PASSWORD: guest
     environment:
-      - EmailSettings__Host = smtp.office365.com
-      - EmailSettings__Port = 587
-      - EmailSettings__EnableSSL = true
-      - EmailSettings__UserName = admir_numanovic@hotmail.com
-      - EmailSettings__Password = Biosamnovembar_123
+      - EmailSettings__Host=smtp.office365.com
+      - EmailSettings__Port=587
+      - EmailSettings__EnableSSL=true
+      - EmailSettings__UserName=admir_numanovic@hotmail.com
+      - EmailSettings__Password=1234
     depends_on:
       - rabbitMQ
       - sql
@@ -57,12 +57,12 @@ services:
         RABBITMQ_USERNAME: guest
         RABBITMQ_PASSWORD: guest
     environment:
-      - ConnectionStrings:AppDatabase=Server=sql,1433;Database=iter_docker3;User=sa;Password=Iter123456;TrustServerCertificate=True;ConnectRetryCount=0
-      - EmailSettings__Host = smtp.office365.com
-      - EmailSettings__Port = 587
+      - ConnectionStrings:AppDatabase=Server=sql,1433;Database=iter_docker4;User=sa;Password=Iter123456;TrustServerCertificate=True;ConnectRetryCount=0
+ertificate=True;ConnectRetryCount=0
+ilSettings__Port = 587
       - EmailSettings__EnableSSL = true
       - EmailSettings__UserName = admir_numanovic@hotmail.com
-      - EmailSettings__Password = Biosamnovembar_123
+      - EmailSettings__Password = 1234
 
     ports:
       - 8080:80

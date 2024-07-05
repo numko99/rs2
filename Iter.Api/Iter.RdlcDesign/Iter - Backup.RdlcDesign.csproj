@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="Report1.rdlc" />
     <None Remove="Reports\ArrangementEarning.rdlc" />
+    <None Remove="Reports\OrdersReport.rdlc" />
     <None Remove="Reports\Report1.rdlc" />
     <None Remove="Reports\UserPaymentsReport.rdlc" />
   </ItemGroup>
@@ -18,17 +19,25 @@
   <ItemGroup>
     <Content Include="Reports\ArrangementEarning.rdlc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-    <Content Include="Reports\Report1.rdlc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Reports\OrdersReport.rdlc">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="Reports\UserPaymentsReport.rdlc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Report1.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Report1.rdlc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -38,17 +47,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Dataset.Designer.cs">
+    <Compile Update="datasets\dataSet.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Dataset.xsd</DependentUpon>
+      <DependentUpon>dataSet.xsd</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Dataset.xsd">
+    <None Update="datasets\dataSet.xsd">
       <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>Dataset.Designer.cs</LastGenOutput>
+      <LastGenOutput>dataSet.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
 
