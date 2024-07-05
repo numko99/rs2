@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iter_mobile/helpers/scaffold_messenger_helper.dart';
 import 'package:iter_mobile/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -36,12 +37,17 @@ void _submit() async {
     if (_formKey.currentState!.validate()) {
       try {
         await _userProvider?.updatePassword(_oldPasswordController.text, _newPasswordController.text);
+        ScaffoldMessengerHelper.showCustomSnackBar(
+            context: context,
+            message: "Uspješno ste promijenili lozinku",
+            backgroundColor: Colors.green);
+      } catch (e) {
+        _showErrorDialog('Trenutna lozinka nije ispravna.');
+      }
+      finally{
         if (mounted) {
           Navigator.of(context).pop(true);
         } 
-      } catch (e) {
-        _showErrorDialog('Trenutna lozinka nije ispravna.');
-
       }
     }
   }

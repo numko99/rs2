@@ -1,16 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/modals/arrangement_reservations_modal.dart';
 import 'package:ui/modals/arrangement_tourist_guide_edit.dart';
 import 'package:ui/models/arrangment.dart';
+import 'package:ui/models/employee_arrangement.dart';
+import 'package:ui/services/employee_arrangment_provider.dart';
 import 'package:ui/services/reservation_provider.dart';
 import 'package:ui/widgets/Layout/layout.dart';
-import 'package:ui/widgets/agency_details/arrangement_data_table.dart';
 import 'package:ui/widgets/image_slider.dart';
-import '../models/agency.dart';
 import '../services/arrangment_provider.dart';
 
 class ArrangementDetailsPage extends StatefulWidget {
@@ -25,18 +23,22 @@ class ArrangementDetailsPage extends StatefulWidget {
 class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
   ArrangmentProvider? _arrangementProvider;
   ReservationProvider? _reservationProvider;
+  EmployeeArrangmentProvider? _employeeArrangmentProvider;
+
 
   Arrangement? arrangement;
   String? reservationCount;
   bool displayLoader = true;
-
+  List<EmployeeArrangment> employees = [];
   @override
   void initState() {
     super.initState();
     _arrangementProvider = context.read<ArrangmentProvider>();
     _reservationProvider = context.read<ReservationProvider>();
+    _employeeArrangmentProvider = context.read<EmployeeArrangmentProvider>();
 
     initialLoad();
+    loadEmployees();
   }
 
   Future<void> initialLoad() async {
@@ -50,6 +52,17 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
       reservationCount = reservationCountTemp.toString();
       arrangement = searchArrangement;
       displayLoader = false;
+    });
+  }
+
+    Future<void> loadEmployees() async {
+
+    var selectedEmployees = await _employeeArrangmentProvider?.get({
+      "arrangementId": widget.id,
+    });
+
+    setState(() {
+      employees = selectedEmployees!.result;
     });
   }
 
@@ -164,23 +177,21 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                                     ),
                                   ),
                                 ),
-                                const Expanded(
-                                  child: Expanded(
-                                    child: Column(
-                                      children: [
-                                        Icon(
-                                          Icons.assignment_rounded,
-                                          color: Colors.amber,
-                                          size: 50.0,
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      const Icon(
+                                        Icons.assignment_rounded,
+                                        color: Colors.amber,
+                                        size: 50.0,
+                                      ),
+                                      Text(
+                                        arrangement!.shortDescription,
+                                        style: const TextStyle(
+                                          fontSize: 14.0,
                                         ),
-                                        Text(
-                                          "Obilazak Ohrida, krstarenje Ohridskim jezerom – biserom Balkana, Makedonska noć, obilazak Skoplja -rodni grad Majke Terezije, posjeta zemlji orlova i gradu Tirani.  Program putovanja nije obavezan, ali je osmišljen kako bi omogućio 100% odmor, zabavu i nezaboravnih iskustava. Spakujte svoj kofer, mi ćemo se pobrinuti za ostalo!",
-                                          style: TextStyle(
-                                            fontSize: 14.0,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 Expanded(
@@ -257,7 +268,7 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                           Container(
                             padding: const EdgeInsets.all(8.0),
                             width: double.infinity,
-                            child: const Column(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
@@ -265,26 +276,33 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                                   child: Text("Vodiči: ",
                                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                                 ),
-                                ListTile(
-                                  leading: Icon(Icons.person_outline,
-                                      color: Colors.amber),
-                                  title: Text("Admir Numanović"),
-                                ),
-                                ListTile(
-                                  leading: Icon(Icons.person_outline,
-                                      color: Colors.amber),
-                                  title: Text("Dalila Bajrić"),
-                                ),
+                                SizedBox(
+                                  height: 350  *
+                                            (employees.length /
+                                                7.5),
+                                  child:                                 ListView.builder(
+                                      itemCount: employees.length,
+                                      itemBuilder: (context, index) {
+                                        return ListTile(
+                                          leading: const Icon(
+                                              Icons.person_outline,
+                                              color: Colors.amber),
+                                          title: Text(
+                                              employees[index].employee!.name!),
+                                        );
+                                      }),
+                                )
                               ],
                             ),
                           ),
-                                                    Container(
+                          if (arrangement!.startDate.isAfter(DateTime.now()))
+                          Container(
                             width: double.infinity,
                             height: 35,
                             margin: const EdgeInsets.only(top: 8.0),
                             child: ElevatedButton(
-                              onPressed: () {
-                                showDialog(
+                              onPressed: () async{
+                                var result = await showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
                                     return ArrangementTouristGuideModal(
@@ -293,6 +311,10 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                                         dateTo: arrangement?.endDate);
                                   },
                                 );
+
+                                if (result == true) {
+                                  await loadEmployees();
+                                }
                               },
                               child: const Text(
                                 "Dodaj vodiče",
@@ -300,7 +322,7 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 3)
+                          const SizedBox(height: 3)
                         ],
                       ),
                     ),
@@ -336,26 +358,26 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                               ),
                             ),
                           ),
-                           Container(
-                            width: double.infinity,
-                            height: 35,
-                            margin: const EdgeInsets.only(top: 8.0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return ArrangementReservationsModal(
-                                        arrangementId: widget.id);
-                                  },
-                                );
-                              },
-                              child: const Text(
-                                "Preuzmi spisak putnika",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ),
+                          //  Container(
+                          //   width: double.infinity,
+                          //   height: 35,
+                          //   margin: const EdgeInsets.only(top: 8.0),
+                          //   child: ElevatedButton(
+                          //     onPressed: () {
+                          //       showDialog(
+                          //         context: context,
+                          //         builder: (BuildContext context) {
+                          //           return ArrangementReservationsModal(
+                          //               arrangementId: widget.id);
+                          //         },
+                          //       );
+                          //     },
+                          //     child: const Text(
+                          //       "Preuzmi spisak putnika",
+                          //       style: TextStyle(color: Colors.white),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       ),
                     )

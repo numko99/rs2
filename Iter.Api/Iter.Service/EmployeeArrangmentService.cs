@@ -27,8 +27,8 @@ namespace Iter.Services
 
         public async Task<List<DropdownModel>> GetAvailableEmployeeArrangmentsAsync(Guid arrangementId, string dateFrom, string? dateTo)
         {
-            var employes = await this._employeeArrangmentRepository.GetAvailableEmployeeArrangmentsAsync(arrangementId, DateTime.Parse(dateFrom), !string.IsNullOrEmpty(dateTo) ? DateTime.Parse(dateTo) : null);
-            return this.mapper.Map<List<DropdownModel>>(employes);
+            var employees = await this._employeeArrangmentRepository.GetAvailableEmployeeArrangmentsAsync(arrangementId, DateTime.Parse(dateFrom), !string.IsNullOrEmpty(dateTo) ? DateTime.Parse(dateTo) : null);
+            return this.mapper.Map<List<DropdownModel>>(employees);
         }
 
         public override async Task<PagedResult<EmployeeArrangmentResponse>> Get(EmployeeArrangementSearchModel searchObject)
@@ -52,7 +52,7 @@ namespace Iter.Services
                 employes.Add(employee);
             }
 
-            await this._employeeArrangmentRepository.AddRangeAsync(employes);
+            await this._employeeArrangmentRepository.AddRangeAsync(employes, new Guid(request.ArrangementId));
         }
     }
 }

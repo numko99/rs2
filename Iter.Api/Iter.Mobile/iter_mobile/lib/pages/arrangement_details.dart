@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iter_mobile/helpers/date_time_helper.dart';
+import 'package:iter_mobile/models/arrangement_search_response.dart';
 import 'package:iter_mobile/widgets/agency_card.dart';
+import 'package:iter_mobile/widgets/arrangement_recommendation_card.dart';
 import 'package:iter_mobile/widgets/destination_by_country_card.dart';
 import 'package:iter_mobile/widgets/expandable_text.dart';
 import 'package:iter_mobile/widgets/icon_text_chip.dart';
@@ -13,10 +18,10 @@ import 'package:iter_mobile/widgets/reservation_confirmation_dialog.dart';
 import 'package:provider/provider.dart';
 
 class ArrangementDetailsPage extends StatefulWidget {
-  const ArrangementDetailsPage({super.key, required this.id, this.isReserved});
+  ArrangementDetailsPage({super.key, required this.id, this.isReserved});
 
   final String id;
-  final bool? isReserved;
+  bool? isReserved;
 
   @override
   State<ArrangementDetailsPage> createState() => _ArrangementDetailsPageState();
@@ -25,6 +30,7 @@ class ArrangementDetailsPage extends StatefulWidget {
 class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
   ArrangmentProvider? _arrangementProvider;
   Arrangement? arrangement;
+  List<ArrangementSearchResponse> recommendedArrangements = [];
   bool displayLoader = true;
 
   @override
@@ -39,8 +45,11 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
       displayLoader = true;
     });
     var searchArrangement = await _arrangementProvider?.getById(widget.id);
+    var recommendedArrangementsTemp = await _arrangementProvider?.getRecommendedArrangements(widget.id);
+    print(recommendedArrangements);
     setState(() {
       arrangement = searchArrangement;
+      recommendedArrangements = recommendedArrangementsTemp ?? [];
       displayLoader = false;
     });
   }
@@ -152,17 +161,56 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                     ),
                   )),
                   Card(
+                      child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text("PREPORUČENI ARANŽMANI",
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[600])),
+                        ),
+                                  SizedBox(
+                          height: 220.0,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: recommendedArrangements.length,
+                            itemBuilder: (context, index) {
+                              final arrangement = recommendedArrangements[index];
+                              return SizedBox(
+                                width: 200.0,
+                                child: ArrangementRecommendationCard(arrangement: arrangement),
+                              );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  )),
+                  Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ElevatedButton(
-                        onPressed: () => widget.isReserved == true
-                         ? () => {}
-                         : showModalBottomSheet(
+                        onPressed: () async{
+                          if ( widget.isReserved == false){
+                          var result = await showModalBottomSheet(
                             context: context,
                             builder: (BuildContext bc) {
                               return ReservationConfirmationDialog(
                                   arrangementId: arrangement!.id);
-                            }),
+                            });
+
+                            if (result != null){
+                              widget.isReserved = result;
+                              initialLoad();
+                            }
+
+                          }
+                        },
                          style: ElevatedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 50),
                           backgroundColor: widget.isReserved == true

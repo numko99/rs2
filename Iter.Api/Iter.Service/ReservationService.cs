@@ -43,7 +43,7 @@ namespace Iter.Services
             return await this.baseReadRepository.Get(searchObject);
         }
 
-        public override async Task Insert(ReservationInsertRequest request)
+        public async override Task<ReservationResponse> Insert(ReservationInsertRequest request)
         {
             if (request.ClientId == null) { 
                 var currentUser = await this.authenticationService.GetCurrentUserAsync();
@@ -56,6 +56,8 @@ namespace Iter.Services
             entity.ReservationNumber = (++latestReservationNumber).ToString();
             entity.TotalPaid = 0;
             await this.reservationRepository.AddAsync(entity);
+
+            return this.mapper.Map<ReservationResponse>(entity);
         }
 
         public async Task AddReview(Guid reservationId, int? rating)
@@ -73,6 +75,21 @@ namespace Iter.Services
             }
 
             reservation.ReservationStatusId = (int)ReservationStatus.Cancelled;
+            await this.reservationRepository.UpdateAsync(reservation);
+        }
+
+        public async Task AddPayment(Guid reservationId, int totalPaid, string transactionId)
+        {
+            var reservation = await this.reservationRepository.GetById(reservationId);
+
+            if (reservation == null)
+            {
+                throw new NullReferenceException("No reservation found");
+            }
+
+            reservation.ReservationStatusId = (int)ReservationStatus.Confirmed;
+            reservation.TotalPaid = totalPaid;
+            reservation.TransactionId = transactionId;
             await this.reservationRepository.UpdateAsync(reservation);
         }
     }

@@ -1,45 +1,53 @@
 using Iter.Api.Infrastructure;
+using Iter.Infrastrucure;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
-builder.Services.ConfigureResponseCaching();
-
-// Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.ConfigureSwagger();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddAuthentication();
 builder.Services.ConfigureServices();
+builder.Services.ConfigureDb(builder.Configuration);
+builder.Services.ConfigureResponseCaching();
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.ConfigureSwagger();
 builder.Services.AddCustomOptions(builder.Configuration);
 
-builder.Services.ConfigureDb(builder.Configuration);
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("MyCorsPolicy", builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
-    });
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
 });
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+// Configure middleware
 
-}
-app.UseCors("MyCorsPolicy");
+app.UseDeveloperExceptionPage();
+app.UseSwagger();
+app.UseSwaggerUI();
+
+
+
+using var scope = app.Services.CreateScope();
+
+var ctx = scope.ServiceProvider.GetRequiredService<IterContext>();
+ctx.Initialize();
+
 
 app.UseStaticFiles();
-app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();

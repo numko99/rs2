@@ -159,6 +159,7 @@ class ReservationDataTableState extends State<ReservationDataTable> {
                   },
                 ),
               ),
+            ],
               const SizedBox(width: 20),
               Expanded(
                 flex: 1,
@@ -180,7 +181,6 @@ class ReservationDataTableState extends State<ReservationDataTable> {
                   },
                 ),
               ),
-            ],
             const SizedBox(width: 20),
             SearchButton(
               onSearch: search,
@@ -200,6 +200,7 @@ class ReservationDataTableState extends State<ReservationDataTable> {
                 Expanded(
                   child: DataTable(
                     columns: [
+                      if (widget.agencyId == null)
                       const DataColumn(
                           label: Text('Broj rezervacije',
                               style: TextStyle(fontWeight: FontWeight.bold))),
@@ -223,6 +224,7 @@ class ReservationDataTableState extends State<ReservationDataTable> {
                         .map(
                           (reservation) => DataRow(
                             cells: [
+                              if (widget.agencyId == null)
                               DataCell(Text(reservation.reservationNumber)),
                               if (widget.userId == null)
                               DataCell(Text("${reservation.firstName} ${reservation.lastName}")),

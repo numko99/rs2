@@ -14,20 +14,20 @@ namespace Iter.Infrastrucure.Configurations
 
             builder.HasKey(r => r.Id);
 
+            builder.HasOne(a => a.City)
+             .WithMany(a => a.Address)
+             .HasForeignKey(a => a.CityId)
+             .OnDelete(DeleteBehavior.NoAction)
+             .HasConstraintName("FK_Address_City");
+
             builder.Property(a => a.Street)
                      .HasMaxLength(100);
 
             builder.Property(a => a.HouseNumber)
                 .HasMaxLength(20);
 
-            builder.Property(a => a.City)
-                .HasMaxLength(50);
-
             builder.Property(a => a.PostalCode)
                 .HasMaxLength(20);
-
-            builder.Property(a => a.Country)
-                .HasMaxLength(50);
 
             builder.Property(a => a.CreatedAt).IsRequired();
 

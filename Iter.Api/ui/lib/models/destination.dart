@@ -7,6 +7,8 @@ part 'destination.g.dart';
 class Destination {
   String? id;
   String? city;
+  int? cityId;
+  int? countryId;
   String? country;
   DateTime? arrivalDate;
   DateTime? departureDate;
@@ -18,6 +20,8 @@ class Destination {
       this.id,
       this.city,
       this.country,
+      this.cityId,
+      this.countryId,
       this.arrivalDate,
       this.departureDate,
       this.isOneDayTrip,

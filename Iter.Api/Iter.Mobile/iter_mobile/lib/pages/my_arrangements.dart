@@ -50,8 +50,8 @@ class _MyArrangementsPageState extends State<MyArrangementsPage>
       }
 
       var filter = _tabController!.index == 0
-          ? {'returnActiveArrangements': true}
-          : {'returnActiveArrangements': false};
+          ? {'returnActiveReservations': true}
+          : {'returnActiveReservations': false};
       var searchReservation = await _reservationProvider?.get(filter);
 
       if (searchReservation != null) {
@@ -96,7 +96,7 @@ class _MyArrangementsPageState extends State<MyArrangementsPage>
               : ListView.builder(
             itemCount: reservations.length,
             itemBuilder: (context, index) {
-              return ReservationCard(reservation: reservations[index]);
+              return ReservationCard(reservation: reservations[index], onReturn: () => loadData(true),);
             },
           ),
           reservations.isEmpty
@@ -104,7 +104,7 @@ class _MyArrangementsPageState extends State<MyArrangementsPage>
               : ListView.builder(
             itemCount: reservations.length,
             itemBuilder: (context, index) {
-              return ReservationCard(reservation: reservations[index]);
+              return ReservationCard(reservation: reservations[index], onReturn: () => {});
             },
           ),
         ],

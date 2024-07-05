@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:iter_mobile/enums/reservation_status.dart';
+import 'package:iter_mobile/helpers/scaffold_messenger_helper.dart';
 import 'package:iter_mobile/models/reservation.dart';
 import 'package:iter_mobile/providers/reservation_provider.dart';
 import 'package:provider/provider.dart';
@@ -36,142 +37,63 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
     var reservationTemp =
         await reservationProvider!.getById(widget.reservationId);
 
-      setState(() {
-        reservation = reservationTemp;
-        displayLoader = false;
-      });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return displayLoader == true
-        ? const Center(child: CircularProgressIndicator())
-        : Scaffold(
-        body: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (reservation?.arrangement.images.isNotEmpty ?? false)
-                      Stack(
-                        children: [
-                          Image.memory(
-                            base64Decode(reservation!.arrangement.images
-                                .firstWhere(
-                                    (image) => image.isMainImage == true)
-                                .image),
-                            width: double.infinity,
-                            height: 150,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            top: MediaQuery.of(context).padding.top,
-                            left: 0,
-                            child: SafeArea(
-                              child: IconButton(
-                                icon: Icon(Icons.arrow_back,
-                                    color: Theme.of(context).primaryColor),
-                                onPressed: () => Navigator.of(context).pop(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                     Card(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Card(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(reservation!.arrangement.name,
-                                    style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.grey[600],
-                                      fontWeight: FontWeight.bold,
-                                    )),
-                                Text(reservation!.arrangement.agency.name,
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.grey[500],
-                                      fontWeight: FontWeight.bold,
-                                    )),
-                                const SizedBox(height: 15),
-                                ListTile(
-                                    leading: const Icon(Icons.calendar_month),
-                                    title: Text(
-                                        "${DateFormat('dd.MM.yyyy.').format(reservation!.arrangement.startDate)}${reservation!.arrangement.endDate != null ? " - ${DateFormat('dd.MM.yyyy').format(reservation!.arrangement.endDate!)}" : ""}")),
-                              ],
-                            ),
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.check_circle,
-                                color:
-                                    getColor(reservation!.reservationStatusId)),
-                            title: Text(reservation!.reservationStatusName),
-                            subtitle: const Text("Status rezervacije"),
-                          ),
-                          ListTile(
-                            leading: const Icon(Icons.place),
-                            title: Text(reservation!.departurePlace ?? "-"),
-                            subtitle: const Text("Mjesto polaska"),
-                          ),
-                          ListTile(
-                            leading: const Icon(Icons.hotel),
-                            title: Text(reservation!
-                                .arrangementPrice!.accommodationType!),
-                            subtitle: const Text("Tip smještaja"),
-                          ),
-                          ListTile(
-                            leading: const Icon(Icons.monetization_on),
-                            title: Text(
-                                "${reservation!.totalPaid.toInt()}/${reservation!.arrangementPrice?.price?.toInt() ?? 0} KM"),
-                            subtitle: const Text("Status uplate"),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-        bottomNavigationBar: getBottomNavigationBar());
-  }
-
-   showPaymentSheet() async {
-    setState(() { displayLoader = true; });
-    var paymentIntentData = await createPaymentIntent("17418", "BAM");
-    print("paymentIntentData['id']");
-    print(paymentIntentData['id']);
-    // reservationProvider!.SetTransactionId(paymentIntentData['id']);
-    await stripe.Stripe.instance
-        .initPaymentSheet(
-      paymentSheetParameters: stripe.SetupPaymentSheetParameters(
-        paymentIntentClientSecret: paymentIntentData['client_secret'],
-        merchantDisplayName: 'ITer',
-        appearance: const stripe.PaymentSheetAppearance(
-          primaryButton: stripe.PaymentSheetPrimaryButtonAppearance(
-              colors: stripe.PaymentSheetPrimaryButtonTheme(
-                  light: stripe.PaymentSheetPrimaryButtonThemeColors(
-                      background: Colors.cyan))),
-        ),
-      ),
-    )
-        .then((value) {print(value);})
-        .onError((error, stackTrace) {
-      showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            content: Text("Došlo je do greške"),
-          ));
+    setState(() {
+      reservation = reservationTemp;
+      displayLoader = false;
     });
+  }
 
+  showPaymentSheet() async {
+    setState(() {
+      displayLoader = true;
+    });
     try {
+      var paymentIntentData = await createPaymentIntent(
+          ((reservation!.arrangementPrice!.price)! * 100).round().toString(),
+          "BAM");
+      await reservationProvider!.addPayment(reservation!.id,
+          reservation!.arrangementPrice?.price, paymentIntentData['id']);
+      await stripe.Stripe.instance
+          .initPaymentSheet(
+        paymentSheetParameters: stripe.SetupPaymentSheetParameters(
+          paymentIntentClientSecret: paymentIntentData['client_secret'],
+          merchantDisplayName: 'ITer',
+          appearance: const stripe.PaymentSheetAppearance(
+            primaryButton: stripe.PaymentSheetPrimaryButtonAppearance(
+                colors: stripe.PaymentSheetPrimaryButtonTheme(
+                    light: stripe.PaymentSheetPrimaryButtonThemeColors(
+                        background: Colors.cyan))),
+          ),
+        ),
+      )
+          .then((value) {
+        print(value);
+      }).onError((error, stackTrace) {
+        print(error);
+        showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+                  content: Text("Došlo je do greške"),
+                ));
+      });
+
       await stripe.Stripe.instance.presentPaymentSheet();
-      // await reservate();
-    } catch (e) {
-      //silent
+      await reservationProvider!.addPayment(reservation!.id,
+          reservation!.arrangementPrice?.price, paymentIntentData['id']);
+      await loadData();
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Uspješno ste izvršili upratu",
+          backgroundColor: Colors.green);
+    } catch (error) {
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Došlo je do greške: ${error.toString()}",
+          backgroundColor: Colors.red);
     }
-    setState(() { displayLoader = false; });
+    setState(() {
+      displayLoader = false;
+    });
   }
 
   createPaymentIntent(String amount, String currency) async {
@@ -185,13 +107,108 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
           Uri.parse('https://api.stripe.com/v1/payment_intents'),
           body: body,
           headers: {
-            'Authorization': 'Bearer sk_test_51PQwmlBosSiX3Jj5LSDOx1OhPtIEvx5nVNYOUvnHxFPF1pRskUols4f51eNGzYV1HCNKlQcLGdSYoMK343iOOeB3007ucSXi2z',
+            'Authorization':
+                'Bearer sk_test_51PQwmlBosSiX3Jj5LSDOx1OhPtIEvx5nVNYOUvnHxFPF1pRskUols4f51eNGzYV1HCNKlQcLGdSYoMK343iOOeB3007ucSXi2z',
             'Content-Type': 'application/x-www-form-urlencoded'
           });
       return jsonDecode(response.body);
     } catch (err) {
       //silent
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return displayLoader == true
+        ? const Center(child: CircularProgressIndicator())
+        : Scaffold(
+            body: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (reservation?.arrangement!.images.isNotEmpty ?? false)
+                    Stack(
+                      children: [
+                        Image.memory(
+                          base64Decode(reservation!.arrangement!.images
+                              .firstWhere((image) => image.isMainImage == true)
+                              .image),
+                          width: double.infinity,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          top: MediaQuery.of(context).padding.top,
+                          left: 0,
+                          child: SafeArea(
+                            child: IconButton(
+                              icon: Icon(Icons.arrow_back,
+                                  color: Theme.of(context).primaryColor),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  Card(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Card(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(reservation!.arrangement!.name,
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.bold,
+                                  )),
+                              Text(reservation!.arrangement!.agency.name,
+                                  style: TextStyle(
+                                    fontSize: 14.0,
+                                    color: Colors.grey[500],
+                                    fontWeight: FontWeight.bold,
+                                  )),
+                              const SizedBox(height: 15),
+                              ListTile(
+                                  leading: const Icon(Icons.calendar_month),
+                                  title: Text(
+                                      "${DateFormat('dd.MM.yyyy.').format(reservation!.arrangement!.startDate)}${reservation!.arrangement!.endDate != null ? " - ${DateFormat('dd.MM.yyyy').format(reservation!.arrangement!.endDate!)}" : ""}")),
+                            ],
+                          ),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.check_circle,
+                              color:
+                                  getColor(reservation!.reservationStatusId!)),
+                          title: Text(reservation!.reservationStatusName!),
+                          subtitle: const Text("Status rezervacije"),
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.place),
+                          title: Text(reservation!.departurePlace ?? "-"),
+                          subtitle: const Text("Mjesto polaska"),
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.hotel),
+                          title: Text(reservation!
+                              .arrangementPrice!.accommodationType!),
+                          subtitle: const Text("Tip smještaja"),
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.monetization_on),
+                          title: Text(
+                              "${reservation!.totalPaid!.toInt()}/${reservation!.arrangementPrice?.price?.toInt() ?? 0} KM"),
+                          subtitle: const Text("Status uplate"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            bottomNavigationBar: getBottomNavigationBar());
   }
 
   Widget? getBottomNavigationBar() {
@@ -203,8 +220,8 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(
-              onPressed: () {
-                showPaymentSheet();
+              onPressed: () async {
+                await showPaymentSheet();
               },
               child: const Text('Izvrši plaćanje',
                   style: TextStyle(color: Colors.white)),
@@ -234,8 +251,27 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
                 );
 
                 if (confirm == true) {
-                  await reservationProvider!.cancelReservation(reservation!.id);
-                  await loadData();
+                  setState(() {
+                    displayLoader = true;
+                  });
+                  try {
+                    await reservationProvider!
+                        .cancelReservation(reservation!.id);
+                    await loadData();
+                    ScaffoldMessengerHelper.showCustomSnackBar(
+                        context: context,
+                        message: "Uspješno ste otkazali rezervaciju",
+                        backgroundColor: Colors.green);
+                  } catch (error) {
+                    ScaffoldMessengerHelper.showCustomSnackBar(
+                        context: context,
+                        message: "Došlo je do greške: ${error.toString()}",
+                        backgroundColor: Colors.red);
+                  } finally {
+                    setState(() {
+                      displayLoader = false;
+                    });
+                  }
                 }
               },
               child: const Text('Otkaži rezervaciju',
@@ -244,11 +280,11 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
           ],
         ),
       );
-    } else if (reservation!.reservationStatusId ==
-                ReservationStatusEnum.confirmed.index + 1 &&
-            (reservation!.arrangement.endDate == null &&
-                reservation!.arrangement.startDate.isBefore(DateTime.now())) ||
-        reservation!.arrangement.endDate!.isBefore(DateTime.now())) {
+    } else if ((reservation!.reservationStatusId ==
+            ReservationStatusEnum.confirmed.index + 1) &&
+        ((reservation!.arrangement!.endDate == null &&
+                reservation!.arrangement!.startDate.isBefore(DateTime.now())) ||
+            reservation!.arrangement!.endDate!.isBefore(DateTime.now()))) {
       return BottomAppBar(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -306,16 +342,28 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
             TextButton(
               child: Text('Otkaži'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(false);
               },
             ),
             TextButton(
               child: Text('Pošalji'),
               onPressed: () async {
-                await reservationProvider?.addReview(
-                    reservation!.id, rating.toInt());
-                await loadData();
-                Navigator.of(context).pop();
+                try {
+                  await reservationProvider?.addReview(
+                      reservation!.id, rating.toInt());
+                  await loadData();
+                  ScaffoldMessengerHelper.showCustomSnackBar(
+                      context: context,
+                      message: "Uspješno ste ostavili recenziju",
+                      backgroundColor: Colors.green);
+                } catch (error) {
+                  ScaffoldMessengerHelper.showCustomSnackBar(
+                      context: context,
+                      message: "Došlo je do greške: ${error.toString()}",
+                      backgroundColor: Colors.red);
+                } finally {
+                  Navigator.of(context).pop(true);
+                }
               },
             ),
           ],

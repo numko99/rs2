@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:intl/intl.dart';
+import 'package:iter_mobile/helpers/scaffold_messenger_helper.dart';
 import 'package:iter_mobile/models/user.dart';
 import 'package:iter_mobile/providers/user_provider.dart';
 import 'package:provider/provider.dart'; // Dodajte ovo za formatiranje datuma
@@ -214,9 +215,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
       'birthDate': _birthDateController.text,
     };
 
-    await _userProvider?.updateCurrentUser(request);
-    if (mounted) {
-      Navigator.of(context).pop(true);
+    try {
+      await _userProvider?.updateCurrentUser(request);
+       ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Uspješno ste uredili podatke",
+          backgroundColor: Colors.green);
+    } catch (error) {
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Došlo je do greške: ${error.toString()}",
+          backgroundColor: Colors.red);
+    } finally {
+      setState(() {
+        displayLoader = false;
+      });
+      if (mounted) {
+        Navigator.of(context).pop(true);
+      }
     }
   }
 }

@@ -171,9 +171,7 @@ class ArrangementTouristGuideModalState
                       ElevatedButton(
                         onPressed: () async {
                           try{
-
-                          
-                          _employeeArrangementProvider?.insert({
+                         await _employeeArrangementProvider?.insert({
                             "employeeIds":
                                 employeeeArangments.map((e) => e.id).toList(),
                             "arrangementId": widget.arrangementId
@@ -182,7 +180,7 @@ class ArrangementTouristGuideModalState
                                 context: context,
                                 message: "Vodiči uspješno dodani!",
                                 backgroundColor: Colors.green);
-                                Navigator.of(context).pop();
+                                Navigator.of(context).pop(true);
                           } catch (error) {
                             ScaffoldMessengerHelper.showCustomSnackBar(
                                 context: context,

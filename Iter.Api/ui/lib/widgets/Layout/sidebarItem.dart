@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ui/services/auth_storage_provider.dart';
 
 class SidebarItem extends StatelessWidget {
   final String text;
@@ -28,6 +29,10 @@ class SidebarItem extends StatelessWidget {
         // textAlign: TextAlign.center,
       ),
       onTap: () {
+        if (link == "/login") {
+          AuthStorageProvider.deleteToken();
+        }
+
         Navigator.pushReplacementNamed(context, link);
       },
     );

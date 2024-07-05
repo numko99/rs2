@@ -105,7 +105,7 @@ class ReservationDetailsModalState extends State<ReservationDetailsModal> {
                                 size: 40.0,
                               ),
                               Text(
-                                reservation!.arrangement.name,
+                                reservation!.arrangement!.name,
                                 style: const TextStyle(
                                   fontSize: 18.0,
                                 ),
@@ -127,7 +127,7 @@ class ReservationDetailsModalState extends State<ReservationDetailsModal> {
                                   color: Colors.amber),
                             ),
                             title: Text(
-                                reservation?.arrangement.agency.name ?? ""),
+                                reservation?.arrangement!.agency.name ?? ""),
                           ),
                         ),
                         Flexible(
@@ -163,7 +163,7 @@ class ReservationDetailsModalState extends State<ReservationDetailsModal> {
                               child: Icon(Icons.payment, color: Colors.amber),
                             ),
                             title: Text(
-                                "${reservation?.totalPaid.toInt()}/${reservation?.arrangementPrice!.price?.toInt()} KM"),
+                                "${reservation?.totalPaid!.toInt()}/${reservation?.arrangementPrice!.price?.toInt()} KM"),
                           ),
                         ),
                       ],

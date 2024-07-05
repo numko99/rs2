@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "902831388592",
+    "project_id": "iter-messages",
+    "storage_bucket": "iter-messages.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:902831388592:android:e9d0b4245ae185f0b58875",
+        "android_client_info": {
+          "package_name": "com.example.ui"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9r3eF5FN74uUCV4SwED-KUKJESiPxMrM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

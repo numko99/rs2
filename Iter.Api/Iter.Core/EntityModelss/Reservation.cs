@@ -26,6 +26,8 @@
 
         public decimal TotalPaid { get; set; }
 
+        public string? TransactionId { get; set; }
+
         public int Rating { get; set; }
     }
 }

@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
+import 'package:ui/enums/dropdown_types.dart';
 import 'package:ui/helpers/image_helper.dart';
 import 'package:ui/helpers/scaffold_messenger_helper.dart';
 import 'package:ui/models/address.dart';
 import 'package:ui/models/agency.dart';
+import 'package:ui/models/dropdown_model.dart';
 import 'package:ui/models/image_model.dart';
+import 'package:ui/services/dropdown_provider.dart';
 
 import '../../services/agency_provider.dart';
 
@@ -27,16 +30,37 @@ class InsertAgencyModal extends StatefulWidget {
 class _InsertAgencyModalState extends State<InsertAgencyModal> {
   final _formKey = GlobalKey<FormBuilderState>();
   Map<String, dynamic> _initialValue = {};
-
+  List<DropdownModel> cities = [];
+  DropdownProvider? _dropdownProvider;
   AgencyProvider? _agencyProvider;
   ImageModel? _logo;
-
+  String? selectedCity = "";
   @override
   void initState() {
     super.initState();
     _agencyProvider = context.read<AgencyProvider>();
+    _dropdownProvider = context.read<DropdownProvider>();
 
     initialLoad();
+    loadCities();
+  }
+
+  Future<void> loadCities() async {
+    var cityListResponse = await _dropdownProvider?.get({
+      "dropdownType": DropdownTypes.cities.index.toString(),
+      "countryId": 1  // Bosnia
+    });
+
+    if (cityListResponse != null) {
+      List<DropdownModel> cityList = [
+        DropdownModel(id: "", name: "Izaberite grad"),
+        ...cityListResponse.result
+      ];
+
+      setState(() {
+        cities = cityList;
+      });
+    }
   }
 
   @override
@@ -144,33 +168,35 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
                       ),
                     ),
                     const SizedBox(width: 60),
-                    Expanded(
-                      child: FormBuilderTextField(
-                        name: 'city',
-                        decoration: const InputDecoration(labelText: 'Grad'),
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(
-                              errorText: "Polje je obavezno"),
-                          FormBuilderValidators.maxLength(30,
-                              errorText: "Neispravan unos"),
-                        ]),
-                      ),
-                    )
+                    Spacer()
                   ],
                 ),
                 const SizedBox(height: 10),
                 Row(
                   children: [
                     Expanded(
-                      child: FormBuilderTextField(
-                        name: 'country',
-                        decoration: const InputDecoration(labelText: 'Država'),
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(
-                              errorText: "Polje je obavezno"),
-                          FormBuilderValidators.maxLength(30,
-                              errorText: "Neispravan unos"),
-                        ]),
+                      child: DropdownButtonFormField<dynamic>(
+                        decoration: const InputDecoration(
+                          labelText: 'Izaberite grad',
+                        ),
+                        value: selectedCity,
+                        items: cities.map((DropdownModel item) {
+                          return DropdownMenuItem<dynamic>(
+                            value: item.id,
+                            child: Text(item.name ?? ""),
+                          );
+                        }).toList(),
+                        onChanged: (value) async {
+                          setState(() {
+                            selectedCity = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Polje je obavezno';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                     const SizedBox(width: 60),
@@ -315,7 +341,7 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
       request["logo"] = _logo?.toJson();
 
       request["address"] = Address(
-        city: request["city"],
+        cityId: selectedCity,
         country: request["country"],
         postalCode: request["postalCode"],
         street: request["street"],
@@ -351,10 +377,10 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
         "licenseNumber": widget.agency?.licenseNumber,
         "street": widget.agency?.address?.street,
         "houseNumber": widget.agency?.address?.houseNumber,
-        "city": widget.agency?.address?.city,
         "postalCode": widget.agency?.address?.postalCode,
-        "country": widget.agency?.address?.country,
       };
+
+      selectedCity = widget.agency!.address!.cityId;
       if (widget.agency?.logo != null) {
         _logo = widget.agency?.logo;
       }

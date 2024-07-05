@@ -123,7 +123,7 @@ class _AgencyPageState extends State<AgencyPage> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                             DataColumn(
-                                label: Text('Kontakt telefon',
+                                label: Text('Telefon',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                             DataColumn(label: Text('')),

@@ -15,6 +15,7 @@ class ArrangementSearchResponse {
   String? arrangementStatusName;
   ImageModel? mainImage;
   bool? isReserved;
+  double? rating;
 
   ArrangementSearchResponse({
     required this.id,
@@ -26,7 +27,8 @@ class ArrangementSearchResponse {
     this.arrangementStatusId,
     this.arrangementStatusName,
     this.mainImage,
-    this.isReserved
+    this.isReserved,
+    this.rating
   });
 
   factory ArrangementSearchResponse.fromJson(Map<String, dynamic> json) =>

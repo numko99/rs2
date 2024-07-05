@@ -21,6 +21,7 @@ ArrangementSearchResponse _$ArrangementSearchResponseFromJson(
       arrangementStatusName: json['arrangementStatusName'] as String?,
       mainImage: ImageModel.fromJson(json['mainImage'] as Map<String, dynamic>),
       isReserved: json['isReserved'] as bool,
+      minPrice: (json['minPrice'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$ArrangementSearchResponseToJson(
@@ -36,4 +37,5 @@ Map<String, dynamic> _$ArrangementSearchResponseToJson(
       'arrangementStatusName': instance.arrangementStatusName,
       'mainImage': instance.mainImage,
       'isReserved': instance.isReserved,
+      'minPrice': instance.minPrice,
     };

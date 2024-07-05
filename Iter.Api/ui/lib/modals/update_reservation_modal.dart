@@ -58,7 +58,7 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
 
     var arrangementPricesTemp = await _dropdownProvider!.get({
       "dropdownType": DropdownTypes.accomodationTypes.index,
-      "arrangementId": reservationTemp?.arrangement.id
+      "arrangementId": reservationTemp?.arrangement!.id
     });
     arrangementPricesTemp.result
         .insert(0, DropdownModel(id: null, name: "Nije odabrano"));

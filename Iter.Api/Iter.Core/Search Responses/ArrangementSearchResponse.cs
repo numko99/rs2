@@ -21,5 +21,9 @@
         public ImageResponse? MainImage { get; set; }
 
         public bool IsReserved { get; set; }
+
+        public decimal Rating { get; set; }
+
+        public decimal MinPrice { get; set; }
     }
 }

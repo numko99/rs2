@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iter_mobile/enums/roles.dart';
+import 'package:iter_mobile/pages/chat_page.dart';
 import 'package:iter_mobile/pages/employee_previous_arrangements.dart';
 import 'package:iter_mobile/pages/employee_home.dart';
 import 'package:iter_mobile/pages/home.dart';
@@ -19,14 +20,14 @@ class _LayoutState extends State<Layout> {
 
   final List<WidgetBuilder> _pages = [
     (context) => HomePage(),
-    (context) => HomePage(),
+    (context) => ChatPage(),
     (context) => const MyArrangementsPage(),
     (context) => ProfilePage(),
   ];
 
     final List<WidgetBuilder> _employePages = [
     (context) => const EmployeeHomePage(),
-    (context) => HomePage(),
+    (context) => ChatPage(),
     (context) => const EmployeePreviousArrangementsPage(),
     (context) => ProfilePage(),
   ];
@@ -52,8 +53,8 @@ class _LayoutState extends State<Layout> {
             label: 'Početna',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
+            icon: Icon(Icons.message),
+            label: 'Poruke',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list_alt),

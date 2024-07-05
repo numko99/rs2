@@ -7,8 +7,8 @@ namespace Iter.Repository.Interface
 {
     public interface IEmployeeArrangmentRepository : IBaseCrudRepository<EmployeeArrangment, EmployeeArrangmentUpsertRequest, EmployeeArrangmentUpsertRequest, EmployeeArrangmentResponse, EmployeeArrangementSearchModel, EmployeeArrangmentResponse>
     {
-        Task<List<Employee>> GetAvailableEmployeeArrangmentsAsync(Guid arrangementId, DateTime dateFrom, DateTime? dateTo);
+        Task<List<Employee>?> GetAvailableEmployeeArrangmentsAsync(Guid arrangementId, DateTime dateFrom, DateTime? dateTo);
 
-        Task AddRangeAsync(List<EmployeeArrangment> employeeArrangments);
+        Task AddRangeAsync(List<EmployeeArrangment> employeeArrangments, Guid arrangementId);
     }
 }

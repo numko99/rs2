@@ -13,8 +13,6 @@ import 'package:ui/models/destination.dart';
 import 'package:ui/models/destinatios_form_controllers.dart';
 import 'package:ui/models/image_model.dart';
 import 'package:ui/services/arrangment_provider.dart';
-import 'package:ui/services/auth_provider.dart';
-import 'package:ui/services/auth_storage_provider.dart';
 import 'package:ui/widgets/Layout/layout.dart';
 import 'package:ui/widgets/arrangement_add_edit/basic_data_form.dart';
 import 'package:ui/widgets/arrangement_add_edit/description_images_form.dart';
@@ -283,7 +281,7 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
                         destinationsFormControllers.streetControllers[i].text,
                     houseNumber: destinationsFormControllers
                         .houseNumberControllers[i].text,
-                    city: destinationsFormControllers.cityControllers[i].text,
+                    cityId: destinationsFormControllers.destinationControllers[i].text,
                     postalCode: destinationsFormControllers
                         .postalCodeControllers[i].text,
                     country:
@@ -372,9 +370,9 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
       destinationsFormControllers.addDestination();
       destinationsFormControllers.idControllers[i].text = destinations[i].id!;
       destinationsFormControllers.destinationControllers[i].text =
-          destinations[i].city!;
+          destinations[i].cityId.toString()!;
       destinationsFormControllers.countryControllers[i].text =
-          destinations[i].country!;
+          destinations[i].countryId.toString()!;
       if (destinations[i].arrivalDate != null) {
         String formattedDate =
             DateFormat('dd-MM-yyyy HH:mm').format(destinations[i].arrivalDate!);
@@ -410,12 +408,8 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
             destinations[i].accommodation!.hotelAddress!.street!;
         destinationsFormControllers.houseNumberControllers[i].text =
             destinations[i].accommodation!.hotelAddress!.houseNumber!;
-        destinationsFormControllers.cityControllers[i].text =
-            destinations[i].accommodation!.hotelAddress!.city!;
         destinationsFormControllers.postalCodeControllers[i].text =
             destinations[i].accommodation!.hotelAddress!.postalCode!;
-        destinationsFormControllers.countryControllers[i].text =
-            destinations[i].accommodation!.hotelAddress!.country!;
       }
     }
   }

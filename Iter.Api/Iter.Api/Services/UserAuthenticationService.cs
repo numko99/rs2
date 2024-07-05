@@ -282,24 +282,31 @@ namespace Iter.Services
 
             if (type == EmailHelper.EMAIL_VERIFICATION)
             {
-                await emailService.SendEmailAsync(user.Email,
-                    "Verifikacija korisničkog računa",
-                    "<p>Hvala vam što ste se registrirali na našu aplikaciju. Kako bismo dovršili vašu registraciju, potrebno je verificirati vašu e-mail adresu.</p>" +
-                    "<p>Molimo vas da unesete sljedeći verifikacijski kod u predviđeno polje na aplikaciji:</p>" +
-                    $"<p style='margin-top:0px'>Verifikacijski kod: <b>{code}</b></p>" +
-                    "<p>Ovaj kod je važeći 60 minuta od trenutka kada je poslan. Verifikacijom vaše e-mail adrese osiguravate sigurnost vašeg računa i omogućavate puni pristup svim funkcijama platforme.</p>");
+                await emailService.SendEmailAsync(
+                    new Core.Models.EmailMessage()
+                    {
+                        Email = user.Email,
+                        Subject = "Verifikacija korisničkog računa",
+                        Content = "<p>Hvala vam što ste se registrirali na našu aplikaciju. Kako bismo dovršili vašu registraciju, potrebno je verificirati vašu e-mail adresu.</p>" +
+                                    "<p>Molimo vas da unesete sljedeći verifikacijski kod u predviđeno polje na aplikaciji:</p>" +
+                                    $"<p style='margin-top:0px'>Verifikacijski kod: <b>{code}</b></p>" +
+                                    "<p>Ovaj kod je važeći 60 minuta od trenutka kada je poslan. Verifikacijom vaše e-mail adrese osiguravate sigurnost vašeg računa i omogućavate puni pristup svim funkcijama platforme.</p>"
+                    });
             }
+
 
             if (type == EmailHelper.FORGOT_PASSWORD)
             {
-                await emailService.SendEmailAsync(user.Email,
-                    "Reset lozinke",
-                    "<p>Primili smo zahtjev za resetiranje vaše lozinke na našoj platformi. Ukoliko niste zatražili promjenu lozinke, molimo vas da zanemarite ovu poruku.</p>" +
+                await emailService.SendEmailAsync(new Core.Models.EmailMessage()
+                {
+                    Email = user.Email,
+                    Subject = "Reset lozinke",
+                    Content = "<p>Primili smo zahtjev za resetiranje vaše lozinke na našoj platformi. Ukoliko niste zatražili promjenu lozinke, molimo vas da zanemarite ovu poruku.</p>" +
                     "<p>Ako želite resetirati lozinku, molimo vas da unesete sljedeći kod za verifikaciju na aplikaciji za resetiranje lozinke:</p>" +
                     $"<p style='margin-top:0px'>Verifikacijski kod: <b>{code}</b></p>" +
-                    "<p>Ovaj kod je važeći 60 minuta od trenutka kada je poslan. Upisom ovog koda na našoj web stranici moći ćete postaviti novu lozinku.</p>");
+                    "<p>Ovaj kod je važeći 60 minuta od trenutka kada je poslan. Upisom ovog koda na našoj web stranici moći ćete postaviti novu lozinku.</p>"
+                });
             }
-
         }
     }
 }

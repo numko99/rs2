@@ -15,6 +15,7 @@ using Iter.Repository;
 using Iter.Services;
 using Iter.Infrastrucure;
 using Iter.Api.Services.Report;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Iter.Api.Infrastructure
 {
@@ -60,6 +61,10 @@ namespace Iter.Api.Infrastructure
             services.AddScoped<IVerificationTokenRepository, VerificationTokenRepository>();
 
             services.AddTransient<IEmailService, EmailService>();
+
+            services.AddTransient<IRecommendationSystemService, RecommendationSystemService>();
+
+            services.AddScoped<IRabbitMQProducer, RabbitMQProducer>();
 
             services.AddSingleton(AutoMapperConfig.CreateMapping());
 
@@ -156,15 +161,15 @@ namespace Iter.Api.Infrastructure
             });
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) => 
-            Host.CreateDefaultBuilder(args).
-                ConfigureWebHostDefaults(webBuilder =>
-        {
-            webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
-            webBuilder.UseWebRoot("wwwroot");
-        });
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Program>()
+                              .UseUrls("https://0.0.0.0:44351", "http://0.0.0.0:5156");
+                });
 
-    public static IServiceCollection AddCustomOptions(
+        public static IServiceCollection AddCustomOptions(
                 this IServiceCollection services,
                 IConfiguration configuration)
         {
@@ -174,7 +179,9 @@ namespace Iter.Api.Infrastructure
                 .Configure<JwtConfiguration>(configuration.GetSection(nameof(ApplicationOptions.JwtConfiguration)))
                 .AddSingleton(x => x.GetRequiredService<IOptions<JwtConfiguration>>().Value)
                 .Configure<EmailSettings>(configuration.GetSection(nameof(ApplicationOptions.EmailSettings)))
-                .AddSingleton(x => x.GetRequiredService<IOptions<EmailSettings>>().Value);
+                .AddSingleton(x => x.GetRequiredService<IOptions<EmailSettings>>().Value)
+                .Configure<Core.Options.RabbitMqSettings>(configuration.GetSection(nameof(ApplicationOptions.RabbitMqSettings)))
+                .AddSingleton(x => x.GetRequiredService<IOptions<Core.Options.RabbitMqSettings>>().Value);
         }
     }
 }

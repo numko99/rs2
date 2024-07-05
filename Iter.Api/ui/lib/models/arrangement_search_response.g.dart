@@ -23,6 +23,7 @@ ArrangementSearchResponse _$ArrangementSearchResponseFromJson(
           ? null
           : ImageModel.fromJson(json['mainImage'] as Map<String, dynamic>),
       isReserved: json['isReserved'] as bool?,
+      rating: (json['rating'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$ArrangementSearchResponseToJson(
@@ -38,4 +39,5 @@ Map<String, dynamic> _$ArrangementSearchResponseToJson(
       'arrangementStatusName': instance.arrangementStatusName,
       'mainImage': instance.mainImage,
       'isReserved': instance.isReserved,
+      'rating': instance.rating,
     };

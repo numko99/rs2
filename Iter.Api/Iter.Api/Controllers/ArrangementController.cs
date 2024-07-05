@@ -11,14 +11,16 @@ namespace Iter.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = nameof(Roles.Client) + "," + nameof(Roles.Admin) + "," + nameof(Roles.Coordinator) + "," + nameof(Roles.TouristGuide))]
+    //[Authorize(Roles = nameof(Roles.Client) + "," + nameof(Roles.Admin) + "," + nameof(Roles.Coordinator) + "," + nameof(Roles.TouristGuide))]
 
     public class ArrangementController : BaseCRUDController<Arrangement, ArrangementUpsertRequest, ArrangementUpsertRequest, ArrangementResponse, ArrangmentSearchModel, ArrangementSearchResponse>
     {
         private readonly IArrangementService arrangementService;
-        public ArrangementController(IArrangementService arrangementService) : base(arrangementService)
+        private readonly IRecommendationSystemService recommendationSystemService;
+        public ArrangementController(IArrangementService arrangementService, IRecommendationSystemService recommendationSystemService) : base(arrangementService)
         {
             this.arrangementService = arrangementService;
+            this.recommendationSystemService = recommendationSystemService;
         }
 
         [HttpGet("arrangementPrice/{id}")]
@@ -32,6 +34,12 @@ namespace Iter.Api.Controllers
         {
             await this.arrangementService.ChangeStatus(new Guid(id), status);
             return Ok();
+        }
+
+        [HttpGet("recommendedArrangements/{id}")]
+        public virtual async Task<IActionResult> GetRecommendedArrangements(string id)
+        {
+            return Ok(await this.recommendationSystemService.RecommendArrangement(new Guid(id)));
         }
     }
 }

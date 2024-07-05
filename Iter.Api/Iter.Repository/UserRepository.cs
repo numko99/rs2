@@ -130,7 +130,7 @@ namespace Iter.Repository
             var user = await this.dbContext.User.Where(u => u.Id == id).Include(nameof(Employee)).FirstOrDefaultAsync();
             var arrangementsQuery = this.dbContext.EmployeeArrangment.Where(r => r.EmployeeId == user.EmployeeId && r.IsDeleted == false && r.Arrangement.StartDate < DateTime.Now).AsQueryable();
             var count = arrangementsQuery.Count();
-            var avgRating = arrangementsQuery.Include(a => a.Arrangement).Select(x => x.Arrangement.Rating).Average();
+            var avgRating = await arrangementsQuery.Include(a => a.Arrangement).Select(x => x.Arrangement.Rating).AverageAsync();
             return new UserStatisticResponse()
             {
                 AvgRating = avgRating,

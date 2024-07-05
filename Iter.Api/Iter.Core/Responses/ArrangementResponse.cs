@@ -12,6 +12,8 @@ namespace Iter.Core
 
         public List<ArrangementPriceResponse> Prices { get; set; }
 
+        public List<string> Employees { get; set; }
+
         public string? Description { get; set; }
 
         public string? ShortDescription { get; set; }
@@ -27,5 +29,7 @@ namespace Iter.Core
         public List<DestinationResponse> Destinations { get; set; }
 
         public DateTime? ModifiedAt { get; set; }
+
+        public decimal Rating{ get; set; }
 
     }}

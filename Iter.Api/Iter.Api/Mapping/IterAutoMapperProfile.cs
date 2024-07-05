@@ -48,10 +48,14 @@ namespace Iter.Api.Mapping
 
         private void CreateAddressMap()
         {
-            this.CreateMap<Address?, AddressResponse?>();
+            this.CreateMap<Address?, AddressResponse?>()
+                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City.Name))
+                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City.Name.ToString()))
+                 .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.City.Country.Name));
             this.CreateMap<AddressInsertRequest, Address>()
                  .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom((src, dest) => dest.Id == default ? DateTime.Now : dest.CreatedAt))
-                 .ForMember(dest => dest.ModifiedAt, opt => opt.MapFrom(src => DateTime.Now));
+                 .ForMember(dest => dest.ModifiedAt, opt => opt.MapFrom(src => DateTime.Now))
+                 .ForMember(dest => dest.CityId, opt => opt.MapFrom(src => int.Parse(src.CityId)));
         }
 
         private void CreateArrangementMap()
@@ -60,6 +64,7 @@ namespace Iter.Api.Mapping
                 .ForMember(dest => dest.Prices, opt => opt.MapFrom(src => src.ArrangementPrices))
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.ArrangementImages))
                 .ForMember(dest => dest.ArrangementStatusId, opt => opt.MapFrom(src => src.ArrangementStatusId))
+                .ForMember(dest => dest.Employees, opt => opt.MapFrom(src => src.EmployeeArrangments.Where(x => x.IsDeleted == false).Select(x => x.Employee.FirstName + " " + x.Employee.LastName)))
                 .ForMember(dest => dest.ArrangementStatusName, opt => opt.MapFrom(src => src.ArrangementStatus.Name));
             this.CreateMap<ArrangementUpsertRequest?, Arrangement?>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
@@ -111,8 +116,15 @@ namespace Iter.Api.Mapping
 
         private void CreateDestinationMap()
         {
-            this.CreateMap<Destination?, DestinationResponse?>();
+            this.CreateMap<Destination?, DestinationResponse?>()
+                .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City.Name))
+                .ForMember(dest => dest.CityId, opt => opt.MapFrom(src => src.CityId))
+                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.City.Country.Name))
+                .ForMember(dest => dest.CountryId, opt => opt.MapFrom(src => src.City.CountryId));
+
             this.CreateMap<DestinationUpsertRequest?, Destination?>()
+                .ForMember(dest => dest.CityId, opt => opt.MapFrom(src => int.Parse(src.City)))
+                .ForMember(dest => dest.City, opt => opt.Ignore())
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom((src, dest) => dest.Id == default ? DateTime.Now : dest.CreatedAt))
                 .ForMember(dest => dest.ModifiedAt, opt => opt.MapFrom(src => DateTime.Now));
@@ -125,6 +137,7 @@ namespace Iter.Api.Mapping
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.LastName : src.Client.LastName))
                 .ForMember(dest => dest.ResidencePlace, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.ResidencePlace : src.Client.ResidencePlace))
                 .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.BirthDate : src.Client.BirthDate))
+                .ForMember(dest => dest.ClientId, opt => opt.MapFrom(src => src.ClientId))
                 .ForMember(dest => dest.Agency, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.Agency : null));
             this.CreateMap<Client?, UserResponse?>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User != null ? src.User.Email : null))
@@ -213,6 +226,10 @@ namespace Iter.Api.Mapping
 
             this.CreateMap<Core.EntityModels.ReservationStatus, DropdownModel>();
             this.CreateMap<Agency, DropdownModel>();
+            this.CreateMap<Country, DropdownModel>()
+                    .ForMember(dest => dest.Id, opt => opt.MapFrom(src => int.Parse(src.Id.ToString())));
+            this.CreateMap<City, DropdownModel>()
+                    .ForMember(dest => dest.Id, opt => opt.MapFrom(src => int.Parse(src.Id.ToString())));
             this.CreateMap<Core.EntityModels.ArrangementStatus, DropdownModel>();
             this.CreateMap<ArrangementPrice, DropdownModel>()
                 .ForPath(dest => dest.Name, opt => opt.MapFrom(src => src.AccommodationType));

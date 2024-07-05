@@ -6,11 +6,11 @@
 
         public string HouseNumber { get; set; }
 
-        public string City { get; set; }
+        public int? CityId { get; set; }
+
+        public City? City { get; set; }
 
         public string PostalCode { get; set; }
-
-        public string Country { get; set; }
 
 
         public List<Accommodation> Accommodations { get; set; }

@@ -138,6 +138,9 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                   labelText: 'Naziv',
                 ),
                 onFieldSubmitted: (value) async {
+                  setState(() {
+                    _currentPage = 1;
+                  });
                   await search();
                 },
               ),
@@ -185,7 +188,7 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                       child: FormBuilderDateTimePicker(
                         name: 'endDate',
                         onChanged: (value) =>
-                            setState(() => dateTo = value), // Ispravljeno
+                            setState(() => dateTo = value),
                         decoration:
                             const InputDecoration(labelText: 'Datum do'),
                         inputType: InputType.date,
@@ -207,9 +210,13 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                       style: TextStyle(color: Colors.white))),
             const SizedBox(width: 20),
             SearchButton(
-              onSearch: search,
+              onSearch: () async{
+                setState(() {
+                  _currentPage = 1;
+                });
+                await search();
+              }
             ),
-            if (widget.agencyId == null) ...[const Spacer(), const Spacer()],
             if (currentUserAgencyId != null) const Spacer()
           ],
         ),

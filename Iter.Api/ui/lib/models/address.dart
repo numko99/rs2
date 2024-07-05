@@ -8,6 +8,7 @@ class Address {
   final String? street;
   final String? houseNumber;
   final String? city;
+  final String? cityId;
   final String? postalCode;
   final String? country;
 
@@ -15,9 +16,10 @@ class Address {
     this.id,
     required this.street,
     required this.houseNumber,
-    required this.city,
+    this.city,
+    required this.cityId,
     required this.postalCode,
-    required this.country,
+    this.country,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) => _$AddressFromJson(json);

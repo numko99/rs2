@@ -14,13 +14,13 @@ class Reservation {
   final String? reservationNumber;
   final String? departurePlace;
   final User? user;
-  final Arrangement arrangement;
+  final Arrangement? arrangement;
   final ArrangementPrice? arrangementPrice;
-  final int reservationStatusId;
-  final String reservationStatusName;
-  final double totalPaid;
-  final int rating;
-  final String reminder;
+  final int? reservationStatusId;
+  final String? reservationStatusName;
+  final double? totalPaid;
+  final int? rating;
+  final String? reminder;
 
   Reservation(
       {

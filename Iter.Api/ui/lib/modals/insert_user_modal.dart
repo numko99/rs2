@@ -185,6 +185,8 @@ class _InsertUserModalState extends State<InsertUserModal> {
                 if (AuthStorageProvider.getAuthData()?["role"] == Roles.admin)
                 Row(
                   children: [
+                    if (widget.user == null)
+                    ...[
                     Expanded(
                       child: DropdownButtonFormField<Roles?>(
                           decoration: const InputDecoration(
@@ -213,6 +215,7 @@ class _InsertUserModalState extends State<InsertUserModal> {
                           ),
                     ),
                     const SizedBox(width: 60),
+                    ],
                     if (selectedUserType == Roles.coordinator ||
                         selectedUserType == Roles.touristGuide)
                       Expanded(

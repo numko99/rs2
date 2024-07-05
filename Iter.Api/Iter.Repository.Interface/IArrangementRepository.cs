@@ -9,5 +9,10 @@ namespace Iter.Repository.Interface
         Task<ArrangementPrice> GetArrangementPriceAsync(Guid id);
 
         Task SmartUpdateAsync(Arrangement arrangement);
+
+        Task<List<ArrangementSearchResponse>> GetRecommendedArrangementsByDestinationNames(List<int> cities, Guid? clientId);
+
+        Task<List<Destination>> GetAllDestinations();
+
     }
 }

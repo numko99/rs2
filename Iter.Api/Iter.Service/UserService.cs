@@ -18,14 +18,14 @@ namespace Iter.Services
         private readonly IMapper mapper;
         private readonly IUserRepository userRepository;
         private readonly IUserAuthenticationService userAuthenticationService;
-        private readonly IEmailService emailService;
+        private readonly IRabbitMQProducer rabbitMQProducer;
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
-        public UserService(IUserRepository clientRepository, IMapper mapper, IUserRepository userRepository, IEmailService emailService, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IUserAuthenticationService userAuthenticationService) : base(clientRepository, mapper)
+        public UserService(IUserRepository clientRepository, IMapper mapper, IUserRepository userRepository, IRabbitMQProducer rabbitMQProducer, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IUserAuthenticationService userAuthenticationService) : base(clientRepository, mapper)
         {
             this.mapper = mapper;
             this.userRepository = userRepository;
-            this.emailService = emailService;
+            this.rabbitMQProducer = rabbitMQProducer;
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.userAuthenticationService = userAuthenticationService;
@@ -53,6 +53,8 @@ namespace Iter.Services
                     user = entity.User;
                 }
 
+                user.IsActive = true;
+                user.EmailConfirmed = true;
                 var result = await this.userManager.CreateAsync(user, password);
 
                 if (!result.Succeeded) {
@@ -61,13 +63,17 @@ namespace Iter.Services
                 var role = (Roles)request.Role;
                 await this.userManager.AddToRoleAsync(user, role.ToString());
 
-                await emailService.SendEmailAsync(request.Email,
-                    "Korisnički račun platforme ITer",
-                    "<p>Obavještavamo Vas da je korisnički račun za pristup ITer platformi kreiran. Kako bismo vam omogućili korištenje naše platforme, u nastavku su navedeni vaši pristupni podaci:</p>" +
+                var emailMessage = new Core.Models.EmailMessage()
+                {
+                    Email = request.Email,
+                    Subject = "Korisnički račun platforme ITer",
+                    Content = "<p>Obavještavamo Vas da je korisnički račun za pristup ITer platformi kreiran. Kako bismo vam omogućili korištenje naše platforme, u nastavku su navedeni vaši pristupni podaci:</p>" +
                        $"<p style='margin-bottom:5px'>Email: <b>{request.Email}</b></p>" +
                        $"<p style='margin-top:0px'>Lozinka: <b>{password}</b></p>" +
-                       "<p>Iz sigurnosnih razloga, molimo Vas da prilikom prve prijave promijenite ovu privremenu lozinku. To možete učiniti prateći upute u sekciji \"Postavke računa\" nakon što se prijavite.</p>");
+                       "<p>Iz sigurnosnih razloga, molimo Vas da prilikom prve prijave promijenite ovu privremenu lozinku. To možete učiniti prateći upute u sekciji \"Postavke računa\" nakon što se prijavite.</p>"
+                };
 
+                rabbitMQProducer.SendMessage(emailMessage);
             }
             catch (Exception ex)
             {
@@ -112,13 +118,16 @@ namespace Iter.Services
             var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
             await userManager.ResetPasswordAsync(user, resetToken, newPassword);
 
-            await emailService.SendEmailAsync(user.Email,
-              "Promjena lozinke",
-              "<p>Obavještavamo Vas da je za Vaš korisnički račun na platformi ITer generisana nova lozinka. Vaša ažurirana lozinka za platformi je sljedeća:</p>" +
+            var emailMessage = new Core.Models.EmailMessage()
+            {
+                Email = user.Email,
+                Subject = "Promjena lozinke",
+                Content = "<p>Obavještavamo Vas da je za Vaš korisnički račun na platformi ITer generisana nova lozinka. Vaša ažurirana lozinka za platformi je sljedeća:</p>" +
                  $"<p style='margin-top:0px'>Lozinka: <b>{newPassword}</b></p>" +
-                 "<p>Iz sigurnosnih razloga, molimo Vas da prilikom prve prijave promijenite ovu privremenu lozinku. To možete učiniti prateći upute u sekciji \"Postavke računa\" nakon što se prijavite.</p>");
+                 "<p>Iz sigurnosnih razloga, molimo Vas da prilikom prve prijave promijenite ovu privremenu lozinku. To možete učiniti prateći upute u sekciji \"Postavke računa\" nakon što se prijavite.</p>"
+            };
 
-
+            rabbitMQProducer.SendMessage(emailMessage);
         }
 
         public async Task UpdateCurrentUser(CurrentUserUpsertRequest request)

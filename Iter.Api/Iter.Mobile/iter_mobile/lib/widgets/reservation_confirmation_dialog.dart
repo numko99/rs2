@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iter_mobile/enums/dropdown_types.dart';
+import 'package:iter_mobile/helpers/scaffold_messenger_helper.dart';
 import 'package:iter_mobile/models/dropdown_model.dart';
+import 'package:iter_mobile/pages/reservation_details_page.dart';
 import 'package:iter_mobile/providers/dropdown_provider.dart';
 import 'package:iter_mobile/providers/reservation_provider.dart';
 import 'package:provider/provider.dart';
@@ -62,7 +64,7 @@ class _ReservationConfirmationDialogState
     });
   }
 
-  void submit() {
+  void submit() async {
     if (_formKey.currentState?.validate() == false) {
       return;
     }
@@ -76,9 +78,32 @@ class _ReservationConfirmationDialogState
     setState(() {
       _displayLoader = true;
     });
-    reservationProvider.insert(request);
 
-    Navigator.pop(context);
+    try {
+      var reservation = await reservationProvider.insert(request);
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Uspješno ste rezervisali aranzman",
+          backgroundColor: Colors.green);
+
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (context) =>
+                ReservationDetailsScreen(reservationId: reservation?.id)),
+      );
+    } catch (error) {
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Došlo je do greške: ${error.toString()}",
+          backgroundColor: Colors.red);
+    } finally {
+      setState(() {
+        _displayLoader = true;
+      });
+      if (mounted) {
+        Navigator.of(context).pop(true);
+      }
+    }
   }
 
   @override

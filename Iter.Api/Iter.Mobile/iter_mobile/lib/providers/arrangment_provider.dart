@@ -40,4 +40,18 @@ class ArrangmentProvider extends BaseProvider<Arrangement, ArrangementSearchResp
 
     await http!.put(url, headers: headers, body: jsonEncode(arrangementStatusId));
   }
+
+    Future<List<ArrangementSearchResponse>> getRecommendedArrangements(var arrangementId) async {
+    var url = Uri.parse("$baseUrl$endpoint/recommendedArrangements/$arrangementId");
+
+    Map<String, String>? headers = await createHeaders();
+
+    var response = await http!.get(url, headers: headers);
+    if (isValidResponseCode(response)) {
+      var data = jsonDecode(response.body);
+      return data.map((x) => fromJsonSearch(x)).cast<ArrangementSearchResponse>().toList();
+    } else {
+      throw Exception("Exception... handle this gracefully");
+    }
+  }
 }

@@ -1,0 +1,76 @@
+version: '3'
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Iter123456
+      - MSSQL_PID=Developer
+    ports:
+      - 1435:1433
+    networks:
+      - iternet
+
+  rabbitMQ:
+    image: rabbitmq:3-management
+    container_name: 'rabbitmqcontainer'
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - 5672:5672
+    expose:
+      - 5672
+    networks:
+      - iternet
+
+  rabbitmq-service:
+    build:
+      context: .
+      dockerfile: Iter.Subscriber\Dockerfile
+      args:
+        RABBITMQ_HOSTNAME: rabbitMQ
+        RABBITMQ_PORT: 5672
+        RABBITMQ_USERNAME: guest
+        RABBITMQ_PASSWORD: guest
+    environment:
+      - EmailSettings__Host = smtp.office365.com
+      - EmailSettings__Port = 587
+      - EmailSettings__EnableSSL = true
+      - EmailSettings__UserName = admir_numanovic@hotmail.com
+      - EmailSettings__Password = Biosamnovembar_123
+    depends_on:
+      - rabbitMQ
+      - sql
+    networks:
+      - iternet
+
+  api:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Iter.Api\Dockerfile
+      args:
+        RABBITMQ_HOSTNAME: rabbitMQ
+        RABBITMQ_PORT: 5672
+        RABBITMQ_USERNAME: guest
+        RABBITMQ_PASSWORD: guest
+    environment:
+      - ConnectionStrings:AppDatabase=Server=sql,1433;Database=iter_docker3;User=sa;Password=Iter123456;TrustServerCertificate=True;ConnectRetryCount=0
+      - EmailSettings__Host = smtp.office365.com
+      - EmailSettings__Port = 587
+      - EmailSettings__EnableSSL = true
+      - EmailSettings__UserName = admir_numanovic@hotmail.com
+      - EmailSettings__Password = Biosamnovembar_123
+
+    ports:
+      - 8080:80
+    networks:
+      - iternet      
+    depends_on:
+      - sql
+
+networks:
+  iternet:
+    driver: bridge

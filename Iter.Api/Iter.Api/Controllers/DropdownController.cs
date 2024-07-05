@@ -17,9 +17,9 @@ namespace Iter.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(int dropdownType, string? arrangementId = null, string? agencyId = null)
+        public async Task<IActionResult> Get(int dropdownType, string? arrangementId = null, string? agencyId = null, string? countryId = null)
         {
-            return Ok(await this.dropdownRepository.Get(dropdownType, arrangementId, agencyId));
+            return Ok(await this.dropdownRepository.Get(dropdownType, arrangementId, agencyId, countryId));
         }
     }
 }

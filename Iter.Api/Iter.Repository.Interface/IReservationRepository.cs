@@ -11,5 +11,7 @@ namespace Iter.Repository.Interface
         Task<int> GetCount(Guid arrangementId);
 
         Task UpdateRatingAsync(Guid reservationId, int? rating);
+
+        Task<List<Reservation>> GetArrangementsByDestinationCityNames(List<int> cities);
     }
 }

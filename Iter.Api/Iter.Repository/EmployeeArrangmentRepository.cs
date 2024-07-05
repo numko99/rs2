@@ -6,6 +6,7 @@ using Iter.Infrastrucure;
 using Iter.Repository.Interface;
 using Iter.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Iter.Core.Enum;
 
 namespace Iter.Repository
 {
@@ -20,9 +21,9 @@ namespace Iter.Repository
             this.mapper = mapper;
         }
 
-        public async Task AddRangeAsync(List<EmployeeArrangment> employeeArrangments)
+        public async Task AddRangeAsync(List<EmployeeArrangment> employeeArrangments, Guid arrangementId)
         {
-            var oldEmployeArrangements = await this.dbContext.EmployeeArrangment.Where(x => x.ArrangementId == employeeArrangments.FirstOrDefault().ArrangementId && x.IsDeleted == false).ToListAsync();
+            var oldEmployeArrangements = await this.dbContext.EmployeeArrangment.Where(x => x.ArrangementId ==  arrangementId && x.IsDeleted == false).ToListAsync();
             var newEmployeIds = employeeArrangments.Select(x => x.EmployeeId).ToList();
             foreach (var item in oldEmployeArrangements)
             {
@@ -56,10 +57,20 @@ namespace Iter.Repository
                     query = query.Where(q => q.Arrangement.EndDate != null ? q.Arrangement.EndDate.Value.Date < DateTime.Now.Date : q.Arrangement.StartDate.Date < DateTime.Now.Date).AsQueryable();
                     query = query.OrderByDescending(q => q.Arrangement.StartDate).AsQueryable();
                 }
-                if (search.ReturnActiveArrangements == null)
+                if (search.ReturnActiveArrangements == null && search.ReturnAll == null)
                 {
                     query = query.Where(q => q.Arrangement.EndDate != null ? q.Arrangement.EndDate.Value.Date >= DateTime.Now.Date : q.Arrangement.StartDate.Date >= DateTime.Now.Date).AsQueryable();
                     query = query.OrderBy(q => q.Arrangement.StartDate).AsQueryable();
+                }
+
+                if (search.ReturnAll == true)
+                {
+                    query = query.OrderByDescending(q => q.Arrangement.StartDate).AsQueryable();
+                }
+
+                if (search.Name != null)
+                {
+                    query = query.Where(q => q.Arrangement.Name.Contains(search.Name)).AsQueryable();
                 }
             }
 
@@ -85,9 +96,16 @@ namespace Iter.Repository
             return result;
         }
 
-        public async Task<List<Employee>> GetAvailableEmployeeArrangmentsAsync(Guid arrangementId, DateTime dateFrom, DateTime? dateTo)
+        public async Task<List<Employee>?> GetAvailableEmployeeArrangmentsAsync(Guid arrangementId, DateTime dateFrom, DateTime? dateTo)
         {
-            var query = await this.dbContext.Employee.Where(e => !e.EmployeeArrangments.Any(x => (x.Arrangement.StartDate.Date <= (dateTo != null ? dateTo.Value.Date : dateFrom.Date) && (x.Arrangement.EndDate != null ? x.Arrangement.EndDate.Value.Date >= dateFrom.Date : x.Arrangement.StartDate.Date >= dateFrom.Date) && x.IsDeleted == false))).ToListAsync();
+            var arrangement = await this.dbContext.Arrangement.FindAsync(arrangementId);
+
+            if (arrangement == null)
+            {
+                return null;
+            }
+
+            var query = await this.dbContext.Employee.Where(e => e.User.Role == (int)Roles.TouristGuide && e.AgencyId == arrangement.AgencyId && !e.EmployeeArrangments.Any(x => (x.Arrangement.StartDate.Date <= (dateTo != null ? dateTo.Value.Date : dateFrom.Date) && (x.Arrangement.EndDate != null ? x.Arrangement.EndDate.Value.Date >= dateFrom.Date : x.Arrangement.StartDate.Date >= dateFrom.Date) && x.IsDeleted == false))).ToListAsync();
             return query;
         }
     }

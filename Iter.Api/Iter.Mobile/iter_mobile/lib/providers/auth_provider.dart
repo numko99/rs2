@@ -15,15 +15,18 @@ class AuthProvider with ChangeNotifier {
         Uri.parse("${ApiConfig.baseUrl}/api/userauthentication/login");
 
     Map<String, String> headers = {"Content-type": "application/json"};
+    http.Response? response = null;;
     try {
-      final http.Response response = await http.post(
+
+      http.Response response = await http.post(
         url,
         headers: headers,
         body: jsonEncode(authRequest),
       );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      if (response?.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response!.body!);
         final String token = responseData['token'];
         final int role = responseData['role'] as int;
         final String? agencyId =

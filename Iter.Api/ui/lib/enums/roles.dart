@@ -22,4 +22,21 @@ class RoleEnumManager {
 
     return Roles.admin;
   }
+
+  static String getRoleNamesById(int id) {
+    if (id == 1) {
+      return "Administrator";
+    }
+    if (id == 2) {
+      return "Koordinator";
+    }
+    if (id == 3) {
+      return "Turistički vodič";
+    }
+    if (id == 4) {
+      return "Klijent";
+    }
+
+    return "Administrator";
+  }
 }

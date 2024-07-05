@@ -33,7 +33,7 @@ namespace Iter.Repository
 
             query = query.Where(a => a.IsDeleted == false);
 
-            query = query.Include(a => a.Address).Include(a => a.Image);
+            query = query.Include(a => a.Address).ThenInclude(a => a.City).ThenInclude(x => x.Country).Include(a => a.Image);
 
             result.Count = await query.CountAsync();
 
@@ -52,7 +52,7 @@ namespace Iter.Repository
 
         public async override Task<Agency?> GetById(Guid id)
         {
-            return await this.dbContext.Agency.Include(a => a.Address).Include(a => a.Image).FirstOrDefaultAsync(a => a.Id == id);
+            return await this.dbContext.Agency.Include(a => a.Address).ThenInclude(x => x.City).ThenInclude(x => x.Country).Include(a => a.Image).FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task<Agency?> GetByEmployeeId(Guid employeeId)

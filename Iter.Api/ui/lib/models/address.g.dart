@@ -11,6 +11,7 @@ Address _$AddressFromJson(Map<String, dynamic> json) => Address(
       street: json['street'] as String?,
       houseNumber: json['houseNumber'] as String?,
       city: json['city'] as String?,
+      cityId: json['cityId'] as String?,
       postalCode: json['postalCode'] as String?,
       country: json['country'] as String?,
     );
@@ -20,6 +21,7 @@ Map<String, dynamic> _$AddressToJson(Address instance) => <String, dynamic>{
       'street': instance.street,
       'houseNumber': instance.houseNumber,
       'city': instance.city,
+      'cityId': instance.cityId,
       'postalCode': instance.postalCode,
       'country': instance.country,
     };

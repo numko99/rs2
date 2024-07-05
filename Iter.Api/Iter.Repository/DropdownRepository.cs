@@ -19,7 +19,7 @@ namespace Iter.Repository
             this.dbContext = dbContext;
             this.mapper = mapper;
         }
-        public async Task<PagedResult<DropdownModel>> Get(int type, string? arrangementId  = null, string? agencyId = null)
+        public async Task<PagedResult<DropdownModel>> Get(int type, string? arrangementId  = null, string? agencyId = null, string? countryId = null)
         {
             var list = new List<DropdownModel>();
 
@@ -45,6 +45,12 @@ namespace Iter.Repository
                     break;
                 case DropdownType.Employee:
                     list = this.mapper.Map<List<DropdownModel>>(await dbContext.EmployeeArrangment.Where(x => x.Arrangement.AgencyId.ToString() == agencyId).ToListAsync());
+                    break;
+                case DropdownType.Countries:
+                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.Country.ToListAsync());
+                    break;
+                case DropdownType.Cities:
+                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.City.Where(x => x.CountryId.ToString() == countryId).ToListAsync());
                     break;
                 default:
                     break;

@@ -10,6 +10,8 @@ Destination _$DestinationFromJson(Map<String, dynamic> json) => Destination(
       id: json['id'] as String?,
       city: json['city'] as String?,
       country: json['country'] as String?,
+      cityId: json['cityId'] as int?,
+      countryId: json['countryId'] as int?,
       arrivalDate: json['arrivalDate'] == null
           ? null
           : DateTime.parse(json['arrivalDate'] as String),
@@ -27,6 +29,8 @@ Map<String, dynamic> _$DestinationToJson(Destination instance) =>
     <String, dynamic>{
       'id': instance.id,
       'city': instance.city,
+      'cityId': instance.cityId,
+      'countryId': instance.countryId,
       'country': instance.country,
       'arrivalDate': instance.arrivalDate?.toIso8601String(),
       'departureDate': instance.departureDate?.toIso8601String(),

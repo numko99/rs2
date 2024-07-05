@@ -1,10 +1,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:ui/enums/roles.dart';
 import 'package:ui/helpers/dateTime_helper.dart';
 import 'package:ui/models/user.dart';
 import 'package:ui/services/user_provider.dart';
 import 'package:ui/widgets/Layout/layout.dart';
+import 'package:ui/widgets/employee_arrangements_data_table.dart';
 import 'package:ui/widgets/reservation/reservation_mini_data_table.dart';
 
 class UserDetailsPage extends StatefulWidget {
@@ -53,17 +55,24 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 padding: const EdgeInsets.fromLTRB(45.0, 10, 45.0, 10),
                 child: Column(
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                            flex: 2,
-                            child: Container(
-                              child: _buildAgencyDetails(user),
-                            )),
-                        Expanded(flex: 3, child: ReservationDataTable(userId: widget.id)),
-                      ],
-                    ),
+                    Card(child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: _buildAgencyDetails(user),
+                    )),
+                    const SizedBox(height: 40),
+                    Card(child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          const Align(alignment: Alignment.centerLeft, child: Text("Rezervacije", style: TextStyle(fontSize: 20))),
+                          const SizedBox(height: 20),
+                          if (user!.role == (Roles.client.index + 1))
+                          ReservationDataTable(userId: widget.id),
+                          if (user!.role == (Roles.touristGuide.index + 1))
+                            EmployeeArrangementsDataTable(employeeId: user!.employeeId),
+                        ],
+                      ),
+                    ))
                   ],
                 ),
               ),
@@ -75,11 +84,23 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     return Column(
       children: [
         const SizedBox(height: 15),
-        Center(
-            child: Text(
-          "${user!.firstName!} ${user.lastName!}",
-          style: const TextStyle(fontSize: 20),
-        )),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Column(
+            children: [
+          Text(
+            "${user!.firstName!} ${user.lastName!}",
+            style: const TextStyle(fontSize: 20),
+          ),
+          if (user.role == (Roles.touristGuide.index + 1) ||
+              user.role == (Roles.coordinator.index + 1))
+            Padding(
+              padding: const EdgeInsets.only(left: 18.0),
+              child: Text(user.agency!.name, style: const TextStyle(fontSize: 15)),
+            )
+            ],
+          ),
+        ),
         const SizedBox(height: 20),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,6 +123,15 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 title: Text(user.residencePlace),
               ),
             ),
+            Flexible(
+              child: ListTile(
+                leading: Tooltip(
+                  message: 'Korisnik aktivan',
+                  child: user.isActive == true ? const Icon(Icons.check, color: Colors.green) : const Icon(Icons.close, color: Colors.red),
+                ),
+                title: Text(user.isActive == true ? "Aktivan" : 'Neaktivan'),
+              ),
+            ),
           ],
         ),
         Row(
@@ -113,7 +143,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   message: 'Email',
                   child: Icon(Icons.email, color: Colors.amber),
                 ),
-                title: Text(user?.email ?? ''),
+                title: Text(user.email ?? ''),
               ),
             ),
             Flexible(
@@ -122,7 +152,15 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 message: 'Broj telefona',
                 child: Icon(Icons.phone, color: Colors.amber),
               ),
-              title: Text(user?.phoneNumber ?? ''),
+              title: Text(user.phoneNumber ?? ''),
+            )),
+             Flexible(
+                child: ListTile(
+                leading: const Tooltip(
+                message: 'Tip korisnika',
+                child: Icon(Icons.person, color: Colors.amber),
+              ),
+              title: Text(RoleEnumManager.getRoleNamesById(user.role)),
             )),
           ],
         ),

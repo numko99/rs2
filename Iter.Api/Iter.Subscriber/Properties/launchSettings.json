@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Iter.Subscriber": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

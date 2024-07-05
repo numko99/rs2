@@ -7,10 +7,14 @@ namespace Iter.Services.Interface
 {
     public interface IReservationService : IBaseCrudService<Reservation, ReservationInsertRequest, ReservationUpdateRequest, ReservationResponse, ReservationSearchModel, ReservationSearchResponse>
     {
-        public Task<int> GetCount(Guid arrangementId);
+        Task<int> GetCount(Guid arrangementId);
 
-        public Task AddReview(Guid reservationId, int? rating);
+        Task AddReview(Guid reservationId, int? rating);
 
-        public Task CancelReservation(Guid reservationId);
+        Task AddPayment(Guid reservationId, int totalPaid, string transactionId);
+
+        Task CancelReservation(Guid reservationId);
+
+        Task<ReservationResponse> Insert(ReservationInsertRequest request);
     }
 }

@@ -6,5 +6,7 @@
 
         public EmailSettings EmailSettings { get; set; } = new EmailSettings();
 
+        public RabbitMqSettings RabbitMqSettings { get; set; } = new RabbitMqSettings();
+
     }
 }

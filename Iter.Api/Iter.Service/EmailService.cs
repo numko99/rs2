@@ -1,8 +1,10 @@
-﻿using Iter.Core.Options;
+﻿using Iter.Core.Models;
+using Iter.Core.Options;
 using Iter.Services.Interface;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using System.IO;
 
 namespace Iter.Services
 {
@@ -10,23 +12,34 @@ namespace Iter.Services
     {
         private readonly EmailSettings _emailSettings;
 
-        public EmailService(IOptions<EmailSettings> emailSettings)
+        public EmailService(EmailSettings emailSettings)
         {
-            _emailSettings = emailSettings.Value;
+            _emailSettings = emailSettings;
         }
 
-        public async Task SendEmailAsync(string to, string subject, string content)
+        public async Task SendEmailAsync(EmailMessage emailData)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(_emailSettings.UserName, _emailSettings.UserName));
-            emailMessage.To.Add(MailboxAddress.Parse(to));
-            emailMessage.Subject = subject;
+            emailMessage.To.Add(MailboxAddress.Parse(emailData.Email));
+            emailMessage.Subject = emailData.Subject;
 
-            var path = "C:\\Projects\\rs2\\Iter.Api\\Iter.Core\\Static files\\emailTemplate.html";
-            var htmlTemplate = await File.ReadAllTextAsync(path);
+            var assembly = typeof(EmailService).Assembly; 
+            var assemblyName = assembly.GetName().Name;
+            var resourceName = $"{assemblyName}.emailTemplate.html";
 
-            htmlTemplate = htmlTemplate.Replace("{{Title}}", subject);
-            htmlTemplate = htmlTemplate.Replace("{{Content}}", content);
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+            {
+                throw new FileNotFoundException($"The resource {resourceName} was not found.");
+            }
+
+            using var reader = new StreamReader(stream);
+            var htmlTemplate = await reader.ReadToEndAsync();
+
+
+            htmlTemplate = htmlTemplate.Replace("{{Title}}", emailData.Subject);
+            htmlTemplate = htmlTemplate.Replace("{{Content}}", emailData.Content);
 
             emailMessage.Body = new TextPart("html") { Text = htmlTemplate };
 

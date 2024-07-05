@@ -34,11 +34,25 @@ namespace Iter.Api.Controllers
             return Ok();
         }
 
+        [HttpPost("addPayment")]
+        public async Task<IActionResult> AddPayment([FromBody] PaymentRequest request)
+        {
+            await this.reservationService.AddPayment(new Guid(request.ReservationId!), request.TotalPaid, request.TransactionId);
+            return Ok();
+        }
+
         [HttpGet("cancelReservation/{reservationId}")]
         public async Task<IActionResult> CancelReservation(string reservationId)
         {
             await this.reservationService.CancelReservation(new Guid(reservationId));
             return Ok();
+        }
+
+        [HttpPost]
+        public override async Task<IActionResult> Insert([FromBody] ReservationInsertRequest request)
+        {
+            var reservation = await this.reservationService.Insert(request);
+            return Ok(reservation);
         }
     }
 }

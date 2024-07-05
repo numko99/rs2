@@ -8,6 +8,7 @@ using Iter.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using Iter.Core.Enum;
+using static Humanizer.On;
 
 namespace Iter.Repository
 {
@@ -28,25 +29,25 @@ namespace Iter.Repository
 
             if (!string.IsNullOrEmpty(search?.Name))
             {
-                query = query.Where(a => a.Name.Contains(search.Name) || a.Destinations.Any(x => x.City.Contains(search.Name)));
+                query = query.Where(a => a.Name.Contains(search.Name) || a.Destinations.Any(x => x.City.Name.Contains(search.Name))).AsQueryable();
             }
 
             if (!string.IsNullOrEmpty(search?.AgencyId))
             {
                 var guid = new Guid(search.AgencyId);
-                query = query.Where(a => a.AgencyId == guid);
+                query = query.Where(a => a.AgencyId == guid).AsQueryable();
             }
 
             if (search?.DateFrom != null)
             {
                 var dateFrom = DateTime.ParseExact(search.DateFrom, "dd.MM.yyyy", CultureInfo.InvariantCulture);
-                query = query.Where(a => a.StartDate.Date >= dateFrom.Date);
+                query = query.Where(a => a.StartDate.Date >= dateFrom.Date).AsQueryable();
             }
 
             if (search?.DateTo != null)
             {
                 var dateTo = DateTime.ParseExact(search.DateTo, "dd.MM.yyyy", CultureInfo.InvariantCulture);
-                query = query.Where(a => dateTo.Date >= a.StartDate.Date);
+                query = query.Where(a => dateTo.Date >= a.StartDate.Date).AsQueryable();
             }
 
             if (search?.ArrangementStatus != null)
@@ -65,12 +66,12 @@ namespace Iter.Repository
 
             if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
             {
-                query = query.Skip((search.CurrentPage.Value - 1) * search.PageSize.Value).Take(search.PageSize.Value);
+                query = query.OrderByDescending(q => q.CreatedAt).Skip((search.CurrentPage.Value - 1) * search.PageSize.Value).Take(search.PageSize.Value);
             }
 
             query = query.Include(a => a.Agency).Include(a => a.ArrangementStatus).Include(a => a.ArrangementImages).ThenInclude(a => a.Image);
 
-            var result = await query.OrderByDescending(q => q.CreatedAt).Select(a => new ArrangementSearchResponse{
+            var result = await query.Select(a => new ArrangementSearchResponse{
                 Id = a.Id,
                 StartDate = a.StartDate,
                 EndDate = a.EndDate,
@@ -80,7 +81,7 @@ namespace Iter.Repository
                 ArrangementStatusId = a.ArrangementStatusId, 
                 ArrangementStatusName = a.ArrangementStatus.Name, 
                 MainImage = this.mapper.Map<ImageResponse>(a.ArrangementImages.Where(a => a.IsMainImage).FirstOrDefault()),
-                IsReserved = search.CurrentUserId != null ? this.dbContext.Reservation.Any(r => r.ArrangmentId == a.Id && r.ClientId == search.CurrentUserId && (r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Confirmed || r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Pending)) : false
+                IsReserved = search.CurrentUserId != null ? this.dbContext.Reservation.Any(r => r.ArrangmentId == a.Id && r.ClientId == search.CurrentUserId && r.IsDeleted == false && (r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Confirmed || r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Pending)) : false
             }).ToListAsync();
 
             return new PagedResult<ArrangementSearchResponse>()
@@ -97,10 +98,16 @@ namespace Iter.Repository
                         .ThenInclude(a => a.Image)
                     .Include(a => a.Agency)
                         .ThenInclude(a => a.Address)
+                        .ThenInclude(a => a.City)
                     .Include(a => a.ArrangementStatus)
+                    .Include(a => a.EmployeeArrangments)
+                        .ThenInclude(a => a.Employee)
                     .Include(a => a.ArrangementPrices)
                     .Include(a => a.ArrangementImages)
                         .ThenInclude(ai => ai.Image)
+                    .Include(a => a.Destinations)
+                        .ThenInclude(ai => ai.City)
+                        .ThenInclude(ai => ai.Country)
                     .Include(a => a.Destinations)
                         .ThenInclude(ai => ai.Accommodation)
                         .ThenInclude(ai => ai.HotelAddress)
@@ -153,7 +160,7 @@ namespace Iter.Repository
                 var existingDestination = dbContext.Destination.AsNoTracking().FirstOrDefault(d => d.Id == destination.Id);
                 if (existingDestination != null)
                 {
-                    dbContext.Entry(existingDestination).CurrentValues.SetValues(destination);
+                    dbContext.Entry(destination).State = EntityState.Modified;
                 }
                 else
                 {
@@ -178,8 +185,14 @@ namespace Iter.Repository
             }
 
             dbContext.ArrangementImage.AddRange(entity.ArrangementImages);
-
-            dbContext.Arrangement.Update(entity);
+            try
+            {
+                dbContext.Arrangement.Update(entity);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
             await dbContext.SaveChangesAsync();
         }
 
@@ -212,37 +225,57 @@ namespace Iter.Repository
             return arrangementPrice;
         }
 
-        private void AddPricesAndImages(Arrangement entity)
+        public async Task<List<ArrangementSearchResponse>> GetRecommendedArrangementsByDestinationNames(List<int> cities, Guid? clientId)
         {
-            foreach (var price in entity.ArrangementPrices)
+            var arrangements = new List<ArrangementSearchResponse>();
+            foreach (var cityId in cities)
             {
-                price.ArrangementId = entity.Id;
-                dbContext.ArrangementPrice.Add(price);
-            }
+                var arrangement = await this.dbContext.Arrangement
+                    .Include(a => a.ArrangementImages)
+                    .ThenInclude(a => a.Image)
+                    .Include(a => a.Agency)
+                    .Include(a => a.ArrangementPrices)
+                    .Where(a => a.Destinations.Any(x => x.CityId == cityId) && a.ArrangementStatusId == (int)Core.Enum.ArrangementStatus.AvailableForReservation).FirstOrDefaultAsync();
 
-            foreach (var image in entity.ArrangementImages)
-            {
-                image.ArrangementId = entity.Id;
-                dbContext.ArrangementImage.Add(image);
+                if (arrangement == null)
+                {
+                    continue;
+                }
+
+                if (!arrangements.Any(a => a.Id == arrangement.Id))
+                {
+                    arrangements.Add(new ArrangementSearchResponse()
+                    {
+                        Id = arrangement.Id,
+                        Name = arrangement.Name,
+                        MainImage = this.mapper.Map<ImageResponse>(arrangement.ArrangementImages.Where(a => a.IsMainImage).FirstOrDefault().Image),
+                        AgencyName = arrangement.Agency.Name,
+                        MinPrice = arrangement.ArrangementPrices.Min(a => a.Price),
+                        IsReserved = this.dbContext.Reservation.Any(r => r.ArrangmentId == arrangement.Id && r.ClientId == clientId && r.IsDeleted == false && (r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Confirmed || r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Pending))
+                    });
+                    if (arrangements.Count == 5)
+                    {
+                        break;
+                    }
+                }
             }
+            return arrangements;
         }
 
-        private async Task DeletePricesAndImages(Arrangement entity)
+        public async Task<List<Destination>> GetAllDestinations()
         {
-            var existingPrices = await dbContext.ArrangementPrice
-                .Where(ap => ap.ArrangementId == entity.Id)
+            // Retrieve all destinations and group them by city
+            var groupedByCity = await this.dbContext.Destination
+                .AsNoTracking() // If you don't need to track changes, this improves performance
                 .ToListAsync();
-            dbContext.ArrangementPrice.RemoveRange(existingPrices);
 
-            var existingImages = await dbContext.ArrangementImage
-                .Where(ai => ai.ArrangementId == entity.Id)
-                .ToListAsync();
-            var imageIds = existingImages.Select(ai => ai.ImageId).ToList();
-            var imagesToDelete = await dbContext.Image
-                .Where(i => imageIds.Contains(i.Id))
-                .ToListAsync();
-            dbContext.ArrangementImage.RemoveRange(existingImages);
-            dbContext.Image.RemoveRange(imagesToDelete);
+            // Use LINQ to get distinct cities
+            var distinctDestinations = groupedByCity
+                .GroupBy(d => d.CityId)
+                .Select(g => g.First()) // Selects the first destination from each grouped city
+                .ToList();
+
+            return distinctDestinations;
         }
     }
 }

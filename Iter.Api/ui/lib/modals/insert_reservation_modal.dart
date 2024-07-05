@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/enums/dropdown_types.dart';
+import 'package:ui/enums/roles.dart';
 import 'package:ui/helpers/scaffold_messenger_helper.dart';
 import 'package:ui/models/dropdown_model.dart';
+import 'package:ui/models/user.dart';
 import 'package:ui/services/dropdown_provider.dart';
 import 'package:ui/services/reservation_provider.dart';
+import 'package:ui/services/user_provider.dart';
 
 class InsertReservationModal extends StatefulWidget {
   const InsertReservationModal(
@@ -21,9 +25,11 @@ class InsertReservationModal extends StatefulWidget {
 class _InsertReservationModalState extends State<InsertReservationModal> {
   final _formKey = GlobalKey<FormBuilderState>();
   Map<String, dynamic> _initialValue = {};
+  final TextEditingController _typeAheadController = TextEditingController();
 
   ReservationProvider? _reservationProvider;
   DropdownProvider? _dropdownProvider;
+  UserProvider? _userProvider;
   bool _displayLoader = true;
 
   String? selectedUser;
@@ -36,8 +42,29 @@ class _InsertReservationModalState extends State<InsertReservationModal> {
     super.initState();
     _reservationProvider = context.read<ReservationProvider>();
     _dropdownProvider = context.read<DropdownProvider>();
+    _userProvider = context.read<UserProvider>();
 
     initialLoad();
+  }
+
+  Future<List<User>> getUsers(String filter) async {
+
+    setState(() {
+      _displayLoader = false;
+    });
+
+    var searchResult = await _userProvider?.get({
+      "currentPage": 1,
+      "pageSize": 10,
+      "name": filter,
+      "role": Roles.client.index + 1
+    });
+
+    setState(() {
+      _displayLoader = false;
+    });
+
+    return searchResult!.result;
   }
 
   Future<void> initialLoad() async {
@@ -92,30 +119,50 @@ class _InsertReservationModalState extends State<InsertReservationModal> {
                       Row(
                         children: [
                           Expanded(
-                            flex: 1,
-                            child: DropdownButtonFormField<dynamic?>(
-                                decoration: const InputDecoration(
-                                  labelText: 'Izaberite korisnika',
-                                ),
-                                value: selectedUser,
-                                items: users?.map((DropdownModel item) {
-                                  return DropdownMenuItem<dynamic>(
-                                    value: item.id,
-                                    child: Text(item.name ?? ""),
-                                  );
-                                }).toList(),
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Polje je obavezno';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {
+                              flex: 1,
+                              child: TypeAheadField<User>(
+                                controller: _typeAheadController,
+                                suggestionsCallback: (pattern) async {
                                   setState(() {
-                                    selectedUser = value;
+                                    selectedUser = null;
                                   });
-                                }),
-                          ),
+                                  if (pattern.length > 3){
+                                      return await getUsers(pattern);
+                                  }
+                                },
+                                loadingBuilder: (context) =>
+                                    const Text('Pretraga...'),
+                                errorBuilder: (context, error) =>
+                                    const Text('Došlo je do greške!'),
+                                emptyBuilder: (context) =>
+                                    const Text('Nema pronađenih rezultata!'),
+
+                                builder: (context, controller, focusNode) {
+                                  return TextFormField(
+                                      controller: controller,
+                                      focusNode: focusNode,
+                                      autofocus: true,
+                                      validator: (value) {
+                                        if (value!.isEmpty || selectedUser == null) {
+                                          return 'Polje je obavezno';
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      decoration: const InputDecoration(
+                                        labelText: 'Korisnik',
+                                      ));
+                                },
+                                itemBuilder: (context, user) {
+                                  return ListTile(
+                                    title: Text("${user.firstName!} ${user.lastName!}"),
+                                  );
+                                },
+                                onSelected: (user) {
+                                  _typeAheadController.text = "${user.firstName!} ${user.lastName!}";
+                                  selectedUser = user.clientId;
+                                },
+                              )),
                           const SizedBox(width: 60),
                           Expanded(
                             child: FormBuilderTextField(
@@ -176,7 +223,7 @@ class _InsertReservationModalState extends State<InsertReservationModal> {
                                       labelText: 'Napomena'))),
                         ],
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [

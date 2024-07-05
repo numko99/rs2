@@ -48,6 +48,23 @@ class ReservationProvider
     );
   }
 
+    Future<void> addPayment(var reservationId, double? totalPaid, String transactionId) async {
+    var url = Uri.parse("$baseUrl$endpoint/addPayment");
+
+    Map<String, String>? headers = await createHeaders();
+    Map<String, dynamic> request = {
+      'reservationId': reservationId,
+      'totalPaid': totalPaid?.round(),
+      'transactionId': transactionId,
+    };
+
+    await http!.post(
+      url,
+      headers: headers,
+      body: jsonEncode(request),
+    );
+  }
+
   Future<void> cancelReservation(var reservationId) async {
     var url = Uri.parse("$baseUrl$endpoint/cancelReservation/$reservationId");
 

@@ -40,6 +40,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 0,
+      ),
       body: displayLoader
           ? const Center(child: CircularProgressIndicator())
           : ListView(

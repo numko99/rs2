@@ -143,6 +143,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                         image: arrangements[index].arrangement!.mainImage.image,
                         name: arrangements[index].arrangement!.name,
                         agencyName: arrangements[index].arrangement!.agencyName,
+                        onReturn: () => loadData(true),
                         departureDate: DateFormat('dd.MM.yyyy')
                             .format(arrangements[index].arrangement!.startDate)),
                       if (DateTimeCustomHelper.isBeforeDateOnly(

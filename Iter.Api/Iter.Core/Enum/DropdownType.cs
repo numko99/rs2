@@ -9,5 +9,7 @@
         Arrangments,
         ArrangementStatus,
         Employee,
+        Countries,
+        Cities
     }
 }

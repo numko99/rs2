@@ -15,6 +15,7 @@ class ArrangementSearchResponse {
   final String? arrangementStatusName;
   final ImageModel mainImage;
   final bool isReserved;
+  final double? minPrice;
 
   ArrangementSearchResponse({
     required this.id,
@@ -27,6 +28,7 @@ class ArrangementSearchResponse {
     required this.arrangementStatusName,
     required this.mainImage,
     required this.isReserved,
+    this.minPrice,
   });
 
   factory ArrangementSearchResponse.fromJson(Map<String, dynamic> json) =>

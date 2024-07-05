@@ -10,6 +10,7 @@ import 'package:iter_mobile/widgets/arrangement_card.dart';
 import 'package:iter_mobile/widgets/filter_chip.dart';
 import 'package:iter_mobile/widgets/filter_drawer.dart';
 import 'package:iter_mobile/widgets/icon_text_chip.dart';
+import 'package:iter_mobile/widgets/logo.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -69,7 +70,7 @@ class _HomePageState extends State<HomePage> {
       var searchArrangements = await _arrangmentProvider?.get({
         "dateFrom": filter.startDate != null
             ? DateFormat('dd.MM.yyyy').format(filter.startDate!)
-            : null,
+            : DateFormat('dd.MM.yyyy').format(DateTime.now()),
         "dateTo": filter.endDate != null
             ? DateFormat('dd.MM.yyyy').format(filter.endDate!)
             : null,
@@ -116,13 +117,20 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: _scaffoldKey,
-        body: Column(
-          children: [
-            SizedBox(
-              height: 45,
+      key: _scaffoldKey,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        toolbarHeight: 0,
+      ),
+      body: displayLoader == true
+          ? const Center(child: CircularProgressIndicator())
+          :  Column(
+        children: [
+          Card(
+            child: SizedBox(
+              height: 60,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(11.0, 8.0, 11.0, 0),
+                padding: const EdgeInsets.fromLTRB(0, 0.0, 0, 0),
                 child: TextFormField(
                   controller: searchController,
                   onChanged: (String value) {
@@ -133,67 +141,69 @@ class _HomePageState extends State<HomePage> {
                   decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(16),
                       labelText: 'Pretraga po aranžanu, destinaciji...',
-                      border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
                           icon: const Icon(Icons.search),
                           onPressed: () => loadData(true))),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Wrap(
-                spacing: 8.0,
-                runSpacing: 4.0,
-                alignment: WrapAlignment.start,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        GestureDetector(
-                            child: IconTextChip(
-                                labelStyle: const TextStyle(
-                                    fontSize: 12, color: Colors.white),
-                                iconData: Icons.filter_alt_sharp,
-                                label: "Filteri"),
-                            onTap: () =>
-                                _scaffoldKey.currentState!.openEndDrawer()),
-                      ],
-                    ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Wrap(
+              spacing: 8.0,
+              runSpacing: 4.0,
+              alignment: WrapAlignment.start,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                          child: IconTextChip(
+                              labelStyle: const TextStyle(
+                                  fontSize: 12, color: Colors.white),
+                              iconData: Icons.filter_alt_sharp,
+                              label: "Filteri"),
+                          onTap: () =>
+                              _scaffoldKey.currentState!.openEndDrawer()),
+                    ],
                   ),
-                  ChipFilter(
-                      onFiltersChanged: () => loadData(true), filter: filter),
-                ],
-              ),
+                ),
+                ChipFilter(
+                    onFiltersChanged: () => loadData(true), filter: filter),
+              ],
             ),
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: arrangements.length,
-                itemBuilder: (context, index) {
-                  return ArrangementCard(
-                      id: arrangements[index].id,
-                      image: arrangements[index].mainImage!.image,
-                      name: arrangements[index].name,
-                      agencyName: arrangements[index].agencyName,
-                      agencyRating: arrangements[index].agencyRating.toString(),
-                      isReserved: arrangements[index].isReserved,
-                      departureDate: DateFormat('dd.MM.yyyy')
-                          .format(arrangements[index].startDate));
-                },
-              ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: arrangements.length,
+              itemBuilder: (context, index) {
+                return ArrangementCard(
+                    id: arrangements[index].id,
+                    image: arrangements[index].mainImage!.image,
+                    name: arrangements[index].name,
+                    agencyName: arrangements[index].agencyName,
+                    agencyRating: arrangements[index].agencyRating.toString(),
+                    isReserved: arrangements[index].isReserved,
+                    onReturn: () => loadData(true),
+                    departureDate: DateFormat('dd.MM.yyyy')
+                        .format(arrangements[index].startDate));
+              },
             ),
-          ],
-        ),
-        endDrawer: FilterDrawer(
-            filter: filter,
-            onFiltersChanged: (Filter updatedFilter) {
-              setState(() {
-                filter = updatedFilter;
-              });
-              loadData(true);
-            }));
+          ),
+        ],
+      ),
+      endDrawer: FilterDrawer(
+          filter: filter,
+          onFiltersChanged: (Filter updatedFilter) {
+            setState(() {
+              filter = updatedFilter;
+            });
+            loadData(true);
+          }),
+    );
   }
 }

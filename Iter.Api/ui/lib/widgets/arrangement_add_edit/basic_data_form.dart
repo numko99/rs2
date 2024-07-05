@@ -45,10 +45,12 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
     if (widget.controllers.accomodationTypes.isEmpty) {
       addArrangementPrices();
     }
-    if (widget.agencyId == null && AuthStorageProvider.getAuthData()?["agencyId"] == null) {
-        loadAgencies();
-    }else{
-      selectedAgency = widget.agencyId ?? AuthStorageProvider.getAuthData()?["agencyId"];
+    if (widget.agencyId == null &&
+        AuthStorageProvider.getAuthData()?["agencyId"] == null) {
+      loadAgencies();
+    } else {
+      selectedAgency =
+          widget.agencyId ?? AuthStorageProvider.getAuthData()?["agencyId"];
     }
   }
 
@@ -73,61 +75,65 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
           children: [
             if (widget.agencyId == null &&
                 AuthStorageProvider.getAuthData()?["agencyId"] == null)
-            Expanded(
-              flex: 1,
-              child: DropdownButtonFormField<dynamic>(
-                decoration: const InputDecoration(
-                  labelText: 'Izaberite agenciju',
+              Expanded(
+                flex: 1,
+                child: DropdownButtonFormField<dynamic>(
+                  decoration: const InputDecoration(
+                    labelText: 'Izaberite agenciju',
+                  ),
+                  value: selectedAgency,
+                  items: agenciesDropdown?.map((DropdownModel item) {
+                    return DropdownMenuItem<dynamic>(
+                      value: item.id,
+                      child: Text(item.name ?? ""),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedAgency = value;
+                      widget.setAgencyId(value);
+                    });
+                  },
                 ),
-                value: selectedAgency,
-                items: agenciesDropdown?.map((DropdownModel item) {
-                  return DropdownMenuItem<dynamic>(
-                    value: item.id,
-                    child: Text(item.name ?? ""),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedAgency = value;
-                    widget.setAgencyId(value);
-                  });
-                },
               ),
-            ),
-            Expanded(
-              child: Row(
-                children: [
-                  Radio(
-                      value: ArrangementType.multiDayTrip,
-                      groupValue: arangmentType,
-                      onChanged: (value) {
-                        setState(() {
-                          arangmentType = value;
-                        });
-                        widget.setArrangementType(value);
-                      }),
-                  const Expanded(
-                    child: Text('Višednevno putovanje'),
-                  )
-                ],
+            if (widget.arrangementStatus == null ||
+                widget.arrangementStatus ==
+                    ArrangementStatus.inPreparation.index) ...[
+              Expanded(
+                child: Row(
+                  children: [
+                    Radio(
+                        value: ArrangementType.multiDayTrip,
+                        groupValue: arangmentType,
+                        onChanged: (value) {
+                          setState(() {
+                            arangmentType = value;
+                          });
+                          widget.setArrangementType(value);
+                        }),
+                    const Expanded(
+                      child: Text('Višednevno putovanje'),
+                    )
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: Row(
-                children: [
-                  Radio(
-                      value: ArrangementType.oneDayTrip,
-                      groupValue: arangmentType,
-                      onChanged: (value) {
-                        setState(() {
-                          arangmentType = value;
-                        });
-                        widget.setArrangementType(value);
-                      }),
-                  const Expanded(child: Text('Jednodnevni izlet'))
-                ],
+              Expanded(
+                child: Row(
+                  children: [
+                    Radio(
+                        value: ArrangementType.oneDayTrip,
+                        groupValue: arangmentType,
+                        onChanged: (value) {
+                          setState(() {
+                            arangmentType = value;
+                          });
+                          widget.setArrangementType(value);
+                        }),
+                    const Expanded(child: Text('Jednodnevni izlet'))
+                  ],
+                ),
               ),
-            ),
+            ]
           ],
         ),
         const SizedBox(height: 20),
@@ -169,8 +175,10 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
                 ]),
                 inputType: InputType.date,
               ))
-            else if ((arangmentType == ArrangementType.oneDayTrip) && 
-                     widget.arrangementStatus== null || widget.arrangementStatus == ArrangementStatus.inPreparation.index)
+            else if ((arangmentType == ArrangementType.oneDayTrip) &&
+                    widget.arrangementStatus == null ||
+                widget.arrangementStatus ==
+                    ArrangementStatus.inPreparation.index)
               Expanded(
                 child: Row(
                   children: [
@@ -199,7 +207,9 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
         ),
         const SizedBox(height: 20),
         if (arangmentType == ArrangementType.multiDayTrip &&
-             (widget.arrangementStatus == null || widget.arrangementStatus == ArrangementStatus.inPreparation.index))
+            (widget.arrangementStatus == null ||
+                widget.arrangementStatus ==
+                    ArrangementStatus.inPreparation.index))
           Column(
             children: [
               Column(
@@ -266,7 +276,8 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
                           child: IconButton(
                             icon: const Icon(Icons.close),
                             onPressed: () {
-                              if (widget.controllers.accomodationTypes.length > 1) {
+                              if (widget.controllers.accomodationTypes.length >
+                                  1) {
                                 _removeArrangementPriceRow(index);
                               }
                             },

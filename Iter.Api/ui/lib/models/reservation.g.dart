@@ -14,17 +14,18 @@ Reservation _$ReservationFromJson(Map<String, dynamic> json) => Reservation(
       user: json['user'] == null
           ? null
           : User.fromJson(json['user'] as Map<String, dynamic>),
-      arrangement:
-          Arrangement.fromJson(json['arrangement'] as Map<String, dynamic>),
+      arrangement: json['arrangement'] == null
+          ? null
+          : Arrangement.fromJson(json['arrangement'] as Map<String, dynamic>),
       arrangementPrice: json['arrangementPrice'] == null
           ? null
           : ArrangementPrice.fromJson(
               json['arrangementPrice'] as Map<String, dynamic>),
-      reservationStatusId: json['reservationStatusId'] as int,
-      reservationStatusName: json['reservationStatusName'] as String,
-      totalPaid: (json['totalPaid'] as num).toDouble(),
-      rating: json['rating'] as int,
-      reminder: json['reminder'] as String,
+      reservationStatusId: json['reservationStatusId'] as int?,
+      reservationStatusName: json['reservationStatusName'] as String?,
+      totalPaid: (json['totalPaid'] as num?)?.toDouble(),
+      rating: json['rating'] as int?,
+      reminder: json['reminder'] as String?,
     );
 
 Map<String, dynamic> _$ReservationToJson(Reservation instance) =>

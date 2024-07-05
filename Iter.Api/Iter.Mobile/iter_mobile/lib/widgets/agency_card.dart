@@ -17,11 +17,11 @@ class AgencyCard extends StatelessWidget {
           backgroundColor: Colors.white
       ),
         onPressed: () { 
-          Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
-      );
+        //   Navigator.of(context).push(
+        // MaterialPageRoute(
+        //   builder: (context) => HomePage(),
+        //),
+      //);
          },
         child: Padding(
           padding: EdgeInsets.fromLTRB(0,8,0,8),

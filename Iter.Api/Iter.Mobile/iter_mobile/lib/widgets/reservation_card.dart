@@ -9,21 +9,25 @@ import 'package:iter_mobile/widgets/reservation_status.dart';
 
 class ReservationCard extends StatelessWidget {
   final ReservationSearchResponse reservation;
-
+  final Function() onReturn;
   const ReservationCard({
     super.key,
     required this.reservation,
+    required this.onReturn
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          Navigator.of(context).push(
+        onTap: () async{
+          await Navigator.of(context).push(
             MaterialPageRoute(
                 builder: (context) => ReservationDetailsScreen(
                     reservationId: reservation.reservationId)),
           );
+        
+        await onReturn();
+
         },
         child: Card(
           shape: RoundedRectangleBorder(

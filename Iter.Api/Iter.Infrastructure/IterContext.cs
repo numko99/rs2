@@ -3,11 +3,39 @@ using Iter.Core.EntityModelss;
 using Iter.Infrastrucure.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace Iter.Infrastrucure
 {
     public class IterContext : IdentityDbContext<User>
     {
+        public void Initialize()
+        {
+            if (Database.GetAppliedMigrations()?.Count() == 0)
+            {
+                Database.Migrate();
+
+
+                var assembly = typeof(IterContext).Assembly;
+                var assemblyName = assembly.FullName[..assembly.FullName.IndexOf(',')];
+                using var resource = assembly.GetManifestResourceStream($"{assemblyName}.iter_seed.sql");
+
+                using var streamReader = new StreamReader(resource, encoding: Encoding.Unicode);
+                var sqlScript = streamReader.ReadToEnd();
+
+                // Podijeli skriptu na pojedinačne naredbe na temelju 'GO'
+                var sqlCommands = sqlScript.Split("GO\r", StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var command in sqlCommands)
+                {
+                    if (!string.IsNullOrWhiteSpace(command))
+                    {
+                        this.Database.ExecuteSqlRaw(command);
+                    }
+                }
+            }
+        }
+
         public IterContext(DbContextOptions options) : base(options)
         {
         }
@@ -44,6 +72,10 @@ namespace Iter.Infrastrucure
 
         public virtual DbSet<VerificationToken> VerificationToken { get; set; }
 
+        public virtual DbSet<City> City { get; set; }
+
+        public virtual DbSet<Country> Country { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -67,6 +99,8 @@ namespace Iter.Infrastrucure
             builder.ApplyConfiguration(new EmployeeConfiguration());
             builder.ApplyConfiguration(new ClientConfiguration());
             builder.ApplyConfiguration(new VerificationTokenConfiguration());
+            builder.ApplyConfiguration(new CityConfiguration());
+            builder.ApplyConfiguration(new CountryConfiguration());
         }
     }
 }

@@ -122,6 +122,7 @@ class _LayoutState extends State<Layout> {
           child: Column(
         children: <Widget>[
           Expanded(
+            flex: 3,
             child: ListView(
               children: <Widget>[
                 Container(
@@ -157,12 +158,13 @@ class _LayoutState extends State<Layout> {
             ),
           ),
           Expanded(
+            flex: 1,
               child: Align(
             alignment: Alignment.bottomCenter,
             child: SidebarItem(
               text: "Odjava",
               icon: Icons.logout,
-              link: "/logout",
+              link: "/login",
             ),
           ))
         ],

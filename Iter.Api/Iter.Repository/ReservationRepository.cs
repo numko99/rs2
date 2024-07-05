@@ -55,10 +55,10 @@ namespace Iter.Repository
 
             if (!string.IsNullOrEmpty(search?.Name))
             {
-                query = query.Where(a => a.ReservationNumber.StartsWith(search.Name)
-                || (a.Client.FirstName + " " + a.Client.LastName).StartsWith(search.Name)
-                || (a.Client.LastName + " " + a.Client.FirstName).StartsWith(search.Name)
-                || a.Arrangement.Name.StartsWith(search.Name));
+                query = query.Where(a => a.ReservationNumber.Contains(search.Name)
+                || (a.Client.FirstName + " " + a.Client.LastName).Contains(search.Name)
+                || (a.Client.LastName + " " + a.Client.FirstName).Contains(search.Name)
+                || a.Arrangement.Name.Contains(search.Name));
             }
 
             if (!string.IsNullOrEmpty(search?.ReservationStatusId))
@@ -185,9 +185,24 @@ namespace Iter.Repository
             await dbContext.SaveChangesAsync();
         }
 
+        public async Task<List<Reservation>> GetArrangementsByDestinationCityNames(List<int> cities)
+        {
+            var clientIds = await this.dbContext.Reservation
+                                .Where(d => d.Arrangement.Destinations.Any(x => cities.Contains(x.CityId))).Select(x => x.ClientId).ToListAsync();
+
+
+            var reservations = await this.dbContext.Reservation.Include(x => x.Arrangement).ThenInclude(x => x.Destinations).Where(r => clientIds.Contains(r.ClientId)).ToListAsync();
+            return reservations;
+        }
+
         private decimal CalculateNewAverage(double oldRating, int count, int newRating)
         {
             return (decimal)((oldRating * count + newRating) / (count + 1));
+        }
+
+        public async override Task<IEnumerable<Reservation>> GetAll()
+        {
+            return await this.dbContext.Reservation.Include(x => x.Arrangement).ThenInclude(x => x.Destinations).ToListAsync();
         }
     }
 }

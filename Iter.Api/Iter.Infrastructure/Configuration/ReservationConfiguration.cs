@@ -19,6 +19,9 @@ namespace Iter.Infrastrucure.Configurations
             builder.Property(r => r.DeparturePlace)
                 .HasMaxLength(100);
 
+            builder.Property(r => r.TransactionId)
+               .HasMaxLength(40);
+
             builder.HasOne(r => r.Client)
                 .WithMany(u => u.Reservations)
                 .HasForeignKey(r => r.ClientId)

@@ -25,6 +25,8 @@ Arrangement _$ArrangementFromJson(Map<String, dynamic> json) => Arrangement(
       destinations: (json['destinations'] as List<dynamic>)
           .map((e) => Destination.fromJson(e as Map<String, dynamic>))
           .toList(),
+      employees:
+          (json['employees'] as List<dynamic>).map((e) => e as String).toList(),
       arrangementStatusId: json['arrangementStatusId'] as int?,
       arrangementStatusName: json['arrangementStatusName'] as String?,
     );
@@ -41,6 +43,7 @@ Map<String, dynamic> _$ArrangementToJson(Arrangement instance) =>
       'prices': instance.prices,
       'images': instance.images,
       'destinations': instance.destinations,
+      'employees': instance.employees,
       'arrangementStatusId': instance.arrangementStatusId,
       'arrangementStatusName': instance.arrangementStatusName,
     };

@@ -64,15 +64,8 @@ namespace Iter.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int?>("CityId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -100,6 +93,8 @@ namespace Iter.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
 
                     b.ToTable("Address", (string)null);
                 });
@@ -304,6 +299,29 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("ArrangementStatus");
                 });
 
+            modelBuilder.Entity("Iter.Core.EntityModels.City", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.ToTable("City", (string)null);
+                });
+
             modelBuilder.Entity("Iter.Core.EntityModels.Client", b =>
                 {
                     b.Property<Guid>("Id")
@@ -342,6 +360,24 @@ namespace Iter.Infrastructure.Migrations
                     b.ToTable("Client", (string)null);
                 });
 
+            modelBuilder.Entity("Iter.Core.EntityModels.Country", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Country", (string)null);
+                });
+
             modelBuilder.Entity("Iter.Core.EntityModels.Destination", b =>
                 {
                     b.Property<Guid>("Id")
@@ -357,15 +393,8 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<DateTime>("ArrivalDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -388,6 +417,8 @@ namespace Iter.Infrastructure.Migrations
                     b.HasIndex("AccommodationId");
 
                     b.HasIndex("ArrangementId");
+
+                    b.HasIndex("CityId");
 
                     b.ToTable("Destination", (string)null);
                 });
@@ -539,6 +570,10 @@ namespace Iter.Infrastructure.Migrations
 
                     b.Property<decimal>("TotalPaid")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TransactionId")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.HasKey("Id");
 
@@ -832,6 +867,17 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("HotelAddress");
                 });
 
+            modelBuilder.Entity("Iter.Core.EntityModels.Address", b =>
+                {
+                    b.HasOne("Iter.Core.EntityModels.City", "City")
+                        .WithMany("Address")
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_Address_City");
+
+                    b.Navigation("City");
+                });
+
             modelBuilder.Entity("Iter.Core.EntityModels.Agency", b =>
                 {
                     b.HasOne("Iter.Core.EntityModels.Address", "Address")
@@ -905,6 +951,18 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Arrangement");
                 });
 
+            modelBuilder.Entity("Iter.Core.EntityModels.City", b =>
+                {
+                    b.HasOne("Iter.Core.EntityModels.Country", "Country")
+                        .WithMany("Cities")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_City_Coutnry");
+
+                    b.Navigation("Country");
+                });
+
             modelBuilder.Entity("Iter.Core.EntityModels.Destination", b =>
                 {
                     b.HasOne("Iter.Core.EntityModels.Accommodation", "Accommodation")
@@ -920,9 +978,18 @@ namespace Iter.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Destination_Arrangement");
 
+                    b.HasOne("Iter.Core.EntityModels.City", "City")
+                        .WithMany("Destinations")
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_Destination_City");
+
                     b.Navigation("Accommodation");
 
                     b.Navigation("Arrangement");
+
+                    b.Navigation("City");
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.Employee", b =>
@@ -1117,11 +1184,23 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Arrangements");
                 });
 
+            modelBuilder.Entity("Iter.Core.EntityModels.City", b =>
+                {
+                    b.Navigation("Address");
+
+                    b.Navigation("Destinations");
+                });
+
             modelBuilder.Entity("Iter.Core.EntityModels.Client", b =>
                 {
                     b.Navigation("Reservations");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Iter.Core.EntityModels.Country", b =>
+                {
+                    b.Navigation("Cities");
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.Employee", b =>

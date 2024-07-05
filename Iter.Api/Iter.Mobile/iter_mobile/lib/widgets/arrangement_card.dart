@@ -12,6 +12,7 @@ class ArrangementCard extends StatelessWidget {
   final String departureDate;
   final String agencyName;
   final String? agencyRating;
+  final Function() onReturn;
   final bool? isReserved;
 
   const ArrangementCard(
@@ -22,19 +23,21 @@ class ArrangementCard extends StatelessWidget {
       required this.departureDate,
       required this.agencyName,
       this.agencyRating,
+      required this.onReturn,
       this.isReserved});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          Navigator.of(context).push(
+        onTap: () async {
+          var result = await Navigator.of(context).push(
             MaterialPageRoute(
-                builder: (context) => AuthStorageProvider.getAuthData()?["role"] == Roles.client
-                                    ? ArrangementDetailsPage(id: id, isReserved: isReserved)
-                                    : EmployeeArrangementDetailsPage(id: id)
-                                    ),
+                builder: (context) =>
+                    AuthStorageProvider.getAuthData()?["role"] == Roles.client
+                        ? ArrangementDetailsPage(id: id, isReserved: isReserved)
+                        : EmployeeArrangementDetailsPage(id: id)),
           );
+          await onReturn();
         },
         child: Card(
           shape: RoundedRectangleBorder(
@@ -93,20 +96,20 @@ class ArrangementCard extends StatelessWidget {
                               style: const TextStyle(fontSize: 16.0),
                             ),
                             if (agencyRating != null)
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  agencyRating ?? "",
-                                  style: const TextStyle(fontSize: 16.0),
-                                ),
-                                Icon(
-                                  Icons.star,
-                                  color: Colors.yellow[700],
-                                  size: 18.0,
-                                ),
-                              ],
-                            ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    agencyRating ?? "",
+                                    style: const TextStyle(fontSize: 16.0),
+                                  ),
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.yellow[700],
+                                    size: 18.0,
+                                  ),
+                                ],
+                              ),
                           ],
                         ),
                         Text(

@@ -19,6 +19,7 @@ class Arrangement {
   final List<ArrangementPrice> prices;
   final List<ImageModel> images;
   final List<Destination> destinations;
+  final List<String> employees;
   final int? arrangementStatusId;
   final String? arrangementStatusName;
 
@@ -33,6 +34,7 @@ class Arrangement {
     required this.prices,
     required this.images,
     required this.destinations,
+    required this.employees,
     required this.arrangementStatusId,
     required this.arrangementStatusName,
   });

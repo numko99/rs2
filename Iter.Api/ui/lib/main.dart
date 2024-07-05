@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/pages/agency_details.dart';
@@ -19,8 +21,13 @@ import 'package:ui/services/employee_arrangment_provider.dart';
 import 'package:ui/services/report_provider.dart';
 import 'package:ui/services/reservation_provider.dart';
 import 'package:ui/services/user_provider.dart';
+import 'package:window_size/window_size.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    setWindowMinSize(const Size(1600, 800));
+  }
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => AgencyProvider()),
     ChangeNotifierProvider(create: (_) => AuthProvider()),
@@ -42,9 +49,9 @@ class IterApp extends StatelessWidget {
           primarySwatch: Colors.amber,
           fontFamily: 'Elsie-Regular',
         ),
-        initialRoute: '/',
+        initialRoute: '/login',
         routes: {
-          '/': (context) => Login(),
+          '/login': (context) => Login(),
           '/agency': (context) => const AgencyPage(),
           '/agency/details': (context) {
             final args = ModalRoute.of(context)!.settings.arguments as Map;

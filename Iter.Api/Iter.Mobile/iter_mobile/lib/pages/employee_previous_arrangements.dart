@@ -139,6 +139,7 @@ class _EmployeePreviousArrangementsPageState extends State<EmployeePreviousArran
                         image: arrangements[index].arrangement!.mainImage.image,
                         name: arrangements[index].arrangement!.name,
                         agencyName: arrangements[index].arrangement!.agencyName,
+                        onReturn: () => loadData(true),
                         departureDate: DateFormat('dd.MM.yyyy')
                             .format(arrangements[index].arrangement!.startDate)),
                       Positioned(
@@ -163,6 +164,7 @@ class _EmployeePreviousArrangementsPageState extends State<EmployeePreviousArran
                                       .mainImage
                                       .image,
                                   name: arrangements[index].arrangement!.name,
+                                  onReturn: () => loadData(true),
                                   agencyName: arrangements[index]
                                       .arrangement!
                                       .agencyName,

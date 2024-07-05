@@ -1,7 +1,9 @@
-﻿namespace Iter.Services.Interface
+﻿using Iter.Core.Models;
+
+namespace Iter.Services.Interface
 {
     public interface IEmailService
     {
-        Task SendEmailAsync(string to, string subject, string htmlMessage);
+        Task SendEmailAsync(EmailMessage emailMessage);
     }
 }

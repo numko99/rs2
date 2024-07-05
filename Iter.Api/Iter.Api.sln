@@ -30,7 +30,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iter.Infrastructure", "Iter
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{3817B316-ECE7-4ABE-8E4D-F377CDD2E30E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iter.RdlcDesign", "Iter.RdlcDesign\Iter.RdlcDesign.csproj", "{6209F6B5-D766-4A75-88FA-EFD5DB3BADE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iter.RdlcDesign", "Iter.RdlcDesign\Iter.RdlcDesign.csproj", "{6209F6B5-D766-4A75-88FA-EFD5DB3BADE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iter.Subscriber", "Iter.Subscriber\Iter.Subscriber.csproj", "{5FA87119-0F78-4CCA-AB5A-75E9D16C0D16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,6 +76,10 @@ Global
 		{6209F6B5-D766-4A75-88FA-EFD5DB3BADE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6209F6B5-D766-4A75-88FA-EFD5DB3BADE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6209F6B5-D766-4A75-88FA-EFD5DB3BADE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FA87119-0F78-4CCA-AB5A-75E9D16C0D16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FA87119-0F78-4CCA-AB5A-75E9D16C0D16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FA87119-0F78-4CCA-AB5A-75E9D16C0D16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FA87119-0F78-4CCA-AB5A-75E9D16C0D16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
