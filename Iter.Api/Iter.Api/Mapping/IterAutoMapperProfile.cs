@@ -2,10 +2,12 @@ using AutoMapper;
 
 using Iter.Core;
 using Iter.Core.Dto;
+using Iter.Core.Dto.User;
 using Iter.Core.EntityModels;
 using Iter.Core.Enum;
 using Iter.Core.Models;
 using Iter.Core.ReportDatasetModels;
+using Iter.Core.Search_Responses;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 
@@ -142,6 +144,7 @@ namespace Iter.Api.Mapping
             this.CreateMap<Client?, UserResponse?>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User != null ? src.User.Email : null))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User != null ? src.User.PhoneNumber : null));
+            this.CreateMap<UserNamesDto?, UserNamesResponse?>();
 
             this.CreateMap<UserUpsertRequest?, Employee?>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Iter.Core.Responses;
 using Iter.Core.Dto;
 using System.Data;
+using Iter.Core.Search_Responses;
 
 namespace Iter.Services
 {
@@ -182,6 +183,19 @@ namespace Iter.Services
             var client = this.mapper.Map<Client>(userRegistration);
             client.User = user;
             await this.userRepository.InsertClient(client);
+        }
+
+        public async Task<List<UserNamesResponse>> GetUserNamesByIds(List<string> Ids)
+        {
+            if (Ids == null || Ids.Count == 0)
+            {
+                return new List<UserNamesResponse>();
+            }
+
+            var users = await this.userRepository.GetUserNamesByIds(Ids);
+            var response = this.mapper.Map<List<UserNamesResponse>>(users);
+
+            return response;
         }
     }
 }

@@ -68,5 +68,16 @@ namespace Iter.Api.Controllers
             return Ok();
         }
 
+        [HttpPost("names-by-id")]
+        public async Task<IActionResult> GetUserNamesByIds([FromBody] List<string> userIds)
+        {
+            if (userIds == null || userIds.Count == 0)
+            {
+                return BadRequest("User IDs are required.");
+            }
+
+            var userNames = await _userService.GetUserNamesByIds(userIds);
+            return Ok(userNames);
+        }
     }
 }

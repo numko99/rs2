@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatPage extends StatefulWidget {
+  final String senderId;
+  final String receiverId;
+  final String reciverName;
+  final String reciverAgency;
+
+  const ChatPage({super.key, required this.senderId, required this.receiverId, required this.reciverName, required this.reciverAgency});
+
   @override
   _ChatPage createState() => _ChatPage();
 }
 
 class _ChatPage extends State<ChatPage> {
   final TextEditingController _controller = TextEditingController();
-  final String currentUserId = "initialUserId";
-  final String chatPartnerId = "initialReceiverId";
 
   void _sendMessage() {
     if (_controller.text.isEmpty) {
@@ -17,8 +22,8 @@ class _ChatPage extends State<ChatPage> {
     }
     FirebaseFirestore.instance.collection('chats').add({
       'text': _controller.text,
-      'senderId': currentUserId,
-      'receiverId': chatPartnerId,
+      'senderId': widget.senderId,
+      'receiverId': widget.receiverId,
       'timestamp': FieldValue.serverTimestamp(),
     });
     _controller.clear();
@@ -29,7 +34,14 @@ class _ChatPage extends State<ChatPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('Dalila Bajrić'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.reciverName),
+            SizedBox(height: 5),
+            Text(widget.reciverAgency, style: TextStyle(fontSize: 10)),
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -37,8 +49,8 @@ class _ChatPage extends State<ChatPage> {
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('chats')
-                  .where('senderId', isEqualTo: currentUserId)
-                  .where('receiverId', isEqualTo: chatPartnerId)
+                  .where('senderId', isEqualTo: widget.senderId)
+                  .where('receiverId', isEqualTo: widget.receiverId)
                   .orderBy('timestamp', descending: true)
                   .snapshots(),
               builder: (ctx, AsyncSnapshot<QuerySnapshot> sentSnapshot) {
@@ -48,8 +60,8 @@ class _ChatPage extends State<ChatPage> {
                 return StreamBuilder(
                   stream: FirebaseFirestore.instance
                       .collection('chats')
-                      .where('senderId', isEqualTo: chatPartnerId)
-                      .where('receiverId', isEqualTo: currentUserId)
+                      .where('senderId', isEqualTo: widget.receiverId)
+                      .where('receiverId', isEqualTo: widget.senderId)
                       .orderBy('timestamp', descending: true)
                       .snapshots(),
                   builder:
@@ -76,7 +88,7 @@ class _ChatPage extends State<ChatPage> {
                       itemCount: allDocs.length,
                       itemBuilder: (ctx, index) => MessageBubble(
                         allDocs[index]['text'],
-                        allDocs[index]['senderId'] == currentUserId,
+                        allDocs[index]['senderId'] == widget.senderId,
                       ),
                     );
                   },

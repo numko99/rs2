@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iter_mobile/enums/roles.dart';
 import 'package:iter_mobile/pages/chat_page.dart';
+import 'package:iter_mobile/pages/all_messages_page.dart';
 import 'package:iter_mobile/pages/employee_previous_arrangements.dart';
 import 'package:iter_mobile/pages/employee_home.dart';
 import 'package:iter_mobile/pages/home.dart';
@@ -20,14 +21,14 @@ class _LayoutState extends State<Layout> {
 
   final List<WidgetBuilder> _pages = [
     (context) => HomePage(),
-    (context) => ChatPage(),
+    (context) => UserListPage(),
     (context) => const MyArrangementsPage(),
     (context) => ProfilePage(),
   ];
 
     final List<WidgetBuilder> _employePages = [
     (context) => const EmployeeHomePage(),
-    (context) => ChatPage(),
+    (context) => UserListPage(),
     (context) => const EmployeePreviousArrangementsPage(),
     (context) => ProfilePage(),
   ];

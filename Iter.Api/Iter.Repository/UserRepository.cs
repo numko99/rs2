@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Iter.Core.Responses;
 using Iter.Core.Enum;
+using Iter.Core.Dto.User;
 
 namespace Iter.Repository
 {
@@ -144,6 +145,31 @@ namespace Iter.Repository
         {
             await this.dbContext.Client.AddAsync(client);
             await this.dbContext.SaveChangesAsync();
+        }
+
+        public async Task<List<UserNamesDto>> GetUserNamesByIds(List<string> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return new List<UserNamesDto>();
+            }
+
+            var users = await this.dbContext.User
+                .AsNoTracking()
+                .Include(x => x.Client)
+                .Include(x => x.Employee)
+                .ThenInclude(x => x.Agency)
+                .Where(u => ids.Contains(u.Id))
+                .Select(x => new UserNamesDto
+                {
+                    Id = x.Id,
+                    FirstName = x.Role == (int)Roles.Client ? x.Client.FirstName : x.Employee.FirstName,
+                    LastName = x.Role == (int)Roles.Client ? x.Client.LastName : x.Employee.LastName,
+                    AgencyName = (x.Role == (int)Roles.TouristGuide || x.Role == (int)Roles.Coordinator) ? x.Employee.Agency.Name : null,
+                })
+                .ToListAsync();
+
+            return users;
         }
     }
 }

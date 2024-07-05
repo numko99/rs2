@@ -4,6 +4,7 @@ using Iter.Core.EntityModels;
 using Iter.Core;
 using Iter.Core.Responses;
 using Iter.Core.Dto;
+using Iter.Core.Search_Responses;
 
 namespace Iter.Services.Interface
 {
@@ -16,5 +17,7 @@ namespace Iter.Services.Interface
         Task<UserStatisticResponse> GetCurrentUserStatistic();
 
         Task InsertClient(UserRegistrationDto? userRegistration);
+
+        Task<List<UserNamesResponse>> GetUserNamesByIds(List<string> Ids);
     }
 }

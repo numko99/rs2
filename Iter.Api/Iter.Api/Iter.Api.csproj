@@ -7,7 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\Reports\ArrangementEarning.rdlc" />
+    <Content Remove="wwwroot\Reports\UserPaymentsReport.rdlc" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="wwwroot\Reports\UserPaymentsReport.rdlc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\Reports\ArrangementEarning.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wwwroot\Reports\UserPaymentsReport.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -44,15 +58,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="wwwroot\Reports\ArrangementEarning.rdlc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\Reports\UserPaymentsReport.rdlc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
