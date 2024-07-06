@@ -79,8 +79,7 @@ namespace Iter.Api.Controllers
             }
 
             this.logger.LogInformation("Token created successfully");
-
-            return Ok(new LoginResponse() { Token = token, Role = result.Role, AgencyId = agencyId, Id = HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier) });
+            return Ok(new LoginResponse() { Token = token, Role = result.Role, AgencyId = agencyId, Id = result.Id });
         }
 
         [HttpPost("verify-email-token")]
