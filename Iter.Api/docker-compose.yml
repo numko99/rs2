@@ -60,9 +60,8 @@ services:
         EMAILSETTINGS_ENABLESSL: true
         EMAILSETTINGS_USERNAME: iter_travel@hotmail.com
         EMAILSETTINGS_PASSWORD: Iter_12345
-      environment:
-        - ConnectionStrings:AppDatabase=Server=sql,1433;Database=iter_docker4;User=sa;Password=Iter123456;TrustServerCertificate=True;ConnectRetryCount=0
-
+    environment:
+        - ConnectionStrings:AppDatabase=Server=sql,1433;Database=iter_docker7;User=sa;Password=Iter123456;TrustServerCertificate=True;ConnectRetryCount=0
     ports:
       - 8080:80
     networks:
