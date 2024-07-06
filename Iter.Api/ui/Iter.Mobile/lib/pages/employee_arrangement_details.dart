@@ -4,6 +4,9 @@ import 'package:iter_mobile/enums/reservation_status.dart';
 import 'package:iter_mobile/helpers/date_time_helper.dart';
 import 'package:iter_mobile/modals/reservation_details_modal.dart';
 import 'package:iter_mobile/models/reservation_search_respose.dart';
+import 'package:iter_mobile/pages/chat_page.dart';
+import 'package:iter_mobile/providers/auth_provider.dart';
+import 'package:iter_mobile/providers/auth_storage_provider.dart';
 import 'package:iter_mobile/providers/reservation_provider.dart';
 import 'package:iter_mobile/widgets/destination_by_country_card.dart';
 import 'package:iter_mobile/widgets/icon_text_chip.dart';
@@ -41,14 +44,14 @@ class _EmployeeArrangementDetailsPageState
   }
 
   Future<void> initialLoad() async {
-    if (mounted){
+    if (mounted) {
       setState(() {
         displayLoader = true;
       });
     }
     var searchArrangement = await _arrangementProvider?.getById(widget.id);
     await loadReservations();
-    if (mounted){
+    if (mounted) {
       setState(() {
         arrangement = searchArrangement;
         displayLoader = false;
@@ -63,14 +66,12 @@ class _EmployeeArrangementDetailsPageState
       "reservationStatusId":
           (ReservationStatusEnum.confirmed.index + 1).toString(),
     });
-    if (mounted){
+    if (mounted) {
       setState(() {
         reservations = searchReservations?.result;
       });
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -111,9 +112,14 @@ class _EmployeeArrangementDetailsPageState
                                       "Prije ${DateTimeCustomHelper.getTimeSince(arrangement!.modifiedAt!)}"),
                               if (arrangement!.endDate != null
                                   ? DateTimeCustomHelper.isAfterOrEqualDateOnly(
-                                              arrangement!.endDate!, DateTime.now()) &&
-                                    DateTimeCustomHelper.isBeforeOrEqualDateOnly(arrangement!.startDate, DateTime.now())
-                                  : DateTimeCustomHelper.areDatesEqual(arrangement!.startDate,
+                                          arrangement!.endDate!,
+                                          DateTime.now()) &&
+                                      DateTimeCustomHelper
+                                          .isBeforeOrEqualDateOnly(
+                                              arrangement!.startDate,
+                                              DateTime.now())
+                                  : DateTimeCustomHelper.areDatesEqual(
+                                      arrangement!.startDate,
                                       DateTime.now())) ...[
                                 const Chip(
                                     label: Text("Putovanje u toku",
@@ -199,27 +205,12 @@ class _EmployeeArrangementDetailsPageState
                                             DataCell(Align(
                                               alignment: Alignment.centerRight,
                                               child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
                                                 children: [
                                                   IconButton(
-                                                      icon: const Icon(
-                                                          Icons.open_in_new_off),
-                                                      onPressed: () => {
-                                                            showDialog(
-                                                              context: context,
-                                                              builder: (BuildContext
-                                                                  context) {
-                                                                return ReservationDetailsModal(
-                                                                    reservationId:
-                                                                        reservation
-                                                                            .value
-                                                                            .reservationId);
-                                                              },
-                                                            )
-                                                          }),
-                                                          IconButton(
                                                       icon: const Icon(Icons
-                                                          .message),
+                                                          .open_in_new_off),
                                                       onPressed: () => {
                                                             showDialog(
                                                               context: context,
@@ -233,6 +224,21 @@ class _EmployeeArrangementDetailsPageState
                                                                             .reservationId);
                                                               },
                                                             )
+                                                          }),
+                                                  IconButton(
+                                                      icon: const Icon(
+                                                          Icons.message),
+                                                      onPressed: () => {
+                                                            Navigator.of(context).push(
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            ChatPage(
+                                                                              senderId: reservation.value.reservationId,
+                                                                              receiverId: AuthStorageProvider.getAuthData()?["id"],
+                                                                              reciverName: "${reservation.value.firstName} ${reservation.value.lastName}",
+                                                                              reciverAgency: "",
+                                                                            )))
                                                           }),
                                                 ],
                                               ),

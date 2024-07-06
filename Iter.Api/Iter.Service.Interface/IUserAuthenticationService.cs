@@ -30,7 +30,5 @@ namespace Iter.Services.Interface
         Task ChangePassword(string currentPassword, string newPassword);
 
         Task CreateAndSendToken(User user, string type);
-
-        Task<string> GetCurrentUserIdAsync();
     }
 }

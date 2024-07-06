@@ -142,7 +142,7 @@ namespace Iter.Repository
                 ArrangementPrice = r.ArrangementPrice.Price,
                 TotalPaid = r.TotalPaid,
                 FirstName = r.Client.FirstName ?? "",
-                LastName = r.Client.LastName ?? "",
+                LastName = r.Client.User.Id,
                 ReservationDate = r.CreatedAt,
                 ReservationNumber = r.ReservationNumber
             }).ToListAsync();

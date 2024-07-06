@@ -186,16 +186,6 @@ namespace Iter.Services
             return user;
         }
 
-        public async Task<string> GetCurrentUserIdAsync()
-        {
-            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                throw new InvalidOperationException("No logged-in user.");
-            }
-            return userId;
-        }
-
 
         public async Task<bool> IsCorrectPassword(string password)
         {
