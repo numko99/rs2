@@ -28,7 +28,7 @@ class _LayoutState extends State<Layout> {
     super.initState();
 
     role = AuthStorageProvider.getAuthData()?["role"];
-    
+
     sidebarItems = sidebarItems.where((item) {
       var roles = item['roles'] as List<Roles>?;
       return roles?.contains(role) ?? false;
@@ -79,9 +79,7 @@ class _LayoutState extends State<Layout> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(
-          color: Colors.amber,
-        ),
+        iconTheme: const IconThemeData(color: Colors.amber),
       ),
       body: Container(
         color: CupertinoColors.lightBackgroundGray,
@@ -94,6 +92,16 @@ class _LayoutState extends State<Layout> {
                   padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
                   child: Row(
                     children: [
+                      IconButton(
+                        color: Colors.amber,
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          } else {}
+                        },
+                      ),
+                      SizedBox(width: 20),
                       Text(
                         widget.name,
                         style: TextStyle(color: Colors.amber, fontSize: 30),
@@ -158,15 +166,15 @@ class _LayoutState extends State<Layout> {
             ),
           ),
           Expanded(
-            flex: 1,
+              flex: 1,
               child: Align(
-            alignment: Alignment.bottomCenter,
-            child: SidebarItem(
-              text: "Odjava",
-              icon: Icons.logout,
-              link: "/login",
-            ),
-          ))
+                alignment: Alignment.bottomCenter,
+                child: SidebarItem(
+                  text: "Odjava",
+                  icon: Icons.logout,
+                  link: "/login",
+                ),
+              ))
         ],
       )),
     );

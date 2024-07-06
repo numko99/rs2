@@ -17,6 +17,10 @@ namespace Iter.Core.EntityModels
 
         public int Role { get; set; }
 
+        public DateTime? CreatedAt{ get; set; }
+
+        public DateTime? ModifiedAt { get; set; }
+
         public List<VerificationToken> VerificationTokens { get; set; }
 
     }

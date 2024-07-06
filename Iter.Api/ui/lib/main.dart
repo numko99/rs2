@@ -46,7 +46,7 @@ class IterApp extends StatelessWidget {
     return MaterialApp(
         title: 'ITer',
         theme: ThemeData(
-          primarySwatch: Colors.amber,
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.amber),
           fontFamily: 'Elsie-Regular',
         ),
         initialRoute: '/login',

@@ -9,10 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using Iter.Core.Enum;
 using static Humanizer.On;
+using Iter.Core.Dto;
+using Iter.Core.RequestParameterModels;
 
 namespace Iter.Repository
 {
-    public class ArrangementRepository : BaseCrudRepository<Arrangement, ArrangementUpsertRequest, ArrangementUpsertRequest, ArrangementResponse, ArrangmentSearchModel, ArrangementSearchResponse>, IArrangementRepository
+    public class ArrangementRepository : BaseCrudRepository<Arrangement>, IArrangementRepository
     {
         private readonly IterContext dbContext;
         private readonly IMapper mapper;
@@ -23,7 +25,7 @@ namespace Iter.Repository
             this.mapper = mapper;
         }
 
-        public async override Task<PagedResult<ArrangementSearchResponse>> Get(ArrangmentSearchModel? search)
+        public async Task<PagedResult<ArrangementSearchDto>> Get(ArrangmentSearchParameters? search)
         {
             var query = dbContext.Set<Arrangement>().AsQueryable();
 
@@ -71,7 +73,7 @@ namespace Iter.Repository
 
             query = query.Include(a => a.Agency).Include(a => a.ArrangementStatus).Include(a => a.ArrangementImages).ThenInclude(a => a.Image);
 
-            var result = await query.Select(a => new ArrangementSearchResponse{
+            var result = await query.Select(a => new ArrangementSearchDto{
                 Id = a.Id,
                 StartDate = a.StartDate,
                 EndDate = a.EndDate,
@@ -80,11 +82,11 @@ namespace Iter.Repository
                 AgencyRating = a.Agency.Rating,
                 ArrangementStatusId = a.ArrangementStatusId, 
                 ArrangementStatusName = a.ArrangementStatus.Name, 
-                MainImage = this.mapper.Map<ImageResponse>(a.ArrangementImages.Where(a => a.IsMainImage).FirstOrDefault()),
+                MainImage = this.mapper.Map<ImageDto>(a.ArrangementImages.Where(a => a.IsMainImage).FirstOrDefault()),
                 IsReserved = search.CurrentUserId != null ? this.dbContext.Reservation.Any(r => r.ArrangmentId == a.Id && r.ClientId == search.CurrentUserId && r.IsDeleted == false && (r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Confirmed || r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Pending)) : false
             }).ToListAsync();
 
-            return new PagedResult<ArrangementSearchResponse>()
+            return new PagedResult<ArrangementSearchDto>()
             {
                 Count = count,
                 Result = result
@@ -225,9 +227,9 @@ namespace Iter.Repository
             return arrangementPrice;
         }
 
-        public async Task<List<ArrangementSearchResponse>> GetRecommendedArrangementsByDestinationNames(List<int> cities, Guid? clientId)
+        public async Task<List<ArrangementSearchDto>> GetRecommendedArrangementsByDestinationNames(List<int> cities, Guid? clientId)
         {
-            var arrangements = new List<ArrangementSearchResponse>();
+            var arrangements = new List<ArrangementSearchDto>();
             foreach (var cityId in cities)
             {
                 var arrangement = await this.dbContext.Arrangement
@@ -244,11 +246,11 @@ namespace Iter.Repository
 
                 if (!arrangements.Any(a => a.Id == arrangement.Id))
                 {
-                    arrangements.Add(new ArrangementSearchResponse()
+                    arrangements.Add(new ArrangementSearchDto()
                     {
                         Id = arrangement.Id,
                         Name = arrangement.Name,
-                        MainImage = this.mapper.Map<ImageResponse>(arrangement.ArrangementImages.Where(a => a.IsMainImage).FirstOrDefault().Image),
+                        MainImage = this.mapper.Map<ImageDto>(arrangement.ArrangementImages.Where(a => a.IsMainImage).FirstOrDefault().Image),
                         AgencyName = arrangement.Agency.Name,
                         MinPrice = arrangement.ArrangementPrices.Min(a => a.Price),
                         IsReserved = this.dbContext.Reservation.Any(r => r.ArrangmentId == arrangement.Id && r.ClientId == clientId && r.IsDeleted == false && (r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Confirmed || r.ReservationStatusId == (int)Core.Enum.ReservationStatus.Pending))
@@ -264,15 +266,13 @@ namespace Iter.Repository
 
         public async Task<List<Destination>> GetAllDestinations()
         {
-            // Retrieve all destinations and group them by city
             var groupedByCity = await this.dbContext.Destination
-                .AsNoTracking() // If you don't need to track changes, this improves performance
+                .AsNoTracking()
                 .ToListAsync();
 
-            // Use LINQ to get distinct cities
             var distinctDestinations = groupedByCity
                 .GroupBy(d => d.CityId)
-                .Select(g => g.First()) // Selects the first destination from each grouped city
+                .Select(g => g.First())
                 .ToList();
 
             return distinctDestinations;

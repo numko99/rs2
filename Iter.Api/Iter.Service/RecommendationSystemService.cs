@@ -136,7 +136,9 @@ namespace Iter.Services
             {
                 var currentUser = await this.userAuthenticationService.GetCurrentUserAsync();
 
-                return await arrangementRepository.GetRecommendedArrangementsByDestinationNames(cities, currentUser.ClientId);
+                var data = await arrangementRepository.GetRecommendedArrangementsByDestinationNames(cities, currentUser.ClientId);
+
+                return this.mapper.Map<List<ArrangementSearchResponse>>(data);
             }
             catch (Exception ex)
             {

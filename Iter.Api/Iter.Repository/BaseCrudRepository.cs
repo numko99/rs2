@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Iter.Repository
 {
-    public class BaseCrudRepository<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> : BaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> where TInsert : class where T : class where TGet : class where TSearchResponse : class where TSearchRequest : BaseSearchModel
+    public class BaseCrudRepository<T> : BaseReadRepository<T> where T : class
     {
         private readonly IterContext dbContext;
         private readonly DbSet<T> dbSet;

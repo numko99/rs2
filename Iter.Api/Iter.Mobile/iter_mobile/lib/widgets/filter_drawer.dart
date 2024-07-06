@@ -131,7 +131,9 @@ void updateFilters() {
             title: const Center(child: Text('Osvježi')),
             onTap: () {
               removeFilters();
-              Navigator.pop(context);
+              if (mounted){
+                Navigator.pop(context);
+              }
             },
           ),
           Container(
@@ -142,6 +144,7 @@ void updateFilters() {
                       Text('Primijeni', style: TextStyle(color: Colors.white))),
               onTap: () async {
                 updateFilters();
+                if (mounted)
                 Navigator.pop(context);
               },
             ),

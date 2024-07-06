@@ -1,4 +1,4 @@
-﻿namespace Iter.Core.Search_Models
+﻿namespace Iter.Core.RequestParameterModels
 {
     public class BaseSearchModel
     {

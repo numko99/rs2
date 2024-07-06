@@ -3,14 +3,12 @@ import 'package:intl/intl.dart';
 import 'package:iter_mobile/enums/arrangement_status.dart';
 import 'package:iter_mobile/helpers/scaffold_messenger_helper.dart';
 import 'package:iter_mobile/models/arrangement_search_response.dart';
-import 'package:iter_mobile/models/arrangment.dart';
 import 'package:iter_mobile/models/filters.dart';
 import 'package:iter_mobile/providers/arrangment_provider.dart';
 import 'package:iter_mobile/widgets/arrangement_card.dart';
 import 'package:iter_mobile/widgets/filter_chip.dart';
 import 'package:iter_mobile/widgets/filter_drawer.dart';
 import 'package:iter_mobile/widgets/icon_text_chip.dart';
-import 'package:iter_mobile/widgets/logo.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController searchController = TextEditingController();
 
   int currentPage = 1;
-  static const int pageSize = 10;
+  static const int pageSize = 5;
 
   Filter filter = Filter();
   String inputValue = "";
@@ -61,9 +59,11 @@ class _HomePageState extends State<HomePage> {
   Future<void> loadData(refresh) async {
     try {
       if (!displayLoader) {
-        setState(() {
-          displayLoader = true;
-        });
+        if (mounted){
+          setState(() {
+            displayLoader = refresh;
+          });
+        }
       }
 
       int loadPage = refresh ? 1 : currentPage;
@@ -85,22 +85,26 @@ class _HomePageState extends State<HomePage> {
         int totalPages = (searchArrangements.count ~/ pageSize) +
             (searchArrangements.count % pageSize == 0 ? 0 : 1);
 
-        setState(() {
-          if (refresh) {
-            arrangements = searchArrangements.result;
-          } else {
-            arrangements.addAll(searchArrangements.result);
-          }
-          currentPage = loadPage + 1;
-          hasMore = currentPage <= totalPages;
-        });
+        if (mounted){
+          setState(() {
+            if (refresh) {
+              arrangements = searchArrangements.result;
+            } else {
+              arrangements.addAll(searchArrangements.result);
+            }
+            currentPage = loadPage + 1;
+            hasMore = currentPage <= totalPages;
+          });
+        }
       } else {
-        setState(() {
-          if (refresh) {
-            arrangements.clear();
-          }
-          hasMore = false;
-        });
+        if (mounted){
+          setState(() {
+            if (refresh) {
+              arrangements.clear();
+            }
+            hasMore = false;
+          });
+        }
       }
     } catch (error) {
       ScaffoldMessengerHelper.showCustomSnackBar(
@@ -108,9 +112,11 @@ class _HomePageState extends State<HomePage> {
           message: "Došlo je do greške: ${error.toString()}",
           backgroundColor: Colors.red);
     } finally {
-      setState(() {
-        displayLoader = false;
-      });
+      if (mounted){
+        setState(() {
+          displayLoader = false;
+        });
+      }
     }
   }
 
@@ -122,9 +128,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
         toolbarHeight: 0,
       ),
-      body: displayLoader == true
-          ? const Center(child: CircularProgressIndicator())
-          :  Column(
+      body: Column(
         children: [
           Card(
             child: SizedBox(
@@ -177,7 +181,9 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
+            child: displayLoader == true
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
               controller: _scrollController,
               itemCount: arrangements.length,
               itemBuilder: (context, index) {
@@ -199,9 +205,11 @@ class _HomePageState extends State<HomePage> {
       endDrawer: FilterDrawer(
           filter: filter,
           onFiltersChanged: (Filter updatedFilter) {
-            setState(() {
-              filter = updatedFilter;
-            });
+            if (mounted){
+              setState(() {
+                filter = updatedFilter;
+              });
+            }
             loadData(true);
           }),
     );

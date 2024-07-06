@@ -230,6 +230,12 @@ class _InsertUserModalState extends State<InsertUserModal> {
                               child: Text(item.name ?? ""),
                             );
                           }).toList(),
+                          validator: (value) {
+                          if (value == null) {
+                            return 'Polje je obavezno';
+                          }
+                          return null;
+                          },
                           onChanged: (value) {
                             setState(() {
                               selectedAgency = value;
@@ -244,7 +250,7 @@ class _InsertUserModalState extends State<InsertUserModal> {
                 ),
                 const SizedBox(height: 30),
                 if (widget.user?.id == null)
-                Row(children: [
+                const Row(children: [
                   Text("Napomena: ",
                       style: TextStyle(
                           fontSize: 10, fontWeight: FontWeight.bold)),

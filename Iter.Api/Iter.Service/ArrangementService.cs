@@ -2,6 +2,7 @@
 using Iter.Core;
 using Iter.Core.EntityModels;
 using Iter.Core.Models;
+using Iter.Core.RequestParameterModels;
 using Iter.Core.Search_Models;
 using Iter.Repository.Interface;
 using Iter.Services.Interface;
@@ -37,7 +38,9 @@ namespace Iter.Services
         {
             var currentUser = await this.userAuthenticationService.GetCurrentUserAsync();
             searchObject.CurrentUserId = currentUser.ClientId;
-            return await this._arrangementRepository.Get(searchObject);
+            var arrangementSearchData = await this._arrangementRepository.Get(this._mapper.Map<ArrangmentSearchParameters>(searchObject));
+
+            return this._mapper.Map<PagedResult<ArrangementSearchResponse>>(arrangementSearchData);
         }
 
         public async Task<ArrangementPriceResponse> GetArrangementPriceAsync(Guid id)

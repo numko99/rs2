@@ -88,6 +88,12 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
                       child: Text(item.name ?? ""),
                     );
                   }).toList(),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Polje je obavezno';
+                    }
+                    return null;
+                  },
                   onChanged: (value) {
                     setState(() {
                       selectedAgency = value;

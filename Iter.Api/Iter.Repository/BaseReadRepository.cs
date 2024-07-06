@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Iter.Repository
 {
-    public class BaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> : IBaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> where T : class where TGet : class where TSearchResponse : class where TSearchRequest : BaseSearchModel
+    public class BaseReadRepository<T> : IBaseReadRepository<T> where T : class
     {
         private readonly IterContext dbContext;
         private readonly DbSet<T> dbSet;
@@ -30,38 +30,28 @@ namespace Iter.Repository
             return await this.dbSet.ToListAsync();
         }
 
-        public virtual async Task<PagedResult<TSearchResponse>> Get(TSearchRequest? search = null)
-        {
-            var query = dbContext.Set<T>().AsQueryable();
+        //public virtual async Task<PagedResult<TSearchResponse>> Get(TSearchRequest? search = null)
+        //{
+        //    var query = dbContext.Set<T>().AsQueryable();
 
-            PagedResult<TSearchResponse> result = new PagedResult<TSearchResponse>();
+        //    PagedResult<TSearchResponse> result = new PagedResult<TSearchResponse>();
 
-            query = AddFilter(query, search);
+        //    query = AddFilter(query, search);
 
-            query = AddInclude(query, search);
+        //    query = AddInclude(query, search);
 
-            result.Count = await query.CountAsync();
+        //    result.Count = await query.CountAsync();
 
-            if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
-            {
-                query = query.Skip((search.CurrentPage.Value - 1) * search.PageSize.Value).Take(search.PageSize.Value);
-            }
+        //    if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
+        //    {
+        //        query = query.Skip((search.CurrentPage.Value - 1) * search.PageSize.Value).Take(search.PageSize.Value);
+        //    }
 
-            var list = await query.ToListAsync();
+        //    var list = await query.ToListAsync();
 
-            var tmp = mapper.Map<List<TSearchResponse>>(list);
-            result.Result = tmp;
-            return result;
-        }
-
-        public virtual IQueryable<T> AddInclude(IQueryable<T> query, TSearchRequest? search = null)
-        {
-            return query;
-        }
-
-        public virtual IQueryable<T> AddFilter(IQueryable<T> query, TSearchRequest? search = null)
-        {
-            return query;
-        }
+        //    var tmp = mapper.Map<List<TSearchResponse>>(list);
+        //    result.Result = tmp;
+        //    return result;
+        //}
     }
 }

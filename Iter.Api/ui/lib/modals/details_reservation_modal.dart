@@ -188,13 +188,13 @@ class ReservationDetailsModalState extends State<ReservationDetailsModal> {
                                 DateTime.now(), "dd.MM.yyyy HH:mm")),
                           ),
                         ),
-                        const Flexible(
+                        Flexible(
                           child: ListTile(
                             leading: Tooltip(
                               message: 'Ocjena',
                               child: Icon(Icons.star, color: Colors.amber),
                             ),
-                            title: Text("TODO"),
+                            title: Text(reservation!.rating.toString()),
                           ),
                         )
                       ],

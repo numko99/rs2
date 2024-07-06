@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Iter.Core.Models;
-using Iter.Core.Search_Models;
+using Iter.Core.RequestParameterModels;
 using Iter.Repository;
 using Iter.Services.Interfaces;
 
@@ -8,20 +8,21 @@ namespace Iter.Services
 {
     public class BaseReadService<T, TGet, TSearchRequest, TSearchResponse> : IBaseReadService<T, TGet, TSearchRequest, TSearchResponse> where T : class where TGet : class where TSearchResponse : class where TSearchRequest: BaseSearchModel
     {
-        protected readonly IBaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> baseReadRepository;
+        protected readonly IBaseReadRepository<T> baseReadRepository;
         private readonly IMapper mapper;
 
 
-        public BaseReadService(IBaseReadRepository<T, TGet, TSearchRequest, TSearchResponse> baseReadRepository, IMapper mapper)
+        public BaseReadService(IBaseReadRepository<T> baseReadRepository, IMapper mapper)
         {
             this.baseReadRepository = baseReadRepository;
             this.mapper = mapper;
 
         }
 
-        public virtual async Task<PagedResult<TSearchResponse>> Get(TSearchRequest searchObject)
+        public virtual Task<PagedResult<TSearchResponse>> Get(TSearchRequest searchObject)
         {
-            return await this.baseReadRepository.Get(searchObject);
+            // TODO
+            throw new NotImplementedException();
         }
 
         public virtual async Task<List<TGet>> GetAll()

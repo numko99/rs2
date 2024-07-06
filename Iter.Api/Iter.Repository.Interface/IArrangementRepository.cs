@@ -1,18 +1,22 @@
 using Iter.Core.EntityModels;
-using Iter.Core;
 using Iter.Core.Search_Models;
+using Iter.Core.Models;
+using Iter.Core.Dto;
+using Iter.Core.RequestParameterModels;
 
 namespace Iter.Repository.Interface
 {
-    public interface IArrangementRepository : IBaseCrudRepository<Arrangement, ArrangementUpsertRequest, ArrangementUpsertRequest, ArrangementResponse, ArrangmentSearchModel, ArrangementSearchResponse>
+    public interface IArrangementRepository : IBaseCrudRepository<Arrangement>
     {
         Task<ArrangementPrice> GetArrangementPriceAsync(Guid id);
 
         Task SmartUpdateAsync(Arrangement arrangement);
 
-        Task<List<ArrangementSearchResponse>> GetRecommendedArrangementsByDestinationNames(List<int> cities, Guid? clientId);
+        Task<List<ArrangementSearchDto>> GetRecommendedArrangementsByDestinationNames(List<int> cities, Guid? clientId);
 
         Task<List<Destination>> GetAllDestinations();
+
+        Task<PagedResult<ArrangementSearchDto>> Get(ArrangmentSearchParameters? search);
 
     }
 }

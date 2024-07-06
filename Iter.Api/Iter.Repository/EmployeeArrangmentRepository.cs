@@ -7,10 +7,11 @@ using Iter.Repository.Interface;
 using Iter.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Iter.Core.Enum;
+using Iter.Core.RequestParameterModels;
 
 namespace Iter.Repository
 {
-    public class EmployeeArrangmentRepository : BaseCrudRepository<EmployeeArrangment, EmployeeArrangmentUpsertRequest, EmployeeArrangmentUpsertRequest, EmployeeArrangmentResponse, EmployeeArrangementSearchModel, EmployeeArrangmentResponse>, IEmployeeArrangmentRepository
+    public class EmployeeArrangmentRepository : BaseCrudRepository<EmployeeArrangment>, IEmployeeArrangmentRepository
     {
         private readonly IterContext dbContext;
         private readonly IMapper mapper;
@@ -38,11 +39,11 @@ namespace Iter.Repository
             await this.dbContext.SaveChangesAsync();
         }
 
-        public virtual async Task<PagedResult<EmployeeArrangmentResponse>> Get(EmployeeArrangementSearchModel? search = null)
+        public async Task<PagedResult<EmployeeArrangment>> Get(EmployeeArrangementRequestParameters? search = null)
         {
             var query = dbContext.Set<EmployeeArrangment>().AsQueryable();
 
-            PagedResult<EmployeeArrangmentResponse> result = new PagedResult<EmployeeArrangmentResponse>();
+            PagedResult<EmployeeArrangment> result = new PagedResult<EmployeeArrangment>();
 
             if (search?.EmployeeId != null)
             {
@@ -79,10 +80,14 @@ namespace Iter.Repository
                 query = query.Where(q => q.ArrangementId == search.ArrangementId && q.IsDeleted == false).AsQueryable();
             }
 
-            query = query.Include(a => a.Employee).Include(a => a.Arrangement).ThenInclude(a => a.Agency).Include(a => a.Arrangement).ThenInclude(a => a.ArrangementImages).ThenInclude(a => a.Image);
-
-
             result.Count = await query.CountAsync();
+
+            query = query.Include(a => a.Employee)
+                         .Include(a => a.Arrangement)
+                         .ThenInclude(a => a.Agency)
+                         .Include(a => a.Arrangement)
+                         .ThenInclude(a => a.ArrangementImages)
+                         .ThenInclude(a => a.Image);
 
             if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
             {
@@ -91,8 +96,7 @@ namespace Iter.Repository
 
             var list = await query.ToListAsync();
 
-            var tmp = mapper.Map<List<EmployeeArrangmentResponse>>(list);
-            result.Result = tmp;
+            result.Result = list;
             return result;
         }
 

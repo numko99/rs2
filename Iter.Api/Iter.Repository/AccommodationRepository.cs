@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Iter.Repository
 {
-    public class AccommodationRepository : BaseCrudRepository<Accommodation, AccommodationUpsertRequest, AccommodationUpsertRequest, AccommodationResponse, AgencySearchModel, AccommodationResponse>, IAccommodationRepository
+    public class AccommodationRepository : BaseCrudRepository<Accommodation>, IAccommodationRepository
     {
         private readonly IterContext dbContext;
         public AccommodationRepository(IterContext dbContext, IMapper mapper) : base(dbContext, mapper)

@@ -141,14 +141,18 @@ class _ProfilePageState extends State<ProfilePage> {
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop();
+                                      if (mounted){
+                                        Navigator.of(context).pop();
+                                      }
                                     },
                                     child: const Text('Odustani'),
                                   ),
                                   TextButton(
                                     onPressed: () {
+                                      if (mounted){
                                       Navigator.of(context).pop();
                                       _authProvider?.logoutUserAsync(context);
+                                      }
                                     },
                                     child: const Text('Potvrdi'),
                                   ),

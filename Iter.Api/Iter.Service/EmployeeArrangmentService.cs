@@ -4,12 +4,8 @@ using Iter.Core;
 using Iter.Core.Search_Models;
 using Iter.Repository.Interface;
 using Iter.Services.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Iter.Core.Models;
+using Iter.Core.RequestParameterModels;
 
 namespace Iter.Services
 {
@@ -39,7 +35,8 @@ namespace Iter.Services
                 searchObject.EmployeeId = currentUser.EmployeeId;
             }
 
-            return await this.baseReadRepository.Get(searchObject);
+            var data = await this._employeeArrangmentRepository.Get(this.mapper.Map<EmployeeArrangementRequestParameters>(searchObject));
+            return this.mapper.Map<PagedResult<EmployeeArrangmentResponse>>(data);
         }
 
         public override async Task Insert(EmployeeArrangmentUpsertRequest request)

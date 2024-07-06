@@ -69,6 +69,8 @@ class _ReservationConfirmationDialogState
       return;
     }
 
+    selectedAccomodationType ??= prices![1].id;
+
     Map<dynamic, dynamic> request = {
       "reminder": reminderController.text,
       "departurePlace": departurePlaceController.text,
@@ -78,7 +80,7 @@ class _ReservationConfirmationDialogState
     setState(() {
       _displayLoader = true;
     });
-
+    
     try {
       var reservation = await reservationProvider.insert(request);
       ScaffoldMessengerHelper.showCustomSnackBar(

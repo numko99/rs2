@@ -62,7 +62,9 @@ void _submit() async {
           TextButton(
             child: Text('U redu'),
             onPressed: () {
-              Navigator.of(ctx).pop();
+              if (mounted){
+                Navigator.of(ctx).pop();
+              }
             },
           ),
         ],

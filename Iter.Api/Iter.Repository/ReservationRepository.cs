@@ -6,12 +6,12 @@ using Iter.Infrastrucure;
 using Iter.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 using Iter.Core.Models;
-using System.Reflection.Metadata.Ecma335;
-using Iter.Core.Enum;
+using Iter.Core.Dto;
+using Iter.Core.RequestParameterModels;
 
 namespace Iter.Repository
 {
-    public class ReservationRepository : BaseCrudRepository<Reservation, ReservationInsertRequest, ReservationUpdateRequest, ReservationResponse, ReservationSearchModel, ReservationSearchResponse>, IReservationRepository
+    public class ReservationRepository : BaseCrudRepository<Reservation>, IReservationRepository
     {
         private readonly IterContext dbContext;
         private readonly IMapper mapper;
@@ -47,11 +47,11 @@ namespace Iter.Repository
                         .ThenInclude(a => a.User).Where(a => a.Id == id).FirstOrDefaultAsync();
         }
 
-        public override async Task<PagedResult<ReservationSearchResponse>> Get(ReservationSearchModel? search)
+        public async Task<PagedResult<ReservationSearchDto>> Get(ReservationSearchRequesParameters? search)
         {
             var query = this.dbContext.Set<Reservation>().AsQueryable();
 
-            PagedResult<ReservationSearchResponse> result = new PagedResult<ReservationSearchResponse>();
+            PagedResult<ReservationSearchDto> result = new PagedResult<ReservationSearchDto>();
 
             if (!string.IsNullOrEmpty(search?.Name))
             {
@@ -96,6 +96,9 @@ namespace Iter.Repository
 
             query = query.Where(a => a.IsDeleted == false);
 
+
+            result.Count = await query.CountAsync();
+
             query = query
                     .Include(a => a.Arrangement)
                         .ThenInclude(ai => ai.Agency)
@@ -106,18 +109,16 @@ namespace Iter.Repository
                     .Include(a => a.Client)
                     .Include(a => a.ReservationStatus).AsNoTracking();
 
-            result.Count = await query.CountAsync();
-
             query = query.OrderByDescending(q => q.CreatedAt);
 
             if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
             {
                 query = query.Skip((search.CurrentPage.Value - 1) * search.PageSize.Value).Take(search.PageSize.Value);
             }
-            result.Result = await query.Select(r => new ReservationSearchResponse()
+            result.Result = await query.Select(r => new ReservationSearchDto()
             {
                 ReservationId = r.Id,
-                MainImage = this.mapper.Map<ImageResponse>(r.Arrangement.ArrangementImages.Where(a => a.IsMainImage).FirstOrDefault()),
+                MainImage = this.mapper.Map<ImageDto>(r.Arrangement.ArrangementImages.Where(a => a.IsMainImage).FirstOrDefault()),
                 ArrangementName = r.Arrangement.Name,
                 ArrangementId = r.Arrangement.Id,
                 ArrangementStartDate = r.Arrangement.StartDate,
@@ -127,8 +128,8 @@ namespace Iter.Repository
                 AgencyName = r.Arrangement.Agency.Name,
                 ArrangementPrice = r.ArrangementPrice.Price,
                 TotalPaid = r.TotalPaid,
-                FirstName = r.Client.FirstName,
-                LastName = r.Client.LastName,
+                FirstName = r.Client.FirstName ?? "",
+                LastName = r.Client.LastName ?? "",
                 ReservationDate = r.CreatedAt,
                 ReservationNumber = r.ReservationNumber
             }).ToListAsync();

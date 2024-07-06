@@ -1,4 +1,6 @@
-﻿namespace Iter.Core.Search_Models
+﻿using Iter.Core.RequestParameterModels;
+
+namespace Iter.Core.Search_Models
 {
     public class ReservationSearchModel: BaseSearchModel
     {

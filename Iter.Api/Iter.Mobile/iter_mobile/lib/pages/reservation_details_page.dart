@@ -144,7 +144,11 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
                             child: IconButton(
                               icon: Icon(Icons.arrow_back,
                                   color: Theme.of(context).primaryColor),
-                              onPressed: () => Navigator.of(context).pop(),
+                              onPressed: () {
+                                if (mounted){
+                                  Navigator.of(context).pop();
+                                }
+                              } 
                             ),
                           ),
                         ),
@@ -190,12 +194,13 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
                           title: Text(reservation!.departurePlace ?? "-"),
                           subtitle: const Text("Mjesto polaska"),
                         ),
-                        ListTile(
-                          leading: const Icon(Icons.hotel),
-                          title: Text(reservation!
-                              .arrangementPrice!.accommodationType!),
-                          subtitle: const Text("Tip smještaja"),
-                        ),
+                        if (reservation!.arrangementPrice != null && reservation!.arrangementPrice!.accommodationType != null)
+                          ListTile(
+                            leading: const Icon(Icons.hotel),
+                            title: Text(reservation!
+                                .arrangementPrice!.accommodationType!),
+                            subtitle: const Text("Tip smještaja"),
+                          ),
                         ListTile(
                           leading: const Icon(Icons.monetization_on),
                           title: Text(
@@ -238,11 +243,19 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
                           'Da li ste sigurni da želite otkazati rezervaciju?'),
                       actions: <Widget>[
                         TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
+                          onPressed: () {
+                            if (mounted){
+                              Navigator.of(context).pop(false);
+                            }
+                          } ,
                           child: const Text('Ne'),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.of(context).pop(true),
+                          onPressed: () {
+                            if (mounted){
+                              Navigator.of(context).pop(true);
+                            }
+                          } ,
                           child: const Text('Da'),
                         ),
                       ],

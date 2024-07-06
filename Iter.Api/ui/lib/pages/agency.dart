@@ -164,7 +164,7 @@ class _AgencyPageState extends State<AgencyPage> {
                                                         (BuildContext context) {
                                                       return InsertAgencyModal(
                                                           onCompleted: loadData,
-                                                          agency: agency);
+                                                          id: agency.id);
                                                     },
                                                   );
                                                 },

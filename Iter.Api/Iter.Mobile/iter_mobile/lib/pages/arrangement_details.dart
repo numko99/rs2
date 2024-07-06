@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iter_mobile/helpers/date_time_helper.dart';
@@ -38,20 +35,41 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
     super.initState();
     _arrangementProvider = context.read<ArrangmentProvider>();
     initialLoad();
+    loadRecommendedArrangements();
   }
 
   Future<void> initialLoad() async {
-    setState(() {
-      displayLoader = true;
-    });
+    if (this.mounted) {
+      setState(() {
+        displayLoader = true;
+      });
+    }
     var searchArrangement = await _arrangementProvider?.getById(widget.id);
-    var recommendedArrangementsTemp = await _arrangementProvider?.getRecommendedArrangements(widget.id);
-    print(recommendedArrangements);
-    setState(() {
-      arrangement = searchArrangement;
-      recommendedArrangements = recommendedArrangementsTemp ?? [];
-      displayLoader = false;
-    });
+
+    if (this.mounted) {
+      setState(() {
+        arrangement = searchArrangement;
+        displayLoader = false;
+      });
+    }
+
+    var recommendedArrangementsTemp =
+        await _arrangementProvider?.getRecommendedArrangements(widget.id);
+    if (this.mounted) {
+      setState(() {
+        recommendedArrangements = recommendedArrangementsTemp ?? [];
+      });
+    }
+  }
+
+  Future<void> loadRecommendedArrangements() async {
+    var recommendedArrangementsTemp =
+        await _arrangementProvider?.getRecommendedArrangements(widget.id);
+    if (this.mounted) {
+      setState(() {
+        recommendedArrangements = recommendedArrangementsTemp ?? [];
+      });
+    }
   }
 
   @override
@@ -72,10 +90,13 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                         left: 0,
                         child: SafeArea(
                           child: IconButton(
-                            icon: Icon(Icons.arrow_back,
-                                color: Theme.of(context).primaryColor),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
+                              icon: Icon(Icons.arrow_back,
+                                  color: Theme.of(context).primaryColor),
+                              onPressed: () {
+                                if (this.mounted) {
+                                  Navigator.of(context).pop();
+                                }
+                              }),
                         ),
                       ),
                     ],
@@ -174,16 +195,18 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.grey[600])),
                         ),
-                                  SizedBox(
+                        SizedBox(
                           height: 220.0,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: recommendedArrangements.length,
                             itemBuilder: (context, index) {
-                              final arrangement = recommendedArrangements[index];
+                              final arrangement =
+                                  recommendedArrangements[index];
                               return SizedBox(
                                 width: 200.0,
-                                child: ArrangementRecommendationCard(arrangement: arrangement),
+                                child: ArrangementRecommendationCard(
+                                    arrangement: arrangement),
                               );
                             },
                           ),
@@ -195,23 +218,22 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ElevatedButton(
-                        onPressed: () async{
-                          if ( widget.isReserved == false){
-                          var result = await showModalBottomSheet(
-                            context: context,
-                            builder: (BuildContext bc) {
-                              return ReservationConfirmationDialog(
-                                  arrangementId: arrangement!.id);
-                            });
+                        onPressed: () async {
+                          if (widget.isReserved == false) {
+                            var result = await showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext bc) {
+                                  return ReservationConfirmationDialog(
+                                      arrangementId: arrangement!.id);
+                                });
 
-                            if (result != null){
+                            if (result != null) {
                               widget.isReserved = result;
                               initialLoad();
                             }
-
                           }
                         },
-                         style: ElevatedButton.styleFrom(
+                        style: ElevatedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 50),
                           backgroundColor: widget.isReserved == true
                               ? Colors.grey

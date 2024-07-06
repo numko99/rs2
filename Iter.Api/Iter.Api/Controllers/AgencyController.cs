@@ -4,12 +4,14 @@ using Iter.Core;
 using Iter.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Iter.Core.Search_Models;
+using Microsoft.AspNetCore.Authorization;
+using Iter.Core.Enum;
 
 namespace Iter.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = nameof(Roles.User))]
+    [Authorize(Roles = nameof(Roles.Admin))]
     public class AgencyController : BaseCRUDController<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel, AgencyResponse>
     {
         public AgencyController(IAgencyService agencyService): base(agencyService)

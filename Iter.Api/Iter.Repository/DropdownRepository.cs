@@ -4,8 +4,6 @@ using Iter.Core.Models;
 using Iter.Infrastrucure;
 using Iter.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using System.Linq.Expressions;
 
 namespace Iter.Repository
 {
@@ -19,48 +17,43 @@ namespace Iter.Repository
             this.dbContext = dbContext;
             this.mapper = mapper;
         }
-        public async Task<PagedResult<DropdownModel>> Get(int type, string? arrangementId  = null, string? agencyId = null, string? countryId = null)
+        public async Task<List<LookupModel>> Get(int type, string? arrangementId  = null, string? agencyId = null, string? countryId = null)
         {
-            var list = new List<DropdownModel>();
+            var list = new List<LookupModel>();
 
             switch ((DropdownType)type)
             {
                 case DropdownType.ReservationStatus:
-                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.ReservationStatus.ToListAsync());
-                    break;
-                case DropdownType.Agencies:
-                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.Agency.ToListAsync());
-                    break;
-                case DropdownType.Clients:
-                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.Client.ToListAsync());
-                    break;
-                case DropdownType.AccomodationTypes:
-                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.ArrangementPrice.Where(x => x.ArrangementId == new Guid(arrangementId) && x.IsDeleted == false).ToListAsync());
-                    break;
-                case DropdownType.Arrangments:
-                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.Arrangement.Where(x => x.AgencyId == new Guid(agencyId) && x.IsDeleted == false).ToListAsync());
-                    break;
-                case DropdownType.ArrangementStatus:
-                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.ArrangementStatus.ToListAsync());
-                    break;
-                case DropdownType.Employee:
-                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.EmployeeArrangment.Where(x => x.Arrangement.AgencyId.ToString() == agencyId).ToListAsync());
-                    break;
-                case DropdownType.Countries:
-                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.Country.ToListAsync());
-                    break;
-                case DropdownType.Cities:
-                    list = this.mapper.Map<List<DropdownModel>>(await dbContext.City.Where(x => x.CountryId.ToString() == countryId).ToListAsync());
-                    break;
-                default:
-                    break;
-            }
+                    return this.mapper.Map<List<LookupModel>>(await dbContext.ReservationStatus.ToListAsync());
 
-            return new PagedResult<DropdownModel>()
-            {
-                Result = list,
-                Count = list.Count
-            };
+                case DropdownType.Agencies:
+                    return this.mapper.Map<List<LookupModel>>(await dbContext.Agency.ToListAsync());
+
+                case DropdownType.Clients:
+                    return this.mapper.Map<List<LookupModel>>(await dbContext.Client.ToListAsync());
+
+                case DropdownType.AccomodationTypes:
+                    return this.mapper.Map<List<LookupModel>>(await dbContext.ArrangementPrice.Where(x => x.ArrangementId == new Guid(arrangementId) && x.IsDeleted == false).ToListAsync());
+
+                case DropdownType.Arrangments:
+                    return this.mapper.Map<List<LookupModel>>(await dbContext.Arrangement.Where(x => x.AgencyId == new Guid(agencyId) && x.IsDeleted == false).ToListAsync());
+
+                case DropdownType.ArrangementStatus:
+                    return this.mapper.Map<List<LookupModel>>(await dbContext.ArrangementStatus.ToListAsync());
+
+                case DropdownType.Employee:
+                    return this.mapper.Map<List<LookupModel>>(await dbContext.EmployeeArrangment.Where(x => x.Arrangement.AgencyId.ToString() == agencyId).ToListAsync());
+
+                case DropdownType.Countries:
+                    return this.mapper.Map<List<LookupModel>>(await dbContext.Country.ToListAsync());
+
+                case DropdownType.Cities:
+                    return this.mapper.Map<List<LookupModel>>(await dbContext.City.Where(x => x.CountryId.ToString() == countryId).ToListAsync());
+
+                default:
+                    return new List<LookupModel>();
+
+            }
         }
     }
 }

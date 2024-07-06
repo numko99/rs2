@@ -18,6 +18,12 @@ namespace Iter.Services
             this.mapper = mapper;
         }
 
+        public override async Task<PagedResult<AgencyResponse>> Get(AgencySearchModel searchObject)
+        {
+            var searchData = await this.agencyRepository.Get(searchObject.Name, searchObject.PageSize, searchObject.CurrentPage);
+            return this.mapper.Map<PagedResult<AgencyResponse>>(searchData);
+        }
+
         public override async Task Update(Guid Id, AgencyInsertRequest request)
         {
             var agency = await agencyRepository.GetById(Id);

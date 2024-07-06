@@ -11,6 +11,8 @@ using Iter.Core.Responses;
 using Iter.Core.Dto;
 using System.Data;
 using Iter.Core.Search_Responses;
+using Iter.Core.Models;
+using Iter.Core.RequestParameterModels;
 
 namespace Iter.Services
 {
@@ -32,12 +34,18 @@ namespace Iter.Services
             this.userAuthenticationService = userAuthenticationService;
         }
 
+        public override async Task<PagedResult<UserResponse>> Get(UserSearchModel searchObject)
+        {
+            var data = await this.userRepository.Get(this.mapper.Map<UserSearchRequestParameters>(searchObject));
+
+            return this.mapper.Map<PagedResult<UserResponse>>(data);
+        }
+
         public override async Task Insert(UserUpsertRequest request)
         {
             try
             {
-
-                var password = PasswordGeneratorHelper.GenerateRandomPassword();
+                var password = RandomGeneratorHelper.GenerateRandomPassword();
                 var user = new User();
                 if ((Roles)request.Role == Roles.TouristGuide || (Roles)request.Role == Roles.Coordinator)
                 {
@@ -56,6 +64,8 @@ namespace Iter.Services
 
                 user.IsActive = true;
                 user.EmailConfirmed = true;
+                user.CreatedAt = DateTime.Now;
+                user.ModifiedAt = DateTime.Now;
                 var result = await this.userManager.CreateAsync(user, password);
 
                 if (!result.Succeeded) {
@@ -115,7 +125,7 @@ namespace Iter.Services
                 throw new ArgumentException("User not found.");
             }
 
-            var newPassword = PasswordGeneratorHelper.GenerateRandomPassword();
+            var newPassword = RandomGeneratorHelper.GenerateRandomPassword();
             var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
             await userManager.ResetPasswordAsync(user, resetToken, newPassword);
 
@@ -161,12 +171,14 @@ namespace Iter.Services
             var currentUser = await this.userAuthenticationService.GetCurrentUserAsync();
             if (currentUser.ClientId != null)
             {
-                return await this.userRepository.GetCurrentUserStatistic(currentUser.Id);
+                var data = await this.userRepository.GetCurrentUserStatistic(currentUser.Id);
+                return this.mapper.Map<UserStatisticResponse>(data);
             }
 
             if (currentUser.EmployeeId != null)
             {
-                return await this.userRepository.GetCurrentEmployeeStatistic(currentUser.Id);
+                var data = await this.userRepository.GetCurrentEmployeeStatistic(currentUser.Id);
+                return this.mapper.Map<UserStatisticResponse>(data);
             }
 
             return null;

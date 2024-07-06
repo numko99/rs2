@@ -7,6 +7,9 @@ using Iter.Core.EntityModels;
 using Iter.Core.Enum;
 using Iter.Core.Models;
 using Iter.Core.ReportDatasetModels;
+using Iter.Core.RequestParameterModels;
+using Iter.Core.Responses;
+using Iter.Core.Search_Models;
 using Iter.Core.Search_Responses;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
@@ -24,6 +27,18 @@ namespace Iter.Api.Mapping
             this.CreateArrangementMap();
             this.CreateDestinationMap();
             this.CreateEmployeeArrangementMap();
+            this.CreateSearchModelsMap();
+
+            CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
+           .ConvertUsing(typeof(PagedResultConverter<,>));
+        }
+
+        private void CreateSearchModelsMap()
+        {
+            this.CreateMap<ArrangmentSearchModel, ArrangmentSearchParameters?>();
+            this.CreateMap<EmployeeArrangementSearchModel, EmployeeArrangementRequestParameters?>();
+            this.CreateMap<ReservationSearchModel, ReservationSearchRequesParameters?>();
+            this.CreateMap<UserSearchModel, UserSearchRequestParameters?>();
         }
 
         private void CreateAgencyMap()
@@ -106,14 +121,22 @@ namespace Iter.Api.Mapping
                 .ForPath(dest => dest.ImageContent, opt => opt.MapFrom(src => src.Image));
 
 
+            this.CreateMap<Image, ImageDto?>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForPath(dest => dest.Image, opt => opt.MapFrom(src => src.ImageContent));
+
             this.CreateMap<Image, ImageResponse?>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForPath(dest => dest.Image, opt => opt.MapFrom(src => src.ImageContent));
+            this.CreateMap<ImageDto, ImageResponse?>();
+
+            this.CreateMap<ArrangementImage, ImageDto?>()
+                .ForPath(dest => dest.Name, opt => opt.MapFrom(src => src.Image.Name))
+                .ForPath(dest => dest.Image, opt => opt.MapFrom(src => src.Image.ImageContent));
 
             this.CreateMap<ArrangementImage, ImageResponse?>()
                 .ForPath(dest => dest.Name, opt => opt.MapFrom(src => src.Image.Name))
                 .ForPath(dest => dest.Image, opt => opt.MapFrom(src => src.Image.ImageContent));
-
         }
 
         private void CreateDestinationMap()
@@ -145,6 +168,7 @@ namespace Iter.Api.Mapping
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User != null ? src.User.Email : null))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User != null ? src.User.PhoneNumber : null));
             this.CreateMap<UserNamesDto?, UserNamesResponse?>();
+            this.CreateMap<UserStatisticDto?, UserStatisticResponse?>();
 
             this.CreateMap<UserUpsertRequest?, Employee?>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
@@ -206,6 +230,8 @@ namespace Iter.Api.Mapping
                 .ForPath(dest => dest.TotalPaid, opt => opt.MapFrom(src => src.TotalPaid))
                 .ForPath(dest => dest.ReservationNumber, opt => opt.MapFrom(src => src.ReservationNumber));
 
+            this.CreateMap<ReservationSearchDto?, ReservationSearchResponse?>();
+
             this.CreateMap<ReservationInsertRequest?, Reservation?>()
                  .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom((src, dest) => dest.Id == default ? DateTime.Now : dest.CreatedAt))
                  .ForMember(dest => dest.ModifiedAt, opt => opt.MapFrom(src => DateTime.Now));
@@ -227,21 +253,23 @@ namespace Iter.Api.Mapping
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom((src, dest) => dest.Id == default ? DateTime.Now : dest.CreatedAt))
                 .ForMember(dest => dest.ModifiedAt, opt => opt.MapFrom(src => DateTime.Now));
 
-            this.CreateMap<Core.EntityModels.ReservationStatus, DropdownModel>();
-            this.CreateMap<Agency, DropdownModel>();
-            this.CreateMap<Country, DropdownModel>()
+            this.CreateMap<Core.EntityModels.ReservationStatus, LookupModel>();
+            this.CreateMap<Agency, LookupModel>();
+            this.CreateMap<Country, LookupModel>()
                     .ForMember(dest => dest.Id, opt => opt.MapFrom(src => int.Parse(src.Id.ToString())));
-            this.CreateMap<City, DropdownModel>()
+            this.CreateMap<City, LookupModel>()
                     .ForMember(dest => dest.Id, opt => opt.MapFrom(src => int.Parse(src.Id.ToString())));
-            this.CreateMap<Core.EntityModels.ArrangementStatus, DropdownModel>();
-            this.CreateMap<ArrangementPrice, DropdownModel>()
+            this.CreateMap<Core.EntityModels.ArrangementStatus, LookupModel>();
+            this.CreateMap<ArrangementPrice, LookupModel>()
                 .ForPath(dest => dest.Name, opt => opt.MapFrom(src => src.AccommodationType));
 
-            this.CreateMap<Arrangement, DropdownModel>()
+            this.CreateMap<Arrangement, LookupModel>()
                 .ForPath(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
 
-            this.CreateMap<Client, DropdownModel>()
+            this.CreateMap<Client, LookupModel>()
                 .ForPath(dest => dest.Name, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
+
+            this.CreateMap<LookupModel, DropdownModel>();
         }
 
         private void CreateEmployeeArrangementMap()
@@ -251,12 +279,13 @@ namespace Iter.Api.Mapping
             this.CreateMap<Employee?, DropdownModel?>()
                 .ForPath(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForPath(dest => dest.Name, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
-            this.CreateMap<Arrangement?, ArrangementSearchResponse?>()
+            this.CreateMap<Arrangement?, ArrangementSearchDto?>()
                 .ForPath(dest => dest.AgencyName, opt => opt.MapFrom(src => src.Agency.Name))
                 .ForPath(dest => dest.AgencyRating, opt => opt.MapFrom(src => src.Agency.Rating))
                 .ForPath(dest => dest.ArrangementStatusId, opt => opt.MapFrom(src => src.ArrangementStatusId))
                 .ForPath(dest => dest.ArrangementStatusId, opt => opt.Ignore())
                 .ForPath(dest => dest.MainImage, opt => opt.MapFrom(src => src.ArrangementImages.Where(x => x.IsMainImage).FirstOrDefault()));
+            this.CreateMap<ArrangementSearchDto?, ArrangementSearchResponse?>();
 
             this.CreateMap<EmployeeArrangmentUpsertRequest?, EmployeeArrangment?>()
                 .ForPath(dest => dest.ArrangementId, opt => opt.MapFrom(src => new Guid(src.ArrangementId)))

@@ -7,6 +7,8 @@ using Iter.Services.Interface;
 using Iter.Core.Enum;
 using ReservationStatus = Iter.Core.Enum.ReservationStatus;
 using Iter.Core.Models;
+using Iter.Core.Helper;
+using Iter.Core.RequestParameterModels;
 
 namespace Iter.Services
 {
@@ -40,7 +42,9 @@ namespace Iter.Services
                 }
             }
 
-            return await this.baseReadRepository.Get(searchObject);
+            var data = await this.reservationRepository.Get(this.mapper.Map<ReservationSearchRequesParameters>(searchObject));
+
+            return this.mapper.Map<PagedResult<ReservationSearchResponse>>(data);
         }
 
         public async override Task<ReservationResponse> Insert(ReservationInsertRequest request)
@@ -52,8 +56,7 @@ namespace Iter.Services
 
             var entity = this.mapper.Map<Reservation>(request);
             entity.ReservationStatusId = (int)ReservationStatus.Pending;
-            int.TryParse(await this.reservationRepository.GetLatestReservationNumber(), out var latestReservationNumber);
-            entity.ReservationNumber = (++latestReservationNumber).ToString();
+            entity.ReservationNumber = RandomGeneratorHelper.GenerateReservationNumber();
             entity.TotalPaid = 0;
             await this.reservationRepository.AddAsync(entity);
 

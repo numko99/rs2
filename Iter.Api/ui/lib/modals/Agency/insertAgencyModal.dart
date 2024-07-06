@@ -18,10 +18,10 @@ import 'package:ui/services/dropdown_provider.dart';
 import '../../services/agency_provider.dart';
 
 class InsertAgencyModal extends StatefulWidget {
-  const InsertAgencyModal({super.key, required this.onCompleted, this.agency});
+  const InsertAgencyModal({super.key, required this.onCompleted, this.id});
 
   final Function onCompleted;
-  final Agency? agency;
+  final String? id;
 
   @override
   _InsertAgencyModalState createState() => _InsertAgencyModalState();
@@ -35,6 +35,8 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
   AgencyProvider? _agencyProvider;
   ImageModel? _logo;
   String? selectedCity = "";
+  bool displayLoader = false;
+
   @override
   void initState() {
     super.initState();
@@ -68,7 +70,7 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
     return AlertDialog(
       title: Column(
         children: [
-          Text(widget.agency == null ?'Dodaj agenciju' : 'Uredi agenciju'),
+          Text(widget.id == null ?'Dodaj agenciju' : 'Uredi agenciju'),
           const SizedBox(height: 10),
           const Icon(
             Icons.business,
@@ -78,7 +80,9 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
         ],
       ),
       contentPadding: const EdgeInsets.fromLTRB(30.0, 5, 30.0, 40),
-      content: Container(
+      content: displayLoader
+          ? const Center(child: Column(children: [CircularProgressIndicator()]))
+          : Container(
         width: 600.0,
         child: FormBuilder(
           key: _formKey,
@@ -268,9 +272,8 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
                     if (_logo != null) ...[
                       const SizedBox(width: 60),
                       Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        child: Stack(
+                          alignment: Alignment.center,
                           children: [
                             Center(
                               child: Container(
@@ -348,10 +351,10 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
         houseNumber: request["houseNumber"],
       ).toJson();
 
-      if (widget.agency == null) {
+      if (widget.id == null) {
         await _agencyProvider?.insert(request);
       } else {
-        await _agencyProvider?.update(widget.agency?.id, request);
+        await _agencyProvider?.update(widget.id, request);
       }
       widget.onCompleted();
 
@@ -368,23 +371,33 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
   }
 
   Future<void> initialLoad() async {
-    if (widget.agency != null) {
+    setState(() {
+      displayLoader = true;
+    });
+
+    var agency = await _agencyProvider?.getById(widget.id); 
+
+    if (agency != null) {
       _initialValue = {
-        "name": widget.agency?.name,
-        "contactEmail": widget.agency?.contactEmail,
-        "contactPhone": widget.agency?.contactPhone,
-        "website": widget.agency?.website,
-        "licenseNumber": widget.agency?.licenseNumber,
-        "street": widget.agency?.address?.street,
-        "houseNumber": widget.agency?.address?.houseNumber,
-        "postalCode": widget.agency?.address?.postalCode,
+        "name": agency.name,
+        "contactEmail": agency.contactEmail,
+        "contactPhone": agency.contactPhone,
+        "website": agency.website,
+        "licenseNumber": agency.licenseNumber,
+        "street": agency.address?.street,
+        "houseNumber": agency.address?.houseNumber,
+        "postalCode": agency.address?.postalCode,
       };
 
-      selectedCity = widget.agency!.address!.cityId;
-      if (widget.agency?.logo != null) {
-        _logo = widget.agency?.logo;
+      selectedCity = agency!.address!.cityId;
+      if (agency.logo != null) {
+        _logo = agency.logo;
       }
     }
+
+    setState(() {
+      displayLoader = false;
+    });
   }
 
   Future getImage() async {

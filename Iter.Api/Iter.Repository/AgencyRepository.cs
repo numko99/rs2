@@ -9,46 +9,45 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Iter.Repository
 {
-    public class AgencyRepository : BaseCrudRepository<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel, AgencyResponse>, IAgencyRepository
+    public class AgencyRepository : BaseCrudRepository<Agency>, IAgencyRepository
     {
         private readonly IterContext dbContext;
-        private readonly IMapper mapper;
 
         public AgencyRepository(IterContext dbContext, IMapper mapper) : base(dbContext, mapper)
         {
             this.dbContext = dbContext;
-            this.mapper = mapper;
         }
 
-        public override async Task<PagedResult<AgencyResponse>> Get(AgencySearchModel? search)
+        public async Task<PagedResult<Agency>> Get(string? name, int? pageSize, int? currentPage)
         {
-            var query = dbContext.Set<Agency>().AsQueryable();
+            var query = dbContext.Set<Agency>().Where(a => !a.IsDeleted);
 
-            PagedResult<AgencyResponse> result = new PagedResult<AgencyResponse>();
-
-            if (!string.IsNullOrEmpty(search?.Name))
+            if (!string.IsNullOrEmpty(name))
             {
-                query = query.Where(a => a.Name.Contains(search.Name));
+                query = query.Where(a => a.Name.Contains(name));
             }
 
-            query = query.Where(a => a.IsDeleted == false);
-
-            query = query.Include(a => a.Address).ThenInclude(a => a.City).ThenInclude(x => x.Country).Include(a => a.Image);
-
-            result.Count = await query.CountAsync();
+            var totalCount = await query.CountAsync();
 
             query = query.OrderByDescending(q => q.CreatedAt);
 
-            if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
+            if (currentPage.HasValue && pageSize.HasValue)
             {
-                query = query.Skip((search.CurrentPage.Value - 1) * search.PageSize.Value).Take(search.PageSize.Value);
+                query = query.Skip((currentPage.Value - 1) * pageSize.Value).Take(pageSize.Value);
             }
-            var list = await query.ToListAsync();
-            var tmp = mapper.Map<List<AgencyResponse>>(list);
-            result.Result = tmp;
-            return result;
-        }
 
+            query = query.Include(a => a.Address)
+                         .ThenInclude(a => a.City)
+                         .ThenInclude(x => x.Country);
+
+            var resultList = await query.ToListAsync();
+
+            return new PagedResult<Agency>
+            {
+                Result = resultList,
+                Count = totalCount
+            };
+        }
 
         public async override Task<Agency?> GetById(Guid id)
         {

@@ -41,15 +41,19 @@ class _EmployeeArrangementDetailsPageState
   }
 
   Future<void> initialLoad() async {
-    setState(() {
-      displayLoader = true;
-    });
+    if (mounted){
+      setState(() {
+        displayLoader = true;
+      });
+    }
     var searchArrangement = await _arrangementProvider?.getById(widget.id);
     await loadReservations();
-    setState(() {
-      arrangement = searchArrangement;
-      displayLoader = false;
-    });
+    if (mounted){
+      setState(() {
+        arrangement = searchArrangement;
+        displayLoader = false;
+      });
+    }
   }
 
   Future<void> loadReservations() async {
@@ -59,9 +63,11 @@ class _EmployeeArrangementDetailsPageState
       "reservationStatusId":
           (ReservationStatusEnum.confirmed.index + 1).toString(),
     });
-    setState(() {
-      reservations = searchReservations?.result;
-    });
+    if (mounted){
+      setState(() {
+        reservations = searchReservations?.result;
+      });
+    }
   }
 
 

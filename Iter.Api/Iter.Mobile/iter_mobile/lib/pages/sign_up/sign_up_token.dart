@@ -44,7 +44,9 @@ class _SignUpTokenPageState extends State<SignUpTokenPage> {
             message: "Uneseni token nije validan!",
             backgroundColor: Colors.red);
       } else {
-        Navigator.of(context).pop(true);
+        if (mounted){
+          Navigator.of(context).pop(true);
+        }
       }
     }
   }

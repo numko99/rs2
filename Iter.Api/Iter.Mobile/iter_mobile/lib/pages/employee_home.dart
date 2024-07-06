@@ -60,9 +60,11 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
   Future<void> loadData(refresh) async {
     try {
       if (!displayLoader) {
-        setState(() {
-          displayLoader = true;
-        });
+        if ( mounted){
+          setState(() {
+            displayLoader = true;
+          });
+        }
       }
 
       int loadPage = refresh ? 1 : currentPage;
@@ -75,22 +77,26 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
         int totalPages = (searchArrangements.count ~/ pageSize) +
             (searchArrangements.count % pageSize == 0 ? 0 : 1);
 
-        setState(() {
-          if (refresh) {
-            arrangements = searchArrangements.result;
-          } else {
-            arrangements.addAll(searchArrangements.result);
-          }
-          currentPage = loadPage + 1;
-          hasMore = currentPage <= totalPages;
-        });
+        if ( mounted){
+          setState(() {
+            if (refresh) {
+              arrangements = searchArrangements.result;
+            } else {
+              arrangements.addAll(searchArrangements.result);
+            }
+            currentPage = loadPage + 1;
+            hasMore = currentPage <= totalPages;
+          });
+        }
       } else {
-        setState(() {
-          if (refresh) {
-            arrangements.clear();
-          }
-          hasMore = false;
-        });
+        if ( mounted){
+          setState(() {
+            if (refresh) {
+              arrangements.clear();
+            }
+            hasMore = false;
+          });
+        }
       }
     } catch (error) {
       ScaffoldMessengerHelper.showCustomSnackBar(
@@ -98,9 +104,11 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
           message: "Došlo je do greške: ${error.toString()}",
           backgroundColor: Colors.red);
     } finally {
-      setState(() {
-        displayLoader = false;
-      });
+      if ( mounted){
+        setState(() {
+          displayLoader = false;
+        });
+      }
     }
   }
 

@@ -45,8 +45,9 @@ class IterMobileApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Iter Mobile App',
-      theme: ThemeData(
+       theme: ThemeData(
         primarySwatch: Colors.amber,
+        primaryColor: Colors.amber,
       ),
       home: Login(),
     );

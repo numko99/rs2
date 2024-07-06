@@ -13,7 +13,7 @@ using Iter.Core.Dto.User;
 
 namespace Iter.Repository
 {
-    public class UserRepository : BaseCrudRepository<User, UserUpsertRequest, UserUpsertRequest, UserResponse, UserSearchModel, UserResponse>, IUserRepository
+    public class UserRepository : BaseCrudRepository<User>, IUserRepository
     {
         private readonly IterContext dbContext;
         private readonly IMapper mapper;
@@ -38,61 +38,60 @@ namespace Iter.Repository
 
             return user;
         }
-        public async override Task<PagedResult<UserResponse>> Get(UserSearchModel search)
+        public async Task<PagedResult<User>> Get(UserSearchRequestParameters search)
         {
             try
             {
-            var query = dbContext.Users
-                .Include(u => u.Client)
-                .Include(u => u.Employee)
-                .Include(u => u.Employee)
-                .ThenInclude(u => u.Agency)
-                .AsQueryable();
+                var query = this.dbContext.Set<User>().AsQueryable();
 
-            PagedResult<UserResponse> result = new PagedResult<UserResponse>();
+                PagedResult<User> result = new PagedResult<User>();
 
-            if (!string.IsNullOrEmpty(search?.Name))
-            {
-                var lowerSearchName = search.Name.ToLower();
-                query = query.Where(a =>
-                    (a.Client != null &&
-                     (a.Client.FirstName + " " + a.Client.LastName).ToLower().StartsWith(lowerSearchName) ||
-                     (a.Client.LastName + " " + a.Client.FirstName).ToLower().StartsWith(lowerSearchName)) ||
-                    (a.Employee != null &&
-                     (a.Employee.LastName + " " + a.Employee.FirstName).ToLower().StartsWith(lowerSearchName) ||
-                     (a.Employee.FirstName + " " + a.Employee.LastName).ToLower().StartsWith(lowerSearchName))
-                ).AsQueryable();
-            }
+                if (!string.IsNullOrEmpty(search?.Name))
+                {
+                    var lowerSearchName = search.Name.ToLower();
+                    query = query.Where(a =>
+                        (a.Client != null &&
+                         (a.Client.FirstName + " " + a.Client.LastName).ToLower().StartsWith(lowerSearchName) ||
+                         (a.Client.LastName + " " + a.Client.FirstName).ToLower().StartsWith(lowerSearchName)) ||
+                        (a.Employee != null &&
+                         (a.Employee.LastName + " " + a.Employee.FirstName).ToLower().StartsWith(lowerSearchName) ||
+                         (a.Employee.FirstName + " " + a.Employee.LastName).ToLower().StartsWith(lowerSearchName))
+                    ).AsQueryable();
+                }
 
-            if (Guid.TryParse(search?.AgencyId, out var guid))
-            {
-                query = query.Where(a => a.Employee != null && a.Employee.AgencyId == guid).AsQueryable();
-            }
+                if (Guid.TryParse(search?.AgencyId, out var guid))
+                {
+                    query = query.Where(a => a.Employee != null && a.Employee.AgencyId == guid).AsQueryable();
+                }
 
-            if (search.RoleId != null)
-            {
-                query = query.Where(q => q.Role == search.RoleId).AsQueryable();
-            }
+                if (search.RoleId != null)
+                {
+                    query = query.Where(q => q.Role == search.RoleId).AsQueryable();
+                }
 
-            query = query.Where(q => (q.Employee != null && q.Employee.IsDeleted == false) || (q.Client != null && q.Client.IsDeleted == false)).AsQueryable();
+                query = query.Where(q => (q.Employee != null && q.Employee.IsDeleted == false) || (q.Client != null && q.Client.IsDeleted == false)).AsQueryable();
 
-            result.Count = await query.CountAsync();
+                result.Count = await query.CountAsync();
 
-            if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
-            {
-                query = query.Skip((search.CurrentPage.Value - 1) * search.PageSize.Value).Take(search.PageSize.Value);
-            }
+                query = query
+                        .Include(u => u.Client)
+                        .Include(u => u.Employee)
+                        .Include(u => u.Employee)
+                        .ThenInclude(u => u.Agency)
+                        .AsQueryable();
 
-            var users = await query.OrderByDescending(q => q.Employee != null ? q.Employee.CreatedAt : q.Client.CreatedAt).ToListAsync();
+                if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
+                {
+                    query = query.Skip((search.CurrentPage.Value - 1) * search.PageSize.Value).Take(search.PageSize.Value);
+                }
 
-            var userReponses = mapper.Map<List<UserResponse>>(users);
+                var users = await query.OrderByDescending(q => q.CreatedAt).ToListAsync();
 
-            result.Result = userReponses;
-            return result;
+                result.Result = users;
+                return result;
             }
             catch (Exception ex)
             {
-                return null;
                 throw;
             }
         }
@@ -112,12 +111,12 @@ namespace Iter.Repository
             await this.dbContext.SaveChangesAsync();
         }
 
-        public async Task<UserStatisticResponse> GetCurrentUserStatistic(string id)
+        public async Task<UserStatisticDto> GetCurrentUserStatistic(string id)
         {
             var user = await this.dbContext.User.Where(u => u.Id == id).Include(nameof(Client)).FirstOrDefaultAsync();
             var reservationCount = await this.dbContext.Reservation.Where(r => r.ClientId == user.ClientId && r.ReservationStatusId != (int)Core.Enum.ReservationStatus.Cancelled).CountAsync();
             var arrangementCount = await this.dbContext.Arrangement.Where(a => (a.StartDate < DateTime.Now) && a.Reservations.Any(x => x.ClientId == user.ClientId && x.ReservationStatusId == (int)Core.Enum.ReservationStatus.Confirmed)).CountAsync();
-            return new UserStatisticResponse()
+            return new UserStatisticDto()
             {
                 ArrangementsCount = arrangementCount,
                 ReservationCount = reservationCount,
@@ -126,13 +125,13 @@ namespace Iter.Repository
             };
         }
 
-        public async Task<UserStatisticResponse> GetCurrentEmployeeStatistic(string id)
+        public async Task<UserStatisticDto> GetCurrentEmployeeStatistic(string id)
         {
             var user = await this.dbContext.User.Where(u => u.Id == id).Include(nameof(Employee)).FirstOrDefaultAsync();
             var arrangementsQuery = this.dbContext.EmployeeArrangment.Where(r => r.EmployeeId == user.EmployeeId && r.IsDeleted == false && r.Arrangement.StartDate < DateTime.Now).AsQueryable();
             var count = arrangementsQuery.Count();
             var avgRating = await arrangementsQuery.Include(a => a.Arrangement).Select(x => x.Arrangement.Rating).AverageAsync();
-            return new UserStatisticResponse()
+            return new UserStatisticDto()
             {
                 AvgRating = avgRating,
                 ArrangementsCount = arrangementsQuery.Count(),

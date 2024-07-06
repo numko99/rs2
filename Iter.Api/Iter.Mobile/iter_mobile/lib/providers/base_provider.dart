@@ -15,8 +15,8 @@ abstract class BaseProvider<T, TSearchResponse> with ChangeNotifier {
   IOClient? http;
 
   BaseProvider(String endpoint) {
-    baseUrl = const String.fromEnvironment("baseUrl",
-        defaultValue: "https://10.0.2.2:7156/api");
+        baseUrl = const String.fromEnvironment('BASE_URL',
+        defaultValue: 'https://10.0.2.2:7156/api');
 
     if (baseUrl!.endsWith("/") == false) {
       baseUrl = baseUrl! + "/";

@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Iter.Repository
 {
-    public class VerificationTokenRepository : BaseCrudRepository<VerificationToken, ReservationInsertRequest, ReservationUpdateRequest, ReservationResponse, VerificationTokenSearchModel, ReservationSearchResponse>, IVerificationTokenRepository
+    public class VerificationTokenRepository : BaseCrudRepository<VerificationToken>, IVerificationTokenRepository
     {
         private readonly IterContext dbContext;
         private readonly IMapper mapper;

@@ -16,7 +16,7 @@ abstract class BaseProvider<T, TSearchResponse> with ChangeNotifier {
 
   BaseProvider(String endpoint) {
     baseUrl = const String.fromEnvironment("baseUrl",
-        defaultValue: "http://localhost:8080/api");
+        defaultValue: "https://localhost:7156/api");
 
     if (baseUrl!.endsWith("/") == false) {
       baseUrl = baseUrl! + "/";
