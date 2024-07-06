@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Iter.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class DropdownController : Controller
     {

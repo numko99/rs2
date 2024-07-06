@@ -9,7 +9,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<bool> loginUserAsync(String username, String password) async {
     final Uri url =
-        Uri.parse("${ApiConfig.baseUrl}/api/userauthentication/login");
+        Uri.parse("${ApiConfig.baseUrl}/auth/login");
 
     try {
       final http.Response response = await http.post(

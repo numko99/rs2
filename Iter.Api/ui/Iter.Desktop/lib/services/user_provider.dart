@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:ui/models/arrangement_earnings.dart';
 import 'package:ui/models/user.dart';
+import 'package:ui/models/user_payment.dart';
 import 'base_provider.dart';
 
 class UserProvider extends BaseProvider<User, User> {

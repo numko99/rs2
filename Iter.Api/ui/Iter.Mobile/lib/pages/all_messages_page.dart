@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:iter_mobile/models/user_names.dart';
 import 'package:iter_mobile/pages/chat_page.dart';
+import 'package:iter_mobile/providers/auth_storage_provider.dart';
 import 'package:iter_mobile/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +14,7 @@ class UserListPage extends StatefulWidget {
 }
 
 class _UserListPageState extends State<UserListPage> {
-  final String currentUserId = "8b778d69-5d48-4690-8d8a-945c7fb250b1";
+  final String currentUserId = AuthStorageProvider.getAuthData()?["id"];
 
   UserProvider? _userProvider;
 

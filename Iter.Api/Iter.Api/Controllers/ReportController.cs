@@ -1,10 +1,11 @@
 ﻿using AspNetCore.Reporting;
+using Iter.Core.Search_Models;
 using Iter.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Iter.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class ReportController : ControllerBase
     {
@@ -15,18 +16,18 @@ namespace Iter.Api.Controllers
             this.reportService = reportService;
         }
 
-        [HttpPost("userPaymentReport/{arrangementId}")]
-        public async Task<IActionResult> PrintUserPaymentReport(string arrangementId)
+        [HttpPost("userPaymentReport")]
+        public async Task<IActionResult> PrintUserPaymentReport([FromBody] ReportSearchModel searchModel)
         {
-            ReportResult result = await this.reportService.UserPaymentReport(arrangementId);
-            return File(result.MainStream, "application/pdf", "UserPaymentsReport.pdf");
+            var data = await this.reportService.UserPaymentReport(searchModel.ArrangementId, searchModel.DateFrom, searchModel.DateFrom);
+            return this.Ok(data);
         }
 
-        [HttpPost("arrangementEarnings/{agencyId}")]
-        public async Task<IActionResult> PrintArrangementEarningsReport(string agencyId)
+        [HttpPost("arrangementEarnings")]
+        public async Task<IActionResult> PrintArrangementEarningsReport([FromBody] ReportSearchModel searchModel)
         {
-            ReportResult result = await this.reportService.ArrangementEarningsReport(agencyId);
-            return File(result.MainStream, "application/pdf", "arrangementEarnings.pdf");
+            var data = await this.reportService.ArrangementEarningsReport(searchModel.AgencyId, searchModel.DateFrom, searchModel.DateFrom);
+            return this.Ok(data);
         }
     }
 }

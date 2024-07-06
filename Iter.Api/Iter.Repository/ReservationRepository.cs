@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Iter.Core.Models;
 using Iter.Core.Dto;
 using Iter.Core.RequestParameterModels;
+using System.Globalization;
 
 namespace Iter.Repository
 {
@@ -65,6 +66,18 @@ namespace Iter.Repository
             {
                 var statusId = int.Parse(search.ReservationStatusId);
                 query = query.Where(a => a.ReservationStatusId == statusId).AsQueryable();
+            }
+
+            if (search.DateFrom != null)
+            {
+                var dateFrom = DateTime.ParseExact(search.DateFrom, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+                query = query.Where(a => dateFrom > a.CreatedAt ).AsQueryable();
+            }
+
+            if (search.DateTo != null)
+            {
+                var dateTo = DateTime.ParseExact(search.DateTo, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+                query = query.Where(a => dateTo < a.CreatedAt).AsQueryable();
             }
 
             if (!string.IsNullOrEmpty(search?.AgencyId))

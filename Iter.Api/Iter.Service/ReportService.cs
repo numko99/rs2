@@ -1,7 +1,9 @@
 using AutoMapper;
 using Iter.Services.Interface;
-using AspNetCore.Reporting;
-using Iter.Core.ReportDatasetModels;
+using Iter.Repository.Interface;
+using Iter.Core.RequestParameterModels;
+using Iter.Core.Responses;
+using Iter.Core.EntityModels;
 using Iter.Core.Enum;
 
 namespace Iter.Services
@@ -9,52 +11,46 @@ namespace Iter.Services
     public class ReportService : IReportService
     {
         private readonly IReservationService reservationService;
+        private readonly IReservationRepository reservationRepository;
         private readonly IReportPathGetterService reportPathGetterService;
         private readonly IMapper mapper;
-        public ReportService(IReservationService reservationService, IMapper mapper, IReportPathGetterService reportPathGetterService)
+        public ReportService(IReservationService reservationService, IMapper mapper, IReportPathGetterService reportPathGetterService, IReservationRepository reservationRepository)
         {
             this.mapper = mapper;
             this.reservationService = reservationService;
             this.reportPathGetterService = reportPathGetterService;
+            this.reservationRepository = reservationRepository;
         }
 
-        public async Task<ReportResult> UserPaymentReport(string arrangementId)
+        public async Task<List<UserPaymentResponse>> UserPaymentReport(string arrangementId, string? dateFrom, string? dateTo)
         {
-            var reportPath = this.reportPathGetterService.GetPath(ReportType.UserPayment);
-
-            var localReport = new LocalReport(reportPath);
-
-            var list = await this.reservationService.Get(new Core.Search_Models.ReservationSearchModel() { ArrangementId = arrangementId });
-            var parameters = new Dictionary<string, string>
-            {
-                { "agencyName", list.Result.FirstOrDefault()?.AgencyName },
-                { "arrangementNameParameter", list.Result.FirstOrDefault()?.ArrangementName },
-                { "currentDateParameter", DateTime.UtcNow.ToString("dd.MM.yyyy") }
-
-            };
-
-            localReport.AddDataSource("DataSet1", this.mapper.Map<List<UserPaymentModel>>(list.Result));
-            var result = localReport.Execute(RenderType.Pdf, parameters: parameters);
-            return result;
+            var list = await this.reservationRepository.Get(new ReservationSearchRequesParameters(){ 
+                                                            ArrangementId = arrangementId,
+                                                            DateTo = dateTo,
+                                                            DateFrom = dateFrom,
+                                                            ReservationStatusId = ((int)Core.Enum.ReservationStatus.Confirmed).ToString()
+            });
+            return this.mapper.Map<List<UserPaymentResponse>>(list.Result);
         }
 
-        public async Task<ReportResult> ArrangementEarningsReport(string agencyId)
+        public async Task<List<ArrangementEarnings>> ArrangementEarningsReport(string agencyId, string? dateFrom, string? dateTo)
         {
-            var reportPath = this.reportPathGetterService.GetPath(ReportType.ArrangementEarnings);
-
-            var localReport = new LocalReport(reportPath);
-
-            var list = await this.reservationService.Get(new Core.Search_Models.ReservationSearchModel() { AgencyId = agencyId });
-            var parameters = new Dictionary<string, string>
+            var list = await this.reservationRepository.Get(new ReservationSearchRequesParameters()
             {
-                { "agencyName", list.Result.FirstOrDefault()?.AgencyName },
-                { "currentDateParameter", DateTime.UtcNow.ToString("dd.MM.yyyy") }
+                AgencyId = agencyId,
+                DateTo = dateTo,
+                DateFrom = dateFrom,
+                ReservationStatusId = ((int)Core.Enum.ReservationStatus.Confirmed).ToString()
+            });
 
-            };
+            var groupedList = list.Result.GroupBy(x => x.ArrangementId).Select(x => new ArrangementEarnings
+            {
+                TotalPaid = x.Sum(s => s.TotalPaid),
+                ReservationCount = x.Count(),
+                ArrangementName = x.FirstOrDefault().ArrangementName,
+            }).ToList();
 
-            localReport.AddDataSource("DataSet1", this.mapper.Map<List<UserPaymentModel>>(list.Result));
-            var result = localReport.Execute(RenderType.Pdf, parameters: parameters);
-            return result;
+            return groupedList;
         }
 
     }

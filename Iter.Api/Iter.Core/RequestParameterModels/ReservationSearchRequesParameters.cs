@@ -13,5 +13,9 @@
         public string? ReservationStatusId { get; set; }
 
         public bool? ReturnActiveReservations { get; set; }
+
+        public string? DateFrom { get; set; }
+
+        public string? DateTo{ get; set; }
     }
 }

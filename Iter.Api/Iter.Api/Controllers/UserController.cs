@@ -12,7 +12,7 @@ using Iter.Core.Enum;
 
 namespace Iter.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class UserController : BaseCRUDController<User, UserUpsertRequest, UserUpsertRequest, UserResponse, UserSearchModel, UserResponse>
     {

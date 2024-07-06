@@ -31,5 +31,7 @@
         public DateTime ReservationDate { get; set; }
 
         public string ReservationNumber { get; set; }
+
+        public string? TransactionId { get; set; }
     }
 }

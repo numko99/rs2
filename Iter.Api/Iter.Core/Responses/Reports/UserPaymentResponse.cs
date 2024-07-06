@@ -1,6 +1,6 @@
-﻿namespace Iter.Core.ReportDatasetModels
+﻿namespace Iter.Core.Responses
 {
-    public class UserPaymentModel
+    public class UserPaymentResponse
     {
         public string? FirstName { get; set; }
 
@@ -13,6 +13,8 @@
         public string? ArrangementId { get; set; }
 
         public string? ArrangementName { get; set; }
+
+        public string? TransactionId { get; set; }
 
     }
 }

@@ -8,5 +8,6 @@
 
         public string AgencyId { get; set; }
 
+        public string Id { get; set; }
     }
 }

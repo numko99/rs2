@@ -6,7 +6,6 @@ using Iter.Core.Dto.User;
 using Iter.Core.EntityModels;
 using Iter.Core.Enum;
 using Iter.Core.Models;
-using Iter.Core.ReportDatasetModels;
 using Iter.Core.RequestParameterModels;
 using Iter.Core.Responses;
 using Iter.Core.Search_Models;
@@ -222,7 +221,7 @@ namespace Iter.Api.Mapping
                 .ForPath(dest => dest.ReservationStatusName, opt => opt.MapFrom(src => src.ReservationStatus.Name));
 
 
-            this.CreateMap<ReservationSearchResponse?, UserPaymentModel?>()
+            this.CreateMap<ReservationSearchDto?, UserPaymentResponse?>()
                 .ForPath(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForPath(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                 .ForPath(dest => dest.ArrangementId, opt => opt.MapFrom(src => src.ArrangementId.ToString()))

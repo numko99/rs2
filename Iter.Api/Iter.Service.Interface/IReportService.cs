@@ -1,11 +1,12 @@
 using AspNetCore.Reporting;
+using Iter.Core.Responses;
 
 namespace Iter.Services.Interface
 {
     public interface IReportService
     {
-        Task<ReportResult> UserPaymentReport(string arrangementId);
+        Task<List<UserPaymentResponse>> UserPaymentReport(string agencyId, string? dateFrom, string? dateTo);
 
-        Task<ReportResult> ArrangementEarningsReport(string agencyId);
+        Task<List<ArrangementEarnings>> ArrangementEarningsReport(string agencyId, string? dateFrom, string? dateTo);
     }
 }

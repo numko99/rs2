@@ -1,17 +1,14 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/enums/dropdown_types.dart';
 import 'package:ui/helpers/scaffold_messenger_helper.dart';
 import 'package:ui/models/dropdown_model.dart';
-import 'package:ui/models/user.dart';
-import 'package:ui/services/agency_provider.dart';
-import 'package:ui/services/arrangment_provider.dart';
 import 'package:ui/services/dropdown_provider.dart';
 import 'package:ui/services/report_provider.dart';
-import 'package:ui/services/user_provider.dart';
 import 'package:ui/widgets/Layout/layout.dart';
-import 'package:ui/widgets/search_button.dart';
 
 class ReportsIndexPage extends StatefulWidget {
   const ReportsIndexPage({super.key});
@@ -171,20 +168,23 @@ class ReportsIndexPageState extends State<ReportsIndexPage> {
   void generateReport() {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       if (selectedReportType == 1) {
-        _reportProvider?.getUserPaymentReport(
-            selectedArrangement!,
-            arrangementDropdown
-                ?.where((element) => element.id == selectedArrangement)
-                .first
-                .name);
+       Navigator.pushNamed(context, '/report/userPayments', arguments: {
+          'id': selectedArrangement,
+          'name': arrangementDropdown?.where((element) => element.id == selectedArrangement).first.name,
+          'dateFrom': null,
+          'dateTo': null,
+        });
       }
       if (selectedReportType == 2) {
-        _reportProvider?.getArrangementEarningsReport(
-            selectedAgency!,
-            agenciesDropdown
-                ?.where((element) => element.id == selectedAgency)
-                .first
-                .name);
+         Navigator.pushNamed(context, '/report/arrangementEarnings', arguments: {
+          'id': selectedAgency,
+          'name': agenciesDropdown
+              ?.where((element) => element.id == selectedAgency)
+              .first
+              .name,
+          'dateFrom': null,
+          'dateTo': null,
+        });
       }
     }
   }

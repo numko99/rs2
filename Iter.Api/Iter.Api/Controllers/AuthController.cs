@@ -8,10 +8,11 @@ using Iter.Services;
 using Iter.Core;
 using Iter.Core.Helper;
 using Iter.Core.Requests;
+using System.Security.Claims;
 
 namespace Iter.Api.Controllers
 {
-    [Route("api/userauthentication")]
+    [Route("[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -79,7 +80,7 @@ namespace Iter.Api.Controllers
 
             this.logger.LogInformation("Token created successfully");
 
-            return Ok(new LoginResponse() { Token = token, Role = result.Role, AgencyId = agencyId });
+            return Ok(new LoginResponse() { Token = token, Role = result.Role, AgencyId = agencyId, Id = HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier) });
         }
 
         [HttpPost("verify-email-token")]

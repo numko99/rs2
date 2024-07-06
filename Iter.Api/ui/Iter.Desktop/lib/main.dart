@@ -7,6 +7,8 @@ import 'package:ui/pages/arrangement_details.dart';
 import 'package:ui/pages/arrangement_index.dart';
 import 'package:ui/pages/arrangments_add_edit.dart';
 import 'package:ui/pages/login.dart';
+import 'package:ui/pages/reports/agency_earnings_report.dart';
+import 'package:ui/pages/reports/user_payments_report.dart';
 import 'package:ui/pages/reports_index.dart';
 import 'package:ui/pages/reservation_index.dart';
 import 'package:ui/pages/user_details.dart';
@@ -72,6 +74,18 @@ class IterApp extends StatelessWidget {
           '/arrangement/details': (context) {
             final args = ModalRoute.of(context)!.settings.arguments as Map;
             return ArrangementDetailsPage(id: args["id"]);
+          },
+          '/report/userPayments': (context) {
+            final args = ModalRoute.of(context)!.settings.arguments as Map;
+            return UserPaymentReportPage(arrangementId: args["id"], arrangementName: args["name"], dateFrom: args["dateFrom"], dateTo: args["dateTo"]);
+          },
+          '/report/arrangementEarnings': (context) {
+            final args = ModalRoute.of(context)!.settings.arguments as Map;
+            return AgencyEarningsReportPage(
+                agencyId: args["id"],
+                agencyName: args["name"],
+                dateFrom: args["dateFrom"],
+                dateTo: args["dateTo"]);
           },
            '/reservations': (context) {
             return ReservationIndexPage();

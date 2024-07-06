@@ -30,10 +30,11 @@ class AuthStorageProvider {
     _authToken = null;
   }
 
-  static saveAuthData(int role, String? agencyId) {
+  static saveAuthData(int role, String? agencyId, String? id) {
     var index = role - 1;
     _authData["role"] = Roles.values[index];
     _authData["agencyId"] = agencyId;
+    _authData["id"] = id;
   }
 
   static Map<String, dynamic>? getAuthData() {
