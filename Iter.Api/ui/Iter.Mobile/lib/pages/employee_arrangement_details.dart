@@ -187,7 +187,7 @@ class _EmployeeArrangementDetailsPageState
                                       label: Text('Ime i prezime',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold))),
-                                  DataColumn(label: Text(""))
+                                  DataColumn(label: Text("")),
                                 ],
                                 rows: reservations!
                                     .asMap()
@@ -198,23 +198,45 @@ class _EmployeeArrangementDetailsPageState
                                                 "${reservation.value.firstName} ${reservation.value.lastName}")),
                                             DataCell(Align(
                                               alignment: Alignment.centerRight,
-                                              child: IconButton(
-                                                  icon: const Icon(
-                                                      Icons.open_in_new_off),
-                                                  onPressed: () => {
-                                                        showDialog(
-                                                          context: context,
-                                                          builder: (BuildContext
-                                                              context) {
-                                                            return ReservationDetailsModal(
-                                                                reservationId:
-                                                                    reservation
-                                                                        .value
-                                                                        .reservationId);
-                                                          },
-                                                        )
-                                                      }),
-                                            ))
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                children: [
+                                                  IconButton(
+                                                      icon: const Icon(
+                                                          Icons.open_in_new_off),
+                                                      onPressed: () => {
+                                                            showDialog(
+                                                              context: context,
+                                                              builder: (BuildContext
+                                                                  context) {
+                                                                return ReservationDetailsModal(
+                                                                    reservationId:
+                                                                        reservation
+                                                                            .value
+                                                                            .reservationId);
+                                                              },
+                                                            )
+                                                          }),
+                                                          IconButton(
+                                                      icon: const Icon(Icons
+                                                          .message),
+                                                      onPressed: () => {
+                                                            showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return ReservationDetailsModal(
+                                                                    reservationId:
+                                                                        reservation
+                                                                            .value
+                                                                            .reservationId);
+                                                              },
+                                                            )
+                                                          }),
+                                                ],
+                                              ),
+                                            )),
                                           ],
                                         ))
                                     .toList(),

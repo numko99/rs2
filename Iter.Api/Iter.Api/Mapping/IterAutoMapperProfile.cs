@@ -284,6 +284,12 @@ namespace Iter.Api.Mapping
                 .ForPath(dest => dest.ArrangementStatusId, opt => opt.MapFrom(src => src.ArrangementStatusId))
                 .ForPath(dest => dest.ArrangementStatusId, opt => opt.Ignore())
                 .ForPath(dest => dest.MainImage, opt => opt.MapFrom(src => src.ArrangementImages.Where(x => x.IsMainImage).FirstOrDefault()));
+            this.CreateMap<Arrangement?, ArrangementSearchResponse?>()
+               .ForPath(dest => dest.AgencyName, opt => opt.MapFrom(src => src.Agency.Name))
+               .ForPath(dest => dest.AgencyRating, opt => opt.MapFrom(src => src.Agency.Rating))
+               .ForPath(dest => dest.ArrangementStatusId, opt => opt.MapFrom(src => src.ArrangementStatusId))
+               .ForPath(dest => dest.ArrangementStatusId, opt => opt.Ignore())
+               .ForPath(dest => dest.MainImage, opt => opt.MapFrom(src => src.ArrangementImages.Where(x => x.IsMainImage).FirstOrDefault()));
             this.CreateMap<ArrangementSearchDto?, ArrangementSearchResponse?>();
 
             this.CreateMap<EmployeeArrangmentUpsertRequest?, EmployeeArrangment?>()
