@@ -33,5 +33,7 @@
         public string ReservationNumber { get; set; }
 
         public string? TransactionId { get; set; }
+
+        public string? UserId { get; set; }
     }
 }

@@ -44,9 +44,6 @@ class _LoginContainerState extends State<LoginContainer> {
   void initState() {
     super.initState();
     _authProvider = context.read<AuthProvider>();
-
-    _usernameController.text = "adnan_numanovic@hotmail.com";
-    _passwordController.text = "Mostar_123";
   }
 
 

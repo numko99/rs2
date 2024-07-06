@@ -26,6 +26,7 @@ ReservationSearchResponse _$ReservationSearchResponseFromJson(
       firstName: json['firstName'] as String,
       lastName: json['lastName'] as String,
       reservationNumber: json['reservationNumber'] as String,
+      userId: json['userId'] as String?,
     );
 
 Map<String, dynamic> _$ReservationSearchResponseToJson(
@@ -46,4 +47,5 @@ Map<String, dynamic> _$ReservationSearchResponseToJson(
       'firstName': instance.firstName,
       'lastName': instance.lastName,
       'reservationNumber': instance.reservationNumber,
+      'userId': instance.userId,
     };

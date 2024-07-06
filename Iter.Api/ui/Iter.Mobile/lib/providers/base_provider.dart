@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:flutter/foundation.dart';
+import 'package:iter_mobile/apiConfig.dart';
 import 'package:iter_mobile/models/search_result.dart';
 import 'package:iter_mobile/providers/auth_storage_provider.dart';
 
@@ -15,8 +16,7 @@ abstract class BaseProvider<T, TSearchResponse> with ChangeNotifier {
   IOClient? http;
 
   BaseProvider(String endpoint) {
-        baseUrl = const String.fromEnvironment('BASE_URL',
-        defaultValue: 'https://10.0.2.2:7156');
+        baseUrl = const String.fromEnvironment('BASE_URL', defaultValue: ApiConfig.baseUrl);
 
     if (baseUrl!.endsWith("/") == false) {
       baseUrl = baseUrl! + "/";

@@ -234,8 +234,8 @@ class _EmployeeArrangementDetailsPageState
                                                                     builder:
                                                                         (context) =>
                                                                             ChatPage(
-                                                                              senderId: reservation.value.reservationId,
-                                                                              receiverId: AuthStorageProvider.getAuthData()?["id"],
+                                                                              receiverId: reservation.value.userId!,
+                                                                              senderId: AuthStorageProvider.getAuthData()?["id"],
                                                                               reciverName: "${reservation.value.firstName} ${reservation.value.lastName}",
                                                                               reciverAgency: "",
                                                                             )))

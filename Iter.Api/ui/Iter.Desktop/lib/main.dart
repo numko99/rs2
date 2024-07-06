@@ -6,6 +6,7 @@ import 'package:ui/pages/agency_details.dart';
 import 'package:ui/pages/arrangement_details.dart';
 import 'package:ui/pages/arrangement_index.dart';
 import 'package:ui/pages/arrangments_add_edit.dart';
+import 'package:ui/pages/home.dart';
 import 'package:ui/pages/login.dart';
 import 'package:ui/pages/reports/agency_earnings_report.dart';
 import 'package:ui/pages/reports/user_payments_report.dart';
@@ -54,6 +55,7 @@ class IterApp extends StatelessWidget {
         initialRoute: '/login',
         routes: {
           '/login': (context) => Login(),
+          '/home': (context) => Home(),
           '/agency': (context) => const AgencyPage(),
           '/agency/details': (context) {
             final args = ModalRoute.of(context)!.settings.arguments as Map;

@@ -164,7 +164,7 @@ class ForgotPasswordLink extends StatelessWidget {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: Text(
-        'Zaboravljena lozinka?',
+        '',
         style: TextStyle(
           color: Colors.amber,
         ),

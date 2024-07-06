@@ -19,6 +19,7 @@ class ReservationSearchResponse {
   final String firstName;
   final String lastName;
   final String reservationNumber;
+  final String? userId;
 
   ReservationSearchResponse({
     required this.reservationId,
@@ -35,6 +36,7 @@ class ReservationSearchResponse {
     required this.firstName,
     required this.lastName,
     required this.reservationNumber,
+    this.userId,
   });
 
 

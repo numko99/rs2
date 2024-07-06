@@ -7,10 +7,12 @@ import '../apiConfig.dart';
 class AuthProvider with ChangeNotifier {
   AuthProvider();
 
+  String baseUrl = const String.fromEnvironment('BASE_URL', defaultValue: ApiConfig.baseUrl);
+
   Future<bool> loginUserAsync(String username, String password) async {
     final Uri url =
-        Uri.parse("${ApiConfig.baseUrl}/auth/login");
-
+        Uri.parse("${baseUrl}/auth/login");
+  print(url);
     try {
       final http.Response response = await http.post(
         url,

@@ -13,7 +13,7 @@ class _HomeState extends State<Home> {
             name: "Početna",
       icon: Icons.home,
       body: Container(
-        child: Text("Ovo je neki tekst"),
+        child: Text("Home page"),
       ),
     );
   }

@@ -21,8 +21,8 @@ class Program
         var retryPolicy = Policy
                .Handle<BrokerUnreachableException>()
                .WaitAndRetry(
-                   retryCount: 5,
-                   sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(2),
+                   retryCount: 100,
+                   sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(5),
                    onRetry: (exception, timeSpan, retryCount, context) =>
                    {
                        Console.WriteLine($"Pokušaj {retryCount}: Neuspešno povezivanje, pokušavam ponovo za {timeSpan.Seconds} sekundi...");
@@ -40,25 +40,6 @@ class Program
 
         var emailSettings = new EmailSettings();
         Configuration.GetSection(nameof(EmailSettings)).Bind(emailSettings);
-
-        Console.WriteLine("logiranje stari nacin");
-        Console.WriteLine(Configuration["RabbitMQ:HostName"]);
-        Console.WriteLine(Configuration["RabbitMQ:Port"]);
-        Console.WriteLine(Configuration["RabbitMQ:Username"]);
-        Console.WriteLine(Configuration["RabbitMQ:Password"]);
-
-
-        Console.WriteLine("logiranje novi nacin");
-        Console.WriteLine(rabbitMqSettings.HostName);
-        Console.WriteLine(rabbitMqSettings.Port);
-        Console.WriteLine(rabbitMqSettings.Username);
-        Console.WriteLine(rabbitMqSettings.Password);
-
-        Console.WriteLine("email novi nacin");
-        Console.WriteLine(emailSettings.Host);
-        Console.WriteLine(emailSettings.Port);
-        Console.WriteLine(emailSettings.UserName);
-        Console.WriteLine(emailSettings.Password);
 
         var factory = new ConnectionFactory
         {

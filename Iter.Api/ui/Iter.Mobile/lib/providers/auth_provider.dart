@@ -9,10 +9,11 @@ import '../apiConfig.dart';
 
 class AuthProvider with ChangeNotifier {
   AuthProvider();
+  String baseUrl = const String.fromEnvironment('BASE_URL', defaultValue: ApiConfig.baseUrl);
 
   Future<bool> loginUserAsync(AuthRequest authRequest) async {
     final Uri url =
-        Uri.parse("${ApiConfig.baseUrl}/auth/login");
+        Uri.parse("${baseUrl}/auth/login");
 
     Map<String, String> headers = {"Content-type": "application/json"};
     http.Response? response = null;;
@@ -47,7 +48,7 @@ class AuthProvider with ChangeNotifier {
   Future<Map<bool, String>> registerUserAsync(
       Map<String, dynamic> request) async {
     final Uri url =
-        Uri.parse("${ApiConfig.baseUrl}/api/userauthentication/register");
+        Uri.parse("${baseUrl}/auth/register");
 
     try {
       final http.Response response = await http.post(
@@ -79,7 +80,7 @@ class AuthProvider with ChangeNotifier {
 
   Future resendToken(String email) async {
     final Uri url = Uri.parse(
-        "${ApiConfig.baseUrl}/api/userauthentication/resend-token?email=$email");
+        "${baseUrl}/auth/resend-token?email=$email");
 
     try {
       final response = await http.get(url, headers: {
@@ -105,7 +106,7 @@ class AuthProvider with ChangeNotifier {
   Future<bool> verifyEmailVerificationToken(
       Map<String, dynamic> request) async {
     final Uri url = Uri.parse(
-        "${ApiConfig.baseUrl}/api/userauthentication/verify-email-token");
+        "${baseUrl}/auth/verify-email-token");
 
     try {
       final http.Response response = await http.post(
@@ -124,7 +125,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<int> sendForgotPasswordToken(String email) async {
     final Uri url =
-        Uri.parse("${ApiConfig.baseUrl}/api/userauthentication/send-forgot-password-token?email=$email");
+        Uri.parse("${baseUrl}/auth/send-forgot-password-token?email=$email");
 
     try {
       final http.Response response = await http.get(
@@ -143,7 +144,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<bool> verifyForgotPasswordToken(String email, String token) async {
     final Uri url =
-        Uri.parse("${ApiConfig.baseUrl}/api/userauthentication/verify-forgot-password-token?email=$email&token=$token");
+        Uri.parse("${baseUrl}/auth/verify-forgot-password-token?email=$email&token=$token");
 
     try {
       final http.Response response = await http.get(
@@ -162,7 +163,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<bool> resetPassword(String email, String password) async {
     final Uri url =
-        Uri.parse("${ApiConfig.baseUrl}/api/userauthentication/reset-password");
+        Uri.parse("${baseUrl}/auth/reset-password");
 
     try {
       final http.Response response = await http.post(
