@@ -14,6 +14,7 @@ namespace Iter.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize(Roles = nameof(Roles.Client) + "," + nameof(Roles.Admin) + "," + nameof(Roles.Coordinator) + "," + nameof(Roles.TouristGuide))]
     public class UserController : BaseCRUDController<User, UserUpsertRequest, UserUpsertRequest, UserResponse, UserSearchModel, UserResponse>
     {
         private readonly IUserService _userService;

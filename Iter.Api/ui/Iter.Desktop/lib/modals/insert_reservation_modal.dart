@@ -126,7 +126,7 @@ class _InsertReservationModalState extends State<InsertReservationModal> {
                                   setState(() {
                                     selectedUser = null;
                                   });
-                                  if (pattern.length > 3){
+                                  if (pattern.length >= 1){
                                       return await getUsers(pattern);
                                   }
                                 },
@@ -144,7 +144,7 @@ class _InsertReservationModalState extends State<InsertReservationModal> {
                                       autofocus: true,
                                       validator: (value) {
                                         if (value!.isEmpty || selectedUser == null) {
-                                          return 'Polje je obavezno';
+                                          return 'Polje je obavezno'; 
                                         } else {
                                           return null;
                                         }

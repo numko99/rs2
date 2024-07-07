@@ -3,12 +3,15 @@ using Iter.Core.Enum;
 using Iter.Core.Models;
 using Iter.Repository;
 using Iter.Repository.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace Iter.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize(Roles = nameof(Roles.Client) + "," + nameof(Roles.Admin) + "," + nameof(Roles.Coordinator) + "," + nameof(Roles.TouristGuide))]
     public class DropdownController : Controller
     {
         private readonly IDropdownRepository dropdownRepository;

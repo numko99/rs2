@@ -1,12 +1,15 @@
 ﻿using AspNetCore.Reporting;
+using Iter.Core.Enum;
 using Iter.Core.Search_Models;
 using Iter.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Iter.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Coordinator))]
     public class ReportController : ControllerBase
     {
         private readonly IReportService reportService;

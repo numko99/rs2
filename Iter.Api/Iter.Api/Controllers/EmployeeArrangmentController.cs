@@ -4,11 +4,14 @@ using Iter.Core;
 using Iter.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Iter.Core.Search_Models;
+using Iter.Core.Enum;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Iter.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Coordinator) + "," + nameof(Roles.TouristGuide))]
     public class EmployeeArrangmentController : BaseCRUDController<EmployeeArrangment, EmployeeArrangmentUpsertRequest, EmployeeArrangmentUpsertRequest, EmployeeArrangmentResponse, EmployeeArrangementSearchModel, EmployeeArrangmentResponse>
     {
         private readonly IEmployeeArrangmentService _employeeArrangmentService;

@@ -108,6 +108,9 @@ class ReportsIndexPageState extends State<ReportsIndexPage> {
                                 return null;
                               },
                               onChanged: (value) {
+                                setState(() {
+                                  selectedArrangement = null;
+                                });
                                 test(value);
                               },
                             ),
