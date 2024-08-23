@@ -14,6 +14,7 @@ UserPaymentModel _$UserPaymentModelFromJson(Map<String, dynamic> json) =>
       reservationNumber: json['reservationNumber'] as String?,
       arrangementId: json['arrangementId'] as String?,
       arrangementName: json['arrangementName'] as String?,
+      transactionId: json['transactionId'] as String?,
     );
 
 Map<String, dynamic> _$UserPaymentModelToJson(UserPaymentModel instance) =>
@@ -24,4 +25,5 @@ Map<String, dynamic> _$UserPaymentModelToJson(UserPaymentModel instance) =>
       'reservationNumber': instance.reservationNumber,
       'arrangementId': instance.arrangementId,
       'arrangementName': instance.arrangementName,
+      'transactionId': instance.transactionId,
     };

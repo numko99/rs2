@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/enums/dropdown_types.dart';
 import 'package:ui/helpers/dateTime_helper.dart';
@@ -257,7 +258,7 @@ class _DestinationFormPageState extends State<DestinationFormPage> {
                           labelText: 'Vrijeme odlaska',
                           suffixIcon: Icon(Icons.calendar_today),
                         ),
-                        readOnly: true, // Sprečava pojavu tastature
+                        readOnly: true,
                         onTap: () => DateTimeHelper.selectDateAndTime(
                             context,
                             widget.controllers
@@ -266,6 +267,20 @@ class _DestinationFormPageState extends State<DestinationFormPage> {
                           if (value == null || value.isEmpty) {
                             return 'Polje je obavezno';
                           }
+
+                          // DateTime? arrivalDateTime = new DateFormat("yyyy-MM-dd hh:mm:ss").parse(widget
+                          //     .controllers
+                          //     .arrivalDateTimeControllers[index]
+                          //     .text);
+
+                          // DateTime? departureDateTime = new DateFormat("yyyy-MM-dd hh:mm:ss").parse(value);
+
+                          // if (arrivalDateTime != null && departureDateTime != null) {
+                          //   if (departureDateTime.isBefore(arrivalDateTime)) {
+                          //     return 'Vrijeme odlaska ne može biti manje od vremena dolaska';
+                          //   }
+                          // }
+
                           return null;
                         },
                       ),

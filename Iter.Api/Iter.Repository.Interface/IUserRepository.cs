@@ -18,5 +18,7 @@ namespace Iter.Repository.Interface
         Task<List<UserNamesDto>> GetUserNamesByIds(List<string> Ids);
 
         Task<PagedResult<User>> Get(UserSearchRequestParameters search);
+
+        Task<int> GetCount();
     }
 }

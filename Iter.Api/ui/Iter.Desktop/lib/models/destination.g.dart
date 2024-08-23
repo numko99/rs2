@@ -10,8 +10,8 @@ Destination _$DestinationFromJson(Map<String, dynamic> json) => Destination(
       id: json['id'] as String?,
       city: json['city'] as String?,
       country: json['country'] as String?,
-      cityId: json['cityId'] as int?,
-      countryId: json['countryId'] as int?,
+      cityId: (json['cityId'] as num?)?.toInt(),
+      countryId: (json['countryId'] as num?)?.toInt(),
       arrivalDate: json['arrivalDate'] == null
           ? null
           : DateTime.parse(json['arrivalDate'] as String),

@@ -541,10 +541,8 @@ namespace Iter.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("DeparturePlace")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int>("DepartureCityId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -582,6 +580,8 @@ namespace Iter.Infrastructure.Migrations
                     b.HasIndex("ArrangmentId");
 
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("DepartureCityId");
 
                     b.HasIndex("ReservationStatusId");
 
@@ -1054,6 +1054,13 @@ namespace Iter.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Reservation_Client");
 
+                    b.HasOne("Iter.Core.EntityModels.City", "DepartureCity")
+                        .WithMany("Reservations")
+                        .HasForeignKey("DepartureCityId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_Reservation_DepartureCity");
+
                     b.HasOne("Iter.Core.EntityModels.ReservationStatus", "ReservationStatus")
                         .WithMany()
                         .HasForeignKey("ReservationStatusId")
@@ -1066,6 +1073,8 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("ArrangementPrice");
 
                     b.Navigation("Client");
+
+                    b.Navigation("DepartureCity");
 
                     b.Navigation("ReservationStatus");
                 });
@@ -1195,6 +1204,8 @@ namespace Iter.Infrastructure.Migrations
                     b.Navigation("Address");
 
                     b.Navigation("Destinations");
+
+                    b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("Iter.Core.EntityModels.Client", b =>

@@ -212,13 +212,12 @@ namespace Iter.Api.Mapping
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom((src, dest) => dest.Id == default ? DateTime.Now : dest.CreatedAt))
                 .ForMember(dest => dest.ModifiedAt, opt => opt.MapFrom(src => DateTime.Now));
 
-            this.CreateMap<EmployeeArrangment?, EmployeeArrangmentResponse?>();
             this.CreateMap<EmployeeArrangmentUpsertRequest?, EmployeeArrangment?>();
-
 
             this.CreateMap<Reservation?, ReservationResponse?>()
                 .ForPath(dest => dest.User, opt => opt.MapFrom(src => src.Client))
-                .ForPath(dest => dest.ReservationStatusName, opt => opt.MapFrom(src => src.ReservationStatus.Name));
+                .ForPath(dest => dest.ReservationStatusName, opt => opt.MapFrom(src => src.ReservationStatus.Name))
+                .ForPath(dest => dest.DeparturePlace, opt => opt.MapFrom(src => src.DepartureCity.Name));
 
 
             this.CreateMap<ReservationSearchDto?, UserPaymentResponse?>()
@@ -275,6 +274,11 @@ namespace Iter.Api.Mapping
         {
             this.CreateMap<EmployeeArrangment?, EmployeeArrangmentResponse?>();
             this.CreateMap<Employee?, UserResponse?>();
+            this.CreateMap<Employee?, EmployeeResponse?>()
+                .ForPath(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForPath(dest => dest.UserId, opt => opt.MapFrom(src => src.User.Id))
+                .ForPath(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                .ForPath(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName));
             this.CreateMap<Employee?, DropdownModel?>()
                 .ForPath(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForPath(dest => dest.Name, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));

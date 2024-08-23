@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:iter_mobile/models/auth_request.dart';
-import 'package:iter_mobile/pages/login.dart';
+import 'package:iter_mobile/pages/sign_up/login_page.dart';
 import 'package:iter_mobile/providers/auth_storage_provider.dart';
 import '../apiConfig.dart';
 

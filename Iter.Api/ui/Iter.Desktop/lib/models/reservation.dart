@@ -13,6 +13,7 @@ class Reservation {
   final String? arrangementPriceId;
   final String? reservationNumber;
   final String? departurePlace;
+  final int departureCityId;
   final User? user;
   final Arrangement? arrangement;
   final ArrangementPrice? arrangementPrice;
@@ -28,6 +29,7 @@ class Reservation {
       required this.reservationNumber,
       required this.arrangementPriceId,
       required this.departurePlace,
+      required this.departureCityId,
       required this.user,
       required this.arrangement,
       required this.arrangementPrice,

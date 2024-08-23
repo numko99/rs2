@@ -14,7 +14,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       phoneNumber: json['phoneNumber'] as String?,
       birthDate: DateTime.parse(json['birthDate'] as String),
       residencePlace: json['residencePlace'] as String,
-      role: json['role'] as int,
+      role: (json['role'] as num).toInt(),
       agency: json['agency'] == null
           ? null
           : Agency.fromJson(json['agency'] as Map<String, dynamic>),

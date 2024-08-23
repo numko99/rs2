@@ -18,5 +18,6 @@ namespace Iter.Repository.Interface
 
         Task<PagedResult<ArrangementSearchDto>> Get(ArrangmentSearchParameters? search);
 
+        Task<int> GetCount(Guid? agencyId = null);
     }
 }

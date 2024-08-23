@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/models/user_payment.dart';
 import 'package:ui/services/report_provider.dart';
-import 'package:ui/widgets/Layout/layout.dart';
+import 'package:ui/widgets/layout.dart';
 
 class UserPaymentReportPage extends StatefulWidget {
   final String arrangementId;
@@ -37,7 +37,7 @@ class _UserPaymentReportPageState extends State<UserPaymentReportPage> {
 
   Future<void> _loadData() async {
     var _userPaymentsTemp = await reportProvider
-        ?.getUserPayments({"arrangementId": widget.arrangementId!});
+        ?.getUserPayments({"arrangementId": widget.arrangementId, "DateFrom": widget.dateFrom, "dateTo": widget.dateTo});
 
     if (_userPaymentsTemp == null) {
       return;
@@ -56,7 +56,10 @@ class _UserPaymentReportPageState extends State<UserPaymentReportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Uplate korisnika'),
+                iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
+        title: const Text('Uplate korisnika', style: TextStyle(color: Colors.white),),
       ),
       body: displayLoader
           ? const Center(child: CircularProgressIndicator())
@@ -65,79 +68,86 @@ class _UserPaymentReportPageState extends State<UserPaymentReportPage> {
             child: Card(
               child: Column(
                 children: [
-                  SizedBox(
-                    height: 30,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(15.0, 0, 0, 0),
-                      child: Row(
-                        children: [
-                          Expanded(child:  Text(
-                                'Aranžman: ${widget.arrangementName}',
-                                style: const TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                             Expanded(
-                              child: Text(
-                                'Ukupno uplaćeno: ${totalSum}KM',
-                                style: const TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                              Expanded(
-                              child: Text(
-                                'Broj uplata: ${_userPayments.length}',
-                                style: const TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
+                  Text("Uplata korisnika za aranžman " + widget.arrangementName, style: TextStyle(fontSize: 20)),
+                  SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 8, 8, 8),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Expanded(
-                          child: _userPayments.length == 0 ? Center(child: Text("Nema uplata", style: TextStyle(fontSize: 20))) : SingleChildScrollView(
-                            child: DataTable(
-                              columns: [
-                                const DataColumn(
-                                    label: Text('Ime',
-                                        style:
-                                            TextStyle(fontWeight: FontWeight.bold))),
-                                const DataColumn(
-                                    label: Text('Prezime',
-                                        style:
-                                            TextStyle(fontWeight: FontWeight.bold))),
-                                const DataColumn(
-                                    label: Text('Broj transakcije',
-                                        style:
-                                            TextStyle(fontWeight: FontWeight.bold))),
-                                const DataColumn(
-                                    label: Text('Broj rezervacije',
-                                        style:
-                                            TextStyle(fontWeight: FontWeight.bold))),
-                                const DataColumn(
-                                    label: Text('Uplata',
-                                        style:
-                                            TextStyle(fontWeight: FontWeight.bold))),
-                              ],
-                              rows: _userPayments.map((payment) {
-                                return DataRow(cells: [
-                                  DataCell(Text(payment.firstName ?? '')),
-                                  DataCell(Text(payment.lastName ?? '')),
-                                  DataCell(Text(payment.transactionId ?? '')),
-                                  DataCell(Text(payment.reservationNumber ?? '')),
-                                  DataCell(Text(
-                                      payment.totalPaid!.toString() + "KM" ?? '')),
-                                ]);
-                              }).toList(),
+                        Flexible(
+                          flex: 2,
+                          child: ListTile(
+                                leading: Text('Aranžman:', style: const TextStyle(
+                                      fontSize: 15, fontWeight: FontWeight.bold)),
+                                title: Text(widget.arrangementName),
+                              ),
+                        ),
+                          Flexible(
+                            flex: 2,
+                            child: ListTile(
+                              leading: Text('Ukupno uplaćeno:',
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold)),
+                              title: Text("${totalSum}KM"),
                             ),
                           ),
-                        ),
+                            Flexible(
+                              flex: 1,
+                            child: ListTile(
+                              leading: Text('Broj uplata:',
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold)),
+                              title: Text(_userPayments.length.toString()),
+                            ),
+                          ),
                       ],
                     ),
+                  ),
+                  SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _userPayments.length == 0 ? Center(child: Text("Nema uplata", style: TextStyle(fontSize: 20))) : SingleChildScrollView(
+                          child: DataTable(
+                            columns: [
+                              const DataColumn(
+                                  label: Text('Ime',
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold))),
+                              const DataColumn(
+                                  label: Text('Prezime',
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold))),
+                              const DataColumn(
+                                  label: Text('Broj transakcije',
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold))),
+                              const DataColumn(
+                                  label: Text('Broj rezervacije',
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold))),
+                              const DataColumn(
+                                  label: Text('Uplata',
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold))),
+                            ],
+                            rows: _userPayments.map((payment) {
+                              return DataRow(cells: [
+                                DataCell(Text(payment.firstName ?? '')),
+                                DataCell(Text(payment.lastName ?? '')),
+                                DataCell(Text(payment.transactionId ?? '')),
+                                DataCell(Text(payment.reservationNumber ?? '')),
+                                DataCell(Text(
+                                    payment.totalPaid!.toString() + "KM" ?? '')),
+                              ]);
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

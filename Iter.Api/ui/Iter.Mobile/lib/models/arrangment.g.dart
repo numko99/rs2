@@ -25,7 +25,7 @@ Arrangement _$ArrangementFromJson(Map<String, dynamic> json) => Arrangement(
       destinations: (json['destinations'] as List<dynamic>)
           .map((e) => Destination.fromJson(e as Map<String, dynamic>))
           .toList(),
-      arrangementStatusId: json['arrangementStatusId'] as int?,
+      arrangementStatusId: (json['arrangementStatusId'] as num?)?.toInt(),
       arrangementStatusName: json['arrangementStatusName'] as String?,
       modifiedAt: json['modifiedAt'] == null
           ? null

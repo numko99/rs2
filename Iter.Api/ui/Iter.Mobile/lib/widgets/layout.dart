@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:iter_mobile/enums/roles.dart';
-import 'package:iter_mobile/pages/chat_page.dart';
-import 'package:iter_mobile/pages/all_messages_page.dart';
-import 'package:iter_mobile/pages/employee_previous_arrangements.dart';
-import 'package:iter_mobile/pages/employee_home.dart';
-import 'package:iter_mobile/pages/home.dart';
-import 'package:iter_mobile/pages/my_arrangements.dart';
-import 'package:iter_mobile/pages/profile.dart';
+import 'package:iter_mobile/pages/chat/chat_page.dart';
+import 'package:iter_mobile/pages/chat/all_messages_page.dart';
+import 'package:iter_mobile/pages/arrangements/employee_previous_arrangements_page.dart';
+import 'package:iter_mobile/pages/arrangements/employee_home_page.dart';
+import 'package:iter_mobile/pages/arrangements/home_page.dart';
+import 'package:iter_mobile/pages/reservations/my_arrangements_page.dart';
+import 'package:iter_mobile/pages/my_profile/profile_page.dart';
 import 'package:iter_mobile/providers/auth_storage_provider.dart';
 
 class Layout extends StatefulWidget {

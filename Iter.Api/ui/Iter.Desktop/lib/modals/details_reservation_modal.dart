@@ -194,7 +194,7 @@ class ReservationDetailsModalState extends State<ReservationDetailsModal> {
                               message: 'Ocjena',
                               child: Icon(Icons.star, color: Colors.amber),
                             ),
-                            title: Text(reservation!.rating.toString()),
+                            title: Text(reservation!.rating! > 0 ? reservation!.rating.toString() : ""),
                           ),
                         )
                       ],

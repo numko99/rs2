@@ -11,7 +11,7 @@ EmployeeArrangment _$EmployeeArrangmentFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String?,
       employee: json['employee'] == null
           ? null
-          : DropdownModel.fromJson(json['employee'] as Map<String, dynamic>),
+          : EmployeeResponse.fromJson(json['employee'] as Map<String, dynamic>),
       arrangement: json['arrangement'] == null
           ? null
           : ArrangementSearchResponse.fromJson(

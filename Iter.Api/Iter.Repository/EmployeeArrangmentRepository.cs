@@ -83,6 +83,7 @@ namespace Iter.Repository
             result.Count = await query.CountAsync();
 
             query = query.Include(a => a.Employee)
+                         .ThenInclude(a => a.User)
                          .Include(a => a.Arrangement)
                          .ThenInclude(a => a.Agency)
                          .Include(a => a.Arrangement)
@@ -109,7 +110,7 @@ namespace Iter.Repository
                 return null;
             }
 
-            var query = await this.dbContext.Employee.Where(e => e.User.Role == (int)Roles.TouristGuide && e.AgencyId == arrangement.AgencyId && !e.EmployeeArrangments.Any(x => (x.Arrangement.StartDate.Date <= (dateTo != null ? dateTo.Value.Date : dateFrom.Date) && (x.Arrangement.EndDate != null ? x.Arrangement.EndDate.Value.Date >= dateFrom.Date : x.Arrangement.StartDate.Date >= dateFrom.Date) && x.IsDeleted == false))).ToListAsync();
+            var query = await this.dbContext.Employee.Where(e => e.User.Role == (int)Roles.TouristGuide && e.AgencyId == arrangement.AgencyId && !e.EmployeeArrangments.Any(x => (x.Arrangement.StartDate.Date <= (dateTo != null ? dateTo.Value.Date : dateFrom.Date) && (x.Arrangement.EndDate != null ? x.Arrangement.EndDate.Value.Date >= dateFrom.Date : x.Arrangement.StartDate.Date >= dateFrom.Date) && x.IsDeleted == false))).AsNoTracking().ToListAsync();
             return query;
         }
     }

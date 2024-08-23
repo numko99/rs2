@@ -72,7 +72,7 @@ namespace Iter.Api.Controllers
         [HttpPost("names-by-id")]
         public async Task<IActionResult> GetUserNamesByIds([FromBody] List<string> userIds)
         {
-            if (userIds == null || userIds.Count == 0)
+            if (userIds == null)
             {
                 return BadRequest("User IDs are required.");
             }

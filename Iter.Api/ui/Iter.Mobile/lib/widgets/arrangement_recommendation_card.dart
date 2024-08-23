@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:iter_mobile/models/arrangement_search_response.dart';
-import 'package:iter_mobile/pages/arrangement_details.dart';
+import 'package:iter_mobile/pages/arrangements/arrangement_details_page.dart';
 
 class ArrangementRecommendationCard extends StatelessWidget {
   const ArrangementRecommendationCard({

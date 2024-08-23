@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iter_mobile/enums/dropdown_types.dart';
 import 'package:iter_mobile/helpers/scaffold_messenger_helper.dart';
 import 'package:iter_mobile/models/dropdown_model.dart';
-import 'package:iter_mobile/pages/reservation_details_page.dart';
+import 'package:iter_mobile/pages/reservations/reservation_details_page.dart';
 import 'package:iter_mobile/providers/dropdown_provider.dart';
 import 'package:iter_mobile/providers/reservation_provider.dart';
 import 'package:provider/provider.dart';
@@ -19,16 +19,18 @@ class ReservationConfirmationDialog extends StatefulWidget {
 
 class _ReservationConfirmationDialogState
     extends State<ReservationConfirmationDialog> {
-
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController departurePlaceController = TextEditingController();
+  final TextEditingController departurePlaceController =
+      TextEditingController();
   final TextEditingController reminderController = TextEditingController();
 
   late ReservationProvider reservationProvider;
   late DropdownProvider dropdownProvider;
   List<DropdownModel>? prices;
+  List<DropdownModel>? cities;
   String? selectedAccomodationType;
+  String? selectedDepartureCityId;
 
   bool _displayLoader = true;
 
@@ -58,9 +60,14 @@ class _ReservationConfirmationDialogState
 
     arrangementPricesTemp.result
         .insert(0, DropdownModel(id: null, name: "Nije odabrano"));
+
+    var citiesTemp = await dropdownProvider
+        .get({"dropdownType": DropdownTypes.cities.index, "countryId": 1});
+
     setState(() {
       _displayLoader = false;
       prices = arrangementPricesTemp.result;
+      cities = citiesTemp.result;
     });
   }
 
@@ -77,10 +84,12 @@ class _ReservationConfirmationDialogState
       "arrangmentId": widget.arrangementId,
       "arrangementPriceId": selectedAccomodationType
     };
+    request["departureCityId"] = int.parse(selectedDepartureCityId!);
+
     setState(() {
       _displayLoader = true;
     });
-    
+
     try {
       var reservation = await reservationProvider.insert(request);
       ScaffoldMessengerHelper.showCustomSnackBar(
@@ -132,17 +141,31 @@ class _ReservationConfirmationDialogState
                 color: Colors.grey[300],
                 thickness: 1,
               ),
-              TextFormField(
-                  controller: departurePlaceController,
-                  decoration: const InputDecoration(labelText: 'Grad polaska'),
+              DropdownButtonFormField<dynamic>(
+                  decoration: const InputDecoration(
+                    labelText: 'Izaberite mjesto polaska',
+                  ),
+                  value: selectedDepartureCityId,
+                  items: cities?.map((DropdownModel item) {
+                    return DropdownMenuItem<dynamic>(
+                      value: item.id,
+                      child: Text(item.name ?? ""),
+                    );
+                  }).toList(),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Polje  je obavezno';
+                    if (value == null) {
+                      return 'Polje je obavezno';
                     }
                     return null;
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      selectedDepartureCityId = value;
+                    });
                   }),
               const SizedBox(height: 10),
-              if ((prices!.length == 2 && prices?[1].name == null) == false) ...[
+              if ((prices!.length == 2 && prices?[1].name == null) ==
+                  false) ...[
                 Row(
                   children: [
                     Expanded(
@@ -185,8 +208,8 @@ class _ReservationConfirmationDialogState
                 onPressed: () {
                   submit();
                 },
-                child:
-                    const Text("Potvrdi", style: TextStyle(color: Colors.white)),
+                child: const Text("Potvrdi",
+                    style: TextStyle(color: Colors.white)),
               ),
             ],
           ),

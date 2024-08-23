@@ -11,6 +11,7 @@ Reservation _$ReservationFromJson(Map<String, dynamic> json) => Reservation(
       reservationNumber: json['reservationNumber'] as String?,
       arrangementPriceId: json['arrangementPriceId'] as String?,
       departurePlace: json['departurePlace'] as String?,
+      departureCityId: (json['departureCityId'] as num).toInt(),
       user: json['user'] == null
           ? null
           : User.fromJson(json['user'] as Map<String, dynamic>),
@@ -21,10 +22,10 @@ Reservation _$ReservationFromJson(Map<String, dynamic> json) => Reservation(
           ? null
           : ArrangementPrice.fromJson(
               json['arrangementPrice'] as Map<String, dynamic>),
-      reservationStatusId: json['reservationStatusId'] as int?,
+      reservationStatusId: (json['reservationStatusId'] as num?)?.toInt(),
       reservationStatusName: json['reservationStatusName'] as String?,
       totalPaid: (json['totalPaid'] as num?)?.toDouble(),
-      rating: json['rating'] as int?,
+      rating: (json['rating'] as num?)?.toInt(),
       reminder: json['reminder'] as String?,
     );
 
@@ -34,6 +35,7 @@ Map<String, dynamic> _$ReservationToJson(Reservation instance) =>
       'arrangementPriceId': instance.arrangementPriceId,
       'reservationNumber': instance.reservationNumber,
       'departurePlace': instance.departurePlace,
+      'departureCityId': instance.departureCityId,
       'user': instance.user,
       'arrangement': instance.arrangement,
       'arrangementPrice': instance.arrangementPrice,

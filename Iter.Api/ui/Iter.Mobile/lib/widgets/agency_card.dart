@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:iter_mobile/models/agency.dart';
-import 'package:iter_mobile/pages/home.dart';
+import 'package:iter_mobile/pages/arrangements/home_page.dart';
 
 class AgencyCard extends StatelessWidget {
   final Agency agency;

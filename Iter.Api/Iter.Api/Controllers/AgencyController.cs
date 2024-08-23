@@ -11,7 +11,7 @@ namespace Iter.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize(Roles = nameof(Roles.Admin))]
+    [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Coordinator))]
     public class AgencyController : BaseCRUDController<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel, AgencyResponse>
     {
         public AgencyController(IAgencyService agencyService): base(agencyService)

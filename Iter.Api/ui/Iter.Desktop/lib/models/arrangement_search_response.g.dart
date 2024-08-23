@@ -17,7 +17,7 @@ ArrangementSearchResponse _$ArrangementSearchResponseFromJson(
       endDate: json['endDate'] == null
           ? null
           : DateTime.parse(json['endDate'] as String),
-      arrangementStatusId: json['arrangementStatusId'] as int?,
+      arrangementStatusId: (json['arrangementStatusId'] as num?)?.toInt(),
       arrangementStatusName: json['arrangementStatusName'] as String?,
       mainImage: json['mainImage'] == null
           ? null

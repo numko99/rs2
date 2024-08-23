@@ -13,5 +13,7 @@
         public List<Destination> Destinations { get; set; }
 
         public List<Address> Address { get; set; }
+
+        public List<Reservation> Reservations { get; set; }
     }
 }

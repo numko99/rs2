@@ -18,6 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Dto\Home\" />
 	  <Folder Include="ReportDatasetModels\" />
 	  <Folder Include="Static files\" />
 	</ItemGroup>

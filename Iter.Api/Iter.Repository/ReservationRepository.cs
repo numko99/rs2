@@ -37,6 +37,7 @@ namespace Iter.Repository
         public async override Task<Reservation?> GetById(Guid id)
         {
            return await this.dbContext.Reservation
+                    .Include(a => a.DepartureCity)
                     .Include(a => a.Arrangement)
                         .ThenInclude(ai => ai.Agency)
                     .Include(a => a.Arrangement)
@@ -68,16 +69,16 @@ namespace Iter.Repository
                 query = query.Where(a => a.ReservationStatusId == statusId).AsQueryable();
             }
 
-            if (search.DateFrom != null)
+            if (!string.IsNullOrEmpty(search.DateFrom))
             {
                 var dateFrom = DateTime.ParseExact(search.DateFrom, "dd.MM.yyyy", CultureInfo.InvariantCulture);
-                query = query.Where(a => dateFrom > a.CreatedAt ).AsQueryable();
+                query = query.Where(a => dateFrom < a.CreatedAt ).AsQueryable();
             }
 
-            if (search.DateTo != null)
+            if (!string.IsNullOrEmpty(search.DateTo))
             {
                 var dateTo = DateTime.ParseExact(search.DateTo, "dd.MM.yyyy", CultureInfo.InvariantCulture);
-                query = query.Where(a => dateTo < a.CreatedAt).AsQueryable();
+                query = query.Where(a => dateTo > a.CreatedAt).AsQueryable();
             }
 
             if (!string.IsNullOrEmpty(search?.AgencyId))
@@ -218,6 +219,16 @@ namespace Iter.Repository
         public async override Task<IEnumerable<Reservation>> GetAll()
         {
             return await this.dbContext.Reservation.Include(x => x.Arrangement).ThenInclude(x => x.Destinations).ToListAsync();
+        }
+
+        public async Task<int> GetCount(Guid? agencyId = null)
+        {
+            return await this.dbContext.Reservation.Where(r => agencyId == null || r.Arrangement.AgencyId == agencyId).CountAsync();
+        }
+
+        public async Task<decimal> GetTotalAmount(Guid? agencyId = null)
+        {
+            return await this.dbContext.Reservation.Where(r => agencyId == null || r.Arrangement.AgencyId == agencyId).SumAsync(x => x.TotalPaid);
         }
     }
 }

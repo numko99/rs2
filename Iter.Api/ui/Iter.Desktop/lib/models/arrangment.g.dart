@@ -27,7 +27,7 @@ Arrangement _$ArrangementFromJson(Map<String, dynamic> json) => Arrangement(
           .toList(),
       employees:
           (json['employees'] as List<dynamic>).map((e) => e as String).toList(),
-      arrangementStatusId: json['arrangementStatusId'] as int?,
+      arrangementStatusId: (json['arrangementStatusId'] as num?)?.toInt(),
       arrangementStatusName: json['arrangementStatusName'] as String?,
     );
 

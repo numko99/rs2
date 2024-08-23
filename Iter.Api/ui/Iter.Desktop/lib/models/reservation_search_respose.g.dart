@@ -17,7 +17,7 @@ ReservationSearchResponse _$ReservationSearchResponseFromJson(
       arrangementEndDateTime: json['arrangementEndDateTime'] == null
           ? null
           : DateTime.parse(json['arrangementEndDateTime'] as String),
-      reservationStatusId: json['reservationStatusId'] as int,
+      reservationStatusId: (json['reservationStatusId'] as num).toInt(),
       reservationStatusName: json['reservationStatusName'] as String,
       agencyName: json['agencyName'] as String,
       arrangementPrice: (json['arrangementPrice'] as num).toDouble(),

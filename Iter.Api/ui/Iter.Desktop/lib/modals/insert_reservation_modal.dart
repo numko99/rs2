@@ -34,8 +34,10 @@ class _InsertReservationModalState extends State<InsertReservationModal> {
 
   String? selectedUser;
   String? selectedAccomodationType;
+  String? selectedDepartureCityId;
   List<DropdownModel>? users;
   List<DropdownModel>? prices;
+  List<DropdownModel>? cities;
 
   @override
   void initState() {
@@ -82,12 +84,18 @@ class _InsertReservationModalState extends State<InsertReservationModal> {
       "arrangementId": widget.arrangementId
     });
 
+     var citiesTemp = await _dropdownProvider!.get({
+      "dropdownType": DropdownTypes.cities.index,
+      "countryId": 1
+    });
+
     arrangementPricesTemp.result
         .insert(0, DropdownModel(id: null, name: "Nije odabrano"));
     setState(() {
       _displayLoader = false;
       users = usersDropdownTemp.result;
       prices = arrangementPricesTemp.result;
+      cities = citiesTemp.result;
     });
   }
 
@@ -165,17 +173,29 @@ class _InsertReservationModalState extends State<InsertReservationModal> {
                               )),
                           const SizedBox(width: 60),
                           Expanded(
-                            child: FormBuilderTextField(
-                              name: 'departurePlace',
-                              decoration: const InputDecoration(
-                                  labelText: 'Grad polaska'),
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.required(
-                                    errorText: "Polje je obavezno"),
-                                FormBuilderValidators.maxLength(30,
-                                    errorText: "Neispravan unos")
-                              ]),
-                            ),
+                            flex: 1,
+                            child: DropdownButtonFormField<dynamic?>(
+                                decoration: const InputDecoration(
+                                  labelText: 'Izaberite mjesto polaska',
+                                ),
+                                value: selectedDepartureCityId,
+                                items: cities?.map((DropdownModel item) {
+                                  return DropdownMenuItem<dynamic>(
+                                    value: item.id,
+                                    child: Text(item.name ?? ""),
+                                  );
+                                }).toList(),
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Polje je obavezno';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedDepartureCityId = value;
+                                  });
+                                }),
                           ),
                         ],
                       ),
@@ -274,6 +294,7 @@ class _InsertReservationModalState extends State<InsertReservationModal> {
       }
 
       request["arrangementPriceId"] = selectedAccomodationType;
+      request["departureCityId"] = int.parse(selectedDepartureCityId!);
 
       await _reservationProvider?.insert(request);
       widget.onCompleted();

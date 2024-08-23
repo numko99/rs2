@@ -170,5 +170,10 @@ namespace Iter.Repository
 
             return users;
         }
+
+        public async Task<int> GetCount()
+        {
+            return await this.dbContext.User.CountAsync();
+        }
     }
 }

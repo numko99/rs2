@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ui/enums/roles.dart';
 import 'package:ui/helpers/dateTime_helper.dart';
@@ -30,7 +31,7 @@ class InsertUserModal extends StatefulWidget {
 class _InsertUserModalState extends State<InsertUserModal> {
   final _formKey = GlobalKey<FormBuilderState>();
   Map<String, dynamic> _initialValue = {};
-
+  final TextEditingController _birthDateController = TextEditingController();
   UserProvider? _userProvider;
 
   Roles? selectedUserType;
@@ -44,12 +45,11 @@ class _InsertUserModalState extends State<InsertUserModal> {
       _initialValue = {
         "firstName": widget.user?.firstName,
         "lastName": widget.user?.lastName,
-        "birthDate":
-            DateTimeHelper.formatDate(widget.user?.birthDate, "dd-MM-yyyy"),
         "residencePlace": widget.user?.residencePlace,
         "email": widget.user?.email,
         "phoneNumber": widget.user?.phoneNumber,
       };
+      _birthDateController.text = DateTimeHelper.formatDate(widget.user?.birthDate, "dd-MM-yyyy");
       selectedUserType = RoleEnumManager.getRoleById(widget.user!.role);
       selectedAgency = widget.user?.agency?.id;
     }
@@ -118,17 +118,44 @@ class _InsertUserModalState extends State<InsertUserModal> {
                 Row(
                   children: [
                   Expanded(
-                      child: FormBuilderTextField(
-                        name: 'birthDate',
-                        decoration: const InputDecoration(labelText: 'Datum rođenja'),
-                        inputFormatters: [
-                          MaskedInputFormatter('00-00-0000'),
-                        ],
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(errorText: "Polje je obavezno"),
-                          FormBuilderValidators.maxLength(30, errorText: "Neispravan unos"),
-                        ]),
-                        keyboardType: TextInputType.number,
+                      child: TextFormField(
+                        controller: _birthDateController,
+                        decoration: InputDecoration(
+                          labelText: 'Datum rođenja',
+                          prefixIcon: const Icon(Icons.calendar_month,
+                              color: Colors.amber),
+                          border: UnderlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                        ),
+                        readOnly: true,
+                        onTap: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: widget.user?.birthDate ?? DateTime.now(),
+                            firstDate: DateTime(1900),
+                            lastDate: DateTime.now(),
+                            builder: (BuildContext context, Widget? child) {
+                              return Theme(
+                                data: ThemeData.light(),
+                                child: child!,
+                              );
+                            },
+                          );
+
+                          if (pickedDate != null) {
+                            String formattedDate =
+                                DateFormat('dd.MM.yyyy').format(pickedDate);
+                            _birthDateController.text = formattedDate;
+                          }
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Polje je obavezno';
+                          }
+                          return null;
+                        },
+                        keyboardType: TextInputType.none,
                       ),
                     ),
                     const SizedBox(width: 60),
@@ -167,6 +194,9 @@ class _InsertUserModalState extends State<InsertUserModal> {
                     Expanded(
                       child: FormBuilderTextField(
                         name: 'phoneNumber',
+                        inputFormatters: [
+                          MaskedInputFormatter('000-000-0000'),
+                        ],
                         decoration:
                             const InputDecoration(labelText: 'Kontakt telefon'),
                         validator: FormBuilderValidators.compose([
@@ -174,8 +204,10 @@ class _InsertUserModalState extends State<InsertUserModal> {
                               errorText: "Polje je obavezno"),
                           FormBuilderValidators.maxLength(20,
                               errorText: "Neispravan unos"),
-                          FormBuilderValidators.match(r'^[0-9+\-]+$',
-                              errorText: "Neispravan format"),
+                          FormBuilderValidators.match(
+                            r'^\d{3}-\d{3}-\d{3,4}$',
+                            errorText: "Neispravan format",
+                          ),
                         ]),
                       ),
                     ),
@@ -302,6 +334,7 @@ class _InsertUserModalState extends State<InsertUserModal> {
 
       request["role"] = selectedUserType!.index + 1;
       request["agencyId"] = selectedAgency;
+      request["birthDate"] = _birthDateController.text;
       if (widget.user?.id == null) {
         await _userProvider?.insert(request);
       } else {

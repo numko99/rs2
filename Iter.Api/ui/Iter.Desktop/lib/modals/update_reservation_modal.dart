@@ -31,10 +31,12 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
   Reservation? reservation;
 
   String? selectedAccomodationType;
+  String? selectedDepartureCityId;
   List<DropdownModel>? accomodationTypes;
 
   String? selectedReservationStatus;
   List<DropdownModel>? reservationStatuses;
+  List<DropdownModel>? cities;
 
   double? totalPrice;
 
@@ -69,12 +71,18 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
     reservationStatusesTemp.result
         .insert(0, DropdownModel(id: null, name: "Nije odabrano"));
 
+    var citiesTemp = await _dropdownProvider!
+        .get({"dropdownType": DropdownTypes.cities.index, "countryId": 1});
+    citiesTemp.result.insert(0, DropdownModel(id: null, name: "Nije odabrano"));
+
     setState(() {
       _displayLoader = false;
       reservation = reservationTemp;
       accomodationTypes = arrangementPricesTemp.result;
+      cities = citiesTemp.result;
       reservationStatuses = reservationStatusesTemp.result;
       selectedAccomodationType = reservation?.arrangementPriceId;
+      selectedDepartureCityId = reservation?.departureCityId.toString();
       selectedReservationStatus = reservation?.reservationStatusId.toString();
       totalPrice = reservation?.arrangementPrice?.price;
       _initialValue = {
@@ -165,18 +173,30 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
                             const SizedBox(width: 60),
                           ],
                           Expanded(
-                            child: FormBuilderTextField(
-                              name: 'departurePlace',
-                              decoration: const InputDecoration(
-                                  labelText: 'Grad polaska'),
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.required(
-                                    errorText: "Polje je obavezno"),
-                                FormBuilderValidators.maxLength(30,
-                                    errorText: "Neispravan unos")
-                              ]),
-                            ),
-                          ),
+                            flex: 1,
+                            child: DropdownButtonFormField<dynamic?>(
+                                decoration: const InputDecoration(
+                                  labelText: 'Izaberite mjesto polaska',
+                                ),
+                                value: selectedDepartureCityId,
+                                items: cities?.map((DropdownModel item) {
+                                  return DropdownMenuItem<dynamic>(
+                                    value: item.id,
+                                    child: Text(item.name ?? ""),
+                                  );
+                                }).toList(),
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Polje je obavezno';
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedDepartureCityId = value;
+                                  });
+                                }),
+                          )
                         ],
                       ),
                       const SizedBox(height: 30),
@@ -198,8 +218,6 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
                                       FormBuilderValidators.required(
                                           errorText: "Polje je obavezno"),
                                       FormBuilderValidators.numeric(
-                                          errorText: "Unesite validan broj"),
-                                      FormBuilderValidators.max(500,
                                           errorText: "Unesite validan broj"),
                                     ]),
                                   ),
@@ -310,6 +328,7 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
 
       request["arrangementPriceId"] = selectedAccomodationType;
       request["reservationStatusId"] = selectedReservationStatus;
+      request["departureCityId"] = selectedDepartureCityId;
       request["totalPaid"] = double.parse(request["totalPaid"]);
       request["reminder"] = request["reminder"] ?? "";
       await _reservationProvider?.update(reservation?.id, request);

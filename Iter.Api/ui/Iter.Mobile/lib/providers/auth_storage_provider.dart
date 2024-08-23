@@ -5,7 +5,8 @@ class AuthStorageProvider {
   static String? _authToken;
   static final Map<String, dynamic> _authData = {
     "role": null,
-    "agencyId": null
+    "agencyId": null,
+    "id": null
   };
   
   static Future<void> saveToken(String token) async {

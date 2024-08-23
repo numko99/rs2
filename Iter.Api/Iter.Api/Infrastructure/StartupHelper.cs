@@ -64,6 +64,8 @@ namespace Iter.Api.Infrastructure
 
             services.AddTransient<IRecommendationSystemService, RecommendationSystemService>();
 
+            services.AddTransient<IStatisticService, StatisticService>();
+
             services.AddScoped<IRabbitMQProducer, RabbitMQProducer>();
 
             services.AddSingleton(AutoMapperConfig.CreateMapping());

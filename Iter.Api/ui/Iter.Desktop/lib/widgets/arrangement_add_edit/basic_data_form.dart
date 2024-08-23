@@ -18,6 +18,7 @@ class BasicDataFormPage extends StatefulWidget {
       required this.setArrangementType,
       required this.setAgencyId,
       this.initialArrangementType,
+      this.selectedStartDate,
       this.arrangementStatus});
 
   final AccomodationTypeFormControllers controllers;
@@ -26,7 +27,7 @@ class BasicDataFormPage extends StatefulWidget {
   final ArrangementType? initialArrangementType;
   final int? arrangementStatus;
   final String? agencyId;
-
+  final DateTime? selectedStartDate;
   @override
   State<BasicDataFormPage> createState() => _BasicDataFormPageState();
 }
@@ -36,7 +37,7 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
   ArrangementType? arangmentType;
   String? selectedAgency;
   List<DropdownModel>? agenciesDropdown;
-
+  DateTime? selectedStartDate;
   @override
   void initState() {
     super.initState();
@@ -52,6 +53,7 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
       selectedAgency =
           widget.agencyId ?? AuthStorageProvider.getAuthData()?["agencyId"];
     }
+    selectedStartDate = widget.selectedStartDate;
   }
 
   loadAgencies() async {
@@ -160,27 +162,52 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
             const SizedBox(width: 60),
             Expanded(
               child: FormBuilderDateTimePicker(
-                name: 'startDate',
-                decoration: const InputDecoration(labelText: 'Datum polaska'),
-                validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(
-                      errorText: "Polje je obavezno"),
-                ]),
-                inputType: InputType.date,
-              ),
+                  name: 'startDate',
+                  decoration: const InputDecoration(labelText: 'Datum polaska'),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(
+                        errorText: "Polje je obavezno"),
+                    (val) {
+                      if (val == null)
+                        return null;
+                      if ((val as DateTime).isBefore(DateTime.now())) {
+                        return "Datum ne može biti manji od današnjeg datuma";
+                      }
+                      return null;
+                    },
+                  ]),
+                  firstDate: DateTime.now(),
+                  inputType: InputType.date,
+                  onChanged: (val) {
+                    setState(() {
+                      selectedStartDate = val;
+                    });
+                  }),
             ),
             const SizedBox(width: 60),
             if (arangmentType == ArrangementType.multiDayTrip)
               Expanded(
-                  child: FormBuilderDateTimePicker(
-                name: 'endDate',
-                decoration: const InputDecoration(labelText: 'Datum povratka'),
-                validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(
-                      errorText: "Polje je obavezno"),
-                ]),
-                inputType: InputType.date,
-              ))
+                child: FormBuilderDateTimePicker(
+                  name: 'endDate',
+                  decoration:
+                      const InputDecoration(labelText: 'Datum povratka'),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(
+                        errorText: "Polje je obavezno"),
+                    (val) {
+                      if (val == null)
+                        return null;
+                      if (selectedStartDate != null &&
+                          (val as DateTime).isBefore(selectedStartDate!)) {
+                        return "Datum povratka ne može biti manji od datuma polaska";
+                      }
+                      return null;
+                    },
+                  ]),
+                  firstDate: DateTime.now(),
+                  inputType: InputType.date,
+                ),
+              )
             else if ((arangmentType == ArrangementType.oneDayTrip) &&
                     widget.arrangementStatus == null ||
                 widget.arrangementStatus ==

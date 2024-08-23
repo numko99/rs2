@@ -65,5 +65,10 @@ namespace Iter.Repository
             dbContext.Agency.Update(entity);
             await this.dbContext.SaveChangesAsync();
         }
+
+        public async Task<int> GetCount()
+        {
+            return await this.dbContext.Agency.CountAsync();
+        }
     }
 }

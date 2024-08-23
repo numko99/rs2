@@ -9,7 +9,7 @@ part of 'arrangement_earnings.dart';
 ArrangementEarnings _$ArrangementEarningsFromJson(Map<String, dynamic> json) =>
     ArrangementEarnings(
       totalPaid: (json['totalPaid'] as num?)?.toDouble(),
-      reservationCount: json['reservationCount'] as int,
+      reservationCount: (json['reservationCount'] as num).toInt(),
       arrangementId: json['arrangementId'] as String?,
       arrangementName: json['arrangementName'] as String?,
     );

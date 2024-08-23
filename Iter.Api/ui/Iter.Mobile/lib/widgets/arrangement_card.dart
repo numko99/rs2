@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:iter_mobile/enums/roles.dart';
-import 'package:iter_mobile/pages/arrangement_details.dart';
-import 'package:iter_mobile/pages/employee_arrangement_details.dart';
+import 'package:iter_mobile/pages/arrangements/arrangement_details_page.dart';
+import 'package:iter_mobile/pages/arrangements/employee_arrangement_details_page.dart';
 import 'package:iter_mobile/providers/auth_storage_provider.dart';
 
 class ArrangementCard extends StatelessWidget {

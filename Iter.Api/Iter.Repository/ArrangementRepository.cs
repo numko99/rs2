@@ -277,5 +277,10 @@ namespace Iter.Repository
 
             return distinctDestinations;
         }
+
+        public async Task<int> GetCount(Guid? agencyId = null)
+        {
+            return await this.dbContext.Arrangement.Where(r => agencyId == null || r.AgencyId == agencyId).CountAsync();
+        }
     }
 }

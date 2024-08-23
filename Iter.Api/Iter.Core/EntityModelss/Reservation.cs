@@ -4,7 +4,9 @@
     {
         public string ReservationNumber { get; set; }
 
-        public string DeparturePlace { get; set; }
+        public int DepartureCityId { get; set; }
+
+        public City DepartureCity { get; set; }
 
         public string Reminder { get; set; }
         

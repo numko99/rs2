@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iter_mobile/enums/reservation_status.dart';
 import 'package:iter_mobile/models/reservation_search_respose.dart';
-import 'package:iter_mobile/pages/reservation_details_page.dart';
+import 'package:iter_mobile/pages/reservations/reservation_details_page.dart';
 import 'package:iter_mobile/widgets/reservation_status.dart';
 
 class ReservationCard extends StatelessWidget {

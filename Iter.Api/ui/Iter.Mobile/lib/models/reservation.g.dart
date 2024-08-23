@@ -21,10 +21,10 @@ Reservation _$ReservationFromJson(Map<String, dynamic> json) => Reservation(
           ? null
           : ArrangementPrice.fromJson(
               json['arrangementPrice'] as Map<String, dynamic>),
-      reservationStatusId: json['reservationStatusId'] as int?,
+      reservationStatusId: (json['reservationStatusId'] as num?)?.toInt(),
       reservationStatusName: json['reservationStatusName'] as String?,
       totalPaid: (json['totalPaid'] as num?)?.toDouble(),
-      rating: json['rating'] as int?,
+      rating: (json['rating'] as num?)?.toInt(),
       reminder: json['reminder'] as String?,
     );
 

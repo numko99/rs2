@@ -4,4 +4,8 @@ enum DropdownTypes {
   reservationStatus,
   accomodationTypes,
   arrangements,
+  arrangementStatus,
+  employee,
+  countries,
+  cities,
 }

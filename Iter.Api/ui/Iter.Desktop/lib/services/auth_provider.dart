@@ -30,10 +30,10 @@ class AuthProvider with ChangeNotifier {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final String token = responseData['token'];
         final int role = responseData['role'] as int;
-        final String? agencyId =
-            responseData['agencyId'] == "" ? null : responseData['agencyId'];
+        final String? agencyId = responseData['agencyId'] == "" ? null : responseData['agencyId'];
+        final String id = responseData['id'];
         AuthStorageProvider.saveToken(token);
-        AuthStorageProvider.saveAuthData(role, agencyId);
+        AuthStorageProvider.saveAuthData(role, agencyId, id);
 
         return true;
       } else {

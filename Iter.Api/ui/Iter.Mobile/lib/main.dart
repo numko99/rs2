@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:iter_mobile/apiConfig.dart';
 import 'package:iter_mobile/helpers/http_overrides.dart';
-import 'package:iter_mobile/pages/login.dart';
+import 'package:iter_mobile/pages/sign_up/login_page.dart';
 import 'package:iter_mobile/providers/arrangment_provider.dart';
 import 'package:iter_mobile/providers/auth_provider.dart';
 import 'package:iter_mobile/providers/dropdown_provider.dart';
@@ -47,6 +47,7 @@ class IterMobileApp extends StatelessWidget {
     return MaterialApp(
       title: 'Iter Mobile App',
        theme: ThemeData(
+        useMaterial3: false,
         primarySwatch: Colors.amber,
         primaryColor: Colors.amber,
       ),

@@ -22,14 +22,14 @@ namespace Iter.Api.Controllers
         [HttpPost("userPaymentReport")]
         public async Task<IActionResult> PrintUserPaymentReport([FromBody] ReportSearchModel searchModel)
         {
-            var data = await this.reportService.UserPaymentReport(searchModel.ArrangementId, searchModel.DateFrom, searchModel.DateFrom);
+            var data = await this.reportService.UserPaymentReport(searchModel.ArrangementId, searchModel.DateFrom, searchModel.DateTo);
             return this.Ok(data);
         }
 
         [HttpPost("arrangementEarnings")]
         public async Task<IActionResult> PrintArrangementEarningsReport([FromBody] ReportSearchModel searchModel)
         {
-            var data = await this.reportService.ArrangementEarningsReport(searchModel.AgencyId, searchModel.DateFrom, searchModel.DateFrom);
+            var data = await this.reportService.ArrangementEarningsReport(searchModel.AgencyId, searchModel.DateFrom, searchModel.DateTo);
             return this.Ok(data);
         }
     }

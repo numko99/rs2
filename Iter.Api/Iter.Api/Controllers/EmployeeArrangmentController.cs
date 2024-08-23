@@ -23,7 +23,8 @@ namespace Iter.Api.Controllers
         [HttpGet("available-guides")]
         public async Task<IActionResult> GetAvailableGuides([FromQuery] string arrangementId, [FromQuery] string dateFrom, [FromQuery] string? dateTo)
         {
-            return Ok(await this._employeeArrangmentService.GetAvailableEmployeeArrangmentsAsync(new Guid(arrangementId), dateFrom, dateTo));
+            var a = await this._employeeArrangmentService.GetAvailableEmployeeArrangmentsAsync(new Guid(arrangementId), dateFrom, dateTo);
+            return Ok(a);
         }
 
     }

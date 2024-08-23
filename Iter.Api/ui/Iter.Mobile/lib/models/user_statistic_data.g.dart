@@ -8,8 +8,8 @@ part of 'user_statistic_data.dart';
 
 UserStatisticData _$UserStatisticDataFromJson(Map<String, dynamic> json) =>
     UserStatisticData(
-      reservationCount: json['reservationCount'] as int?,
-      arrangementsCount: json['arrangementsCount'] as int,
+      reservationCount: (json['reservationCount'] as num?)?.toInt(),
+      arrangementsCount: (json['arrangementsCount'] as num).toInt(),
       avgRating: (json['avgRating'] as num?)?.toDouble(),
       firstName: json['firstName'] as String?,
       lastName: json['lastName'] as String?,

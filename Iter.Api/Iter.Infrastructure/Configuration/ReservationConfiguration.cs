@@ -16,8 +16,12 @@ namespace Iter.Infrastrucure.Configurations
             builder.Property(r => r.ReservationNumber)
                     .HasMaxLength(50);
 
-            builder.Property(r => r.DeparturePlace)
-                .HasMaxLength(100);
+
+            builder.HasOne(r => r.DepartureCity)
+              .WithMany(u => u.Reservations)
+              .HasForeignKey(r => r.DepartureCityId)
+              .OnDelete(DeleteBehavior.NoAction)
+              .HasConstraintName("FK_Reservation_DepartureCity");
 
             builder.Property(r => r.TransactionId)
                .HasMaxLength(40);

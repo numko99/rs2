@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:ui/models/arrangement_earnings.dart';
 import 'package:ui/models/user_payment.dart';
 import 'package:ui/services/report_provider.dart';
-import 'package:ui/widgets/Layout/layout.dart';
+import 'package:ui/widgets/layout.dart';
 
 class AgencyEarningsReportPage extends StatefulWidget {
   final String agencyId;
@@ -39,7 +39,9 @@ class AgencyEarningsReportPageState extends State<AgencyEarningsReportPage> {
 
   Future<void> _loadData() async {
     var _userPaymentsTemp = await reportProvider
-        ?.geArrangementEarnings({"agencyId": widget.agencyId!});
+        ?.geArrangementEarnings({"agencyId": widget.agencyId, "DateFrom": widget.dateFrom,
+      "dateTo": widget.dateTo
+    });
 
     if (_userPaymentsTemp == null) {
       return;
@@ -60,7 +62,10 @@ class AgencyEarningsReportPageState extends State<AgencyEarningsReportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Uplate po aranžmanu'),
+        iconTheme: const IconThemeData(
+    color: Colors.white,
+  ),
+        title: const Text('Izvještaj o poslovanju', style: TextStyle(color: Colors.white)),
       ),
       body: displayLoader
           ? const Center(child: CircularProgressIndicator())
@@ -69,30 +74,43 @@ class AgencyEarningsReportPageState extends State<AgencyEarningsReportPage> {
             child: Card(
               child: Column(
                 children: [
+                    const Text("Uplate korisnika po aranžamu ",
+                        style: TextStyle(fontSize: 20)),
+                    const SizedBox(height: 30),
                   SizedBox(
                     height: 60,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(15.0, 0, 0, 0),
                       child: Row(
                         children: [
-                          Expanded(child:  Text(
-                                'Agencija: ${widget.agencyName}',
-                                style: const TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
+                            Flexible(
+                              flex: 2,
+                              child: ListTile(
+                                leading: const Text('Agencija:',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold)),
+                                title: Text(widget.agencyName),
                               ),
                             ),
-                             Expanded(
-                              child: Text(
-                                'Ukupna zarada: ${totalSum}KM',
-                                style: const TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
+                            Flexible(
+                              flex: 2,
+                              child: ListTile(
+                                leading: const Text('Ukupna zarada:',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold)),
+                                title: Text("${totalSum}KM"),
                               ),
                             ),
-                              Expanded(
-                              child: Text(
-                                'Ukupan broj uplata: ${totalCount}',
-                                style: const TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
+                            Flexible(
+                              flex: 1,
+                              child: ListTile(
+                                leading: const Text('Ukupan broj uplata:',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold)),
+                                title: Text(totalCount.toInt().toString()),
                               ),
                             ),
                         ],
@@ -105,7 +123,7 @@ class AgencyEarningsReportPageState extends State<AgencyEarningsReportPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: _userPayments.length == 0 ? Center(child: Text("Nema uplata", style: TextStyle(fontSize: 20))) : SingleChildScrollView(
+                          child: _userPayments.length == 0 ? const Center(child: Text("Nema uplata", style: TextStyle(fontSize: 20))) : SingleChildScrollView(
                             child: DataTable(
                               columns: [
                                 const DataColumn(

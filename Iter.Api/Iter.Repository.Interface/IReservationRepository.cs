@@ -17,5 +17,9 @@ namespace Iter.Repository.Interface
         Task<List<Reservation>> GetArrangementsByDestinationCityNames(List<int> cities);
 
         Task<PagedResult<ReservationSearchDto>> Get(ReservationSearchRequesParameters? search);
+
+        Task<int> GetCount(Guid? agencyId = null);
+
+        Task<decimal> GetTotalAmount(Guid? agencyId = null);
     }
 }

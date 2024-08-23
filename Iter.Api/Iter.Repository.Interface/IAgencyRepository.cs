@@ -10,5 +10,7 @@ namespace Iter.Repository.Interface
         Task<Agency?> GetByEmployeeId(Guid employeeId);
 
         Task<PagedResult<Agency>> Get(string? name, int? pageSize, int? currentPage);
+
+        Task<int> GetCount();
     }
 }
