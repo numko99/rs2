@@ -48,6 +48,7 @@ class _AgencyDetailsPageState extends State<AgencyDetailsPage> {
   Widget build(BuildContext context) {
     return Layout(
       name: "Agencije",
+      displayBackNavigationArrow: true,
       icon: Icons.business,
       body: displayLoader
           ? const Center(child: Column(children: [CircularProgressIndicator()]))

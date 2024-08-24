@@ -268,18 +268,15 @@ class _DestinationFormPageState extends State<DestinationFormPage> {
                             return 'Polje je obavezno';
                           }
 
-                          // DateTime? arrivalDateTime = new DateFormat("yyyy-MM-dd hh:mm:ss").parse(widget
-                          //     .controllers
-                          //     .arrivalDateTimeControllers[index]
-                          //     .text);
+                          DateFormat format = new DateFormat("dd-MM-yyyy");
+                          DateTime arrivalDateTime = format.parse(widget.controllers
+                              .arrivalDateTimeControllers[index].text);
 
-                          // DateTime? departureDateTime = new DateFormat("yyyy-MM-dd hh:mm:ss").parse(value);
-
-                          // if (arrivalDateTime != null && departureDateTime != null) {
-                          //   if (departureDateTime.isBefore(arrivalDateTime)) {
-                          //     return 'Vrijeme odlaska ne može biti manje od vremena dolaska';
-                          //   }
-                          // }
+                          DateTime departureDateTime = format.parse(value);
+                          
+                            if (departureDateTime.isBefore(arrivalDateTime)) {
+                              return 'Vrijeme odlaska ne može biti manje od vremena dolaska';
+                            }
 
                           return null;
                         },

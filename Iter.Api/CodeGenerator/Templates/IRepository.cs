@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Iter.Repository.Interface
 {{
-    public interface I{entityName}Repository : IBaseCrudRepository<{entityName}, {entityName}UpsertRequest, {entityName}UpsertRequest, {entityName}Response>
+    public interface I{entityName}Repository : IBaseCrudRepository<{entityName}>
     {{
     }}
 }}";

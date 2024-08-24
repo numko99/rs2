@@ -63,6 +63,7 @@ class _UsersIndexPageState extends State<UsersIndexPage> {
   Widget build(BuildContext context) {
     return Layout(
       name: AuthStorageProvider.getAuthData()?["role"] == Roles.coordinator ? "Uposlenici" : "Korisnici",
+      displayBackNavigationArrow: false,
       icon: Icons.people,
       body: Card(
         child: Padding(

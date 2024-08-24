@@ -20,6 +20,7 @@ class _ArrangementIndexPageState extends State<ArrangementIndexPage> {
   Widget build(BuildContext context) {
     return Layout(
       name: "Aranžmani",
+      displayBackNavigationArrow: false,
       icon: Icons.beach_access_outlined,
       body: const Card(child: Padding(
         padding: EdgeInsets.all(32.0),

@@ -25,6 +25,14 @@ namespace Iter.Api.Infrastructure
 
         public static void ConfigureServices(this IServiceCollection services)
         {
+            services.AddScoped<ICountryService, CountryService>();
+            services.AddScoped<ICountryRepository, CountryRepository>();
+
+
+            services.AddScoped<ICityService, CityService>();
+            services.AddScoped<ICityRepository, CityRepository>();
+
+
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IReportPathGetterService, ReportPathGetterService>();
 

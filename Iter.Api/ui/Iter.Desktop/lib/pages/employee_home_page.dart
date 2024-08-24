@@ -84,6 +84,7 @@ class _EmployeeHomeState extends State<EmployeeHome> {
   @override
   Widget build(BuildContext context) {
     return Layout(
+      displayBackNavigationArrow: false,
       name: "Početna",
       icon: Icons.home,
       body: displayLoader

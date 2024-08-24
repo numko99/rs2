@@ -11,11 +11,13 @@ class Layout extends StatefulWidget {
     required this.body,
     required this.name,
     required this.icon,
+    required this.displayBackNavigationArrow,
   });
 
   final Widget body;
   final String name;
   final IconData icon;
+  final bool displayBackNavigationArrow;
 
   @override
   State<Layout> createState() => _LayoutState();
@@ -89,6 +91,12 @@ class _LayoutState extends State<Layout> {
       'icon': Icons.person,
       'link': '/my-profile',
       'roles': [Roles.coordinator]
+    },
+     {
+      'text': 'Postavke',
+      'icon': Icons.settings,
+      'link': '/settings',
+      'roles': [Roles.admin]
     }
     //   {
     //   'text': 'Poruke',
@@ -116,6 +124,7 @@ class _LayoutState extends State<Layout> {
                   padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
                   child: Row(
                     children: [
+                    if (widget.displayBackNavigationArrow)
                       IconButton(
                         color: Colors.amber,
                         icon: Icon(Icons.arrow_back),

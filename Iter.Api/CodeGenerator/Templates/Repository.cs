@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace Iter.Repository
 {{
-    public class {entityName}Repository : BaseCrudRepository<{entityName}, {entityName}UpsertRequest, {entityName}UpsertRequest, {entityName}Response>, I{entityName}Repository
+    public class {entityName}Repository : BaseCrudRepository<{entityName}>, I{entityName}Repository
     {{
         private readonly IterContext dbContext;
         public {entityName}Repository(IterContext dbContext) : base(dbContext)

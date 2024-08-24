@@ -340,8 +340,9 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                                           tooltip: 'Dodaj rezervaciju'),
                                       IconButton(
                                           icon: getArrangementIcon(
-                                              arrangement.arrangementStatusId),
+                                              arrangement.arrangementStatusId, arrangement.startDate),
                                           onPressed: () {
+                                            if (arrangement.startDate.isAfter(DateTime.now())){
                                             showDialog(
                                                 context: context,
                                                 builder:
@@ -349,6 +350,7 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
                                                   return getConfirmationDialog(
                                                       arrangement);
                                                 });
+                                            }
                                           },
                                           tooltip: arrangement
                                                       .arrangementStatusId ==
@@ -425,7 +427,7 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
     );
   }
 
-  Icon getArrangementIcon(int? status) {
+  Icon getArrangementIcon(int? status, DateTime date) {
     var arrangementStatus = ArrangementStatus.values[status!];
     switch (arrangementStatus) {
       case ArrangementStatus.inPreparation:
@@ -439,9 +441,9 @@ class _ArrangementDataTableState extends State<ArrangementDataTable> {
           color: Colors.green,
         );
       case ArrangementStatus.reservationsClosed:
-        return const Icon(
+        return Icon(
           Icons.event_available,
-          color: Colors.red,
+          color: date.isAfter(DateTime.now()) ? Colors.red : Colors.grey,
         );
       default:
         return const Icon(

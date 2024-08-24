@@ -58,6 +58,7 @@ class _HomeState extends State<Home> {
     return Layout(
       name: "Početna",
       icon: Icons.home,
+      displayBackNavigationArrow: false,
       body: displayLoader
           ? const Center(child: Column(children: [CircularProgressIndicator()]))
           : Card(

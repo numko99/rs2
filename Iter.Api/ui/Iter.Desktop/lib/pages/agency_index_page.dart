@@ -42,7 +42,8 @@ class _AgencyPageState extends State<AgencyPage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
-                  name: "Agencije",
+      name: "Agencije",
+      displayBackNavigationArrow: false,
       icon: Icons.business,
       body: Card(
         child: Padding(

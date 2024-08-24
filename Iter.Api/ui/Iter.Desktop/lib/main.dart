@@ -17,6 +17,7 @@ import 'package:ui/pages/reports/agency_earnings_report.dart';
 import 'package:ui/pages/reports/user_payments_report.dart';
 import 'package:ui/pages/reports_index_page.dart';
 import 'package:ui/pages/reservation_index_page.dart';
+import 'package:ui/pages/settings_page.dart';
 import 'package:ui/pages/user_details_page.dart';
 import 'package:ui/pages/users_index_page.dart';
 import 'package:ui/services/agency_provider.dart';
@@ -24,6 +25,8 @@ import 'package:ui/services/agency_provider.dart';
 import 'package:ui/pages/agency_index_page.dart';
 import 'package:ui/services/arrangment_provider.dart';
 import 'package:ui/services/auth_provider.dart';
+import 'package:ui/services/city_provider.dart';
+import 'package:ui/services/country_provider.dart';
 import 'package:ui/services/dropdown_provider.dart';
 import 'package:ui/services/employee_arrangment_provider.dart';
 import 'package:ui/services/report_provider.dart';
@@ -63,7 +66,9 @@ void main() async {
     ChangeNotifierProvider(create: (_) => ReservationProvider()),
     ChangeNotifierProvider(create: (_) => ReportProvider()),
     ChangeNotifierProvider(create: (_) => EmployeeArrangmentProvider()),
-    ChangeNotifierProvider(create: (_) => StatisticProvider())
+    ChangeNotifierProvider(create: (_) => StatisticProvider()),
+    ChangeNotifierProvider(create: (_) => CityProvider()),
+    ChangeNotifierProvider(create: (_) => CountryProvider())
   ], child: IterApp()));
 }
 
@@ -130,6 +135,9 @@ class IterApp extends StatelessWidget {
           },
            '/my-profile': (context) {
             return const EditProfilePage();
+          },
+           '/settings': (context) {
+            return const SettingsPage();
           },
           //  '/messages': (context) {
           //   return const UserListPage();

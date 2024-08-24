@@ -46,6 +46,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
+      displayBackNavigationArrow: true,
       name: "Korisnici",
       icon: Icons.person_2,
       body: displayLoader

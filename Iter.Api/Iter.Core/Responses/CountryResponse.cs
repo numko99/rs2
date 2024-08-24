@@ -1,0 +1,1 @@
+using Iter.Core.EntityModels;namespace Iter.Core.Models{    public class CountryResponse    {        public int Id { get; set; }        public string Name { get; set; }    }}

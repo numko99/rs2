@@ -22,6 +22,7 @@ class _ReservationIndexPageState extends State<ReservationIndexPage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
+      displayBackNavigationArrow: false,
       name: "Rezervacije",
       icon: Icons.list_alt,
       body: Card(

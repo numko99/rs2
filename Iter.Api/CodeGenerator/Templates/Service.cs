@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace Iter.Services
 {{
-    public class {entityName}Service : BaseCrudService<{entityName}, {entityName}UpsertRequest, {entityName}UpsertRequest, {entityName}Response>, I{entityName}Service
+    public class {entityName}Service : BaseCrudService<{entityName}, {entityName}UpsertRequest, {entityName}UpsertRequest, {entityName}Response, {entityName}SearchModel, {entityName}Response>, I{entityName}Service
     {{
         private readonly I{entityName}Repository {entityName.ToLower()}Repository;
         private readonly IMapper mapper;

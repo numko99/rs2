@@ -66,6 +66,7 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
+      displayBackNavigationArrow: true,
       name: "Aranžmani",
       icon: Icons.beach_access_outlined,
       body: Card(

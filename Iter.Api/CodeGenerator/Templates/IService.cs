@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace Iter.Services.Interface
 {{
-    public interface I{entityName}Service : IBaseCrudService<{entityName}, {entityName}UpsertRequest, {entityName}UpsertRequest, {entityName}Response>
+    public interface I{entityName}Service : IBaseCrudService<{entityName}, {entityName}UpsertRequest, {entityName}UpsertRequest, {entityName}Response, {entityName}SearchModel, {entityName}Response>
     {{
     }}
 }}";

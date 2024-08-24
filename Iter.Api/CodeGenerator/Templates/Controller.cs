@@ -25,9 +25,10 @@ using System.Security.Claims;
 
 namespace Iter.Api.Controllers
 {{
-    [Route(""api/[controller]"")]
+    [Route(""[controller]"")]
     [ApiController]
-    public class {entityName}Controller : BaseCRUDController<{entityName}, {entityName}UpsertRequest, {entityName}UpsertRequest, {entityName}Response>
+    [Authorize(Roles = nameof(Roles.Client) + "","" + nameof(Roles.Admin) + "","" + nameof(Roles.Coordinator))]
+    public class {entityName}Controller : BaseCRUDController<{entityName}, {entityName}UpsertRequest, {entityName}UpsertRequest, {entityName}Response, {entityName}SearchModel, {entityName}Response>
     {{
         private readonly I{entityName}Service {entityName.ToLower()}Service;
         public {entityName}Controller(I{entityName}Service {entityName.ToLower()}Service) : base({entityName.ToLower()}Service)

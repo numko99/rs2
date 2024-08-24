@@ -7,6 +7,7 @@ using Iter.Core.EntityModels;
 using Iter.Core.Enum;
 using Iter.Core.Models;
 using Iter.Core.RequestParameterModels;
+using Iter.Core.Requests;
 using Iter.Core.Responses;
 using Iter.Core.Search_Models;
 using Iter.Core.Search_Responses;
@@ -156,6 +157,15 @@ namespace Iter.Api.Mapping
 
         private void CreateMap()
         {
+            this.CreateMap<City?, CityResponse?>();
+            this.CreateMap<CityUpsertRequest?, City?>();
+
+
+            this.CreateMap<Country?, CountryResponse?>();
+            this.CreateMap<CountryUpsertRequest?, Country?>();
+
+
+
             this.CreateMap<User?, UserResponse?>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.FirstName : src.Client.FirstName ))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.LastName : src.Client.LastName))
@@ -268,6 +278,11 @@ namespace Iter.Api.Mapping
                 .ForPath(dest => dest.Name, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
 
             this.CreateMap<LookupModel, DropdownModel>();
+
+            this.CreateMap<City?, CityResponse?>()
+                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country.Name));
+
+            this.CreateMap<CityUpsertRequest?, City?>();
         }
 
         private void CreateEmployeeArrangementMap()

@@ -69,6 +69,7 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
+      displayBackNavigationArrow: true,
       name: "Aranžman",
       icon: Icons.beach_access_outlined,
       body: displayLoader

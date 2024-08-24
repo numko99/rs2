@@ -47,6 +47,7 @@ class ReportsIndexPageState extends State<ReportsIndexPage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
+      displayBackNavigationArrow: false,
       name: "Izvještaji",
       icon: Icons.description,
       body: Card(

@@ -144,7 +144,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
-        name: "Agencije",
+        displayBackNavigationArrow: false,
+        name: "Profil",
         icon: Icons.business,
         body: displayLoader
             ? const Center(
