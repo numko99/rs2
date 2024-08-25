@@ -30,6 +30,7 @@ namespace Iter.Infrastrucure
                 {
                     if (!string.IsNullOrWhiteSpace(command))
                     {
+                        this.Database.SetCommandTimeout(300);
                         this.Database.ExecuteSqlRaw(command);
                     }
                 }
