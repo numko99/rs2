@@ -49,7 +49,7 @@ class _InsertUserModalState extends State<InsertUserModal> {
         "email": widget.user?.email,
         "phoneNumber": widget.user?.phoneNumber,
       };
-      _birthDateController.text = DateTimeHelper.formatDate(widget.user?.birthDate, "dd-MM-yyyy");
+      _birthDateController.text = DateTimeHelper.formatDate(widget.user?.birthDate, "dd.MM.yyyy");
       selectedUserType = RoleEnumManager.getRoleById(widget.user!.role);
       selectedAgency = widget.user?.agency?.id;
     }

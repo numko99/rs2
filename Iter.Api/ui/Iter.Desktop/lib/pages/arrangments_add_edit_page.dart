@@ -228,8 +228,14 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
             price: price));
       }
     }
-    DateTime startDate = formData["startDate"];
+ DateTime startDate = formData["startDate"];
     DateTime? endDate = formData["endDate"];
+
+    startDate = startDate.add(const Duration(hours: 2));
+    if (endDate != null) {
+      endDate = endDate.add(const Duration(hours: 2));
+    }
+    
     formData["startDate"] = startDate.toIso8601String();
     if (endDate != null){
       formData["endDate"] = endDate.toIso8601String();

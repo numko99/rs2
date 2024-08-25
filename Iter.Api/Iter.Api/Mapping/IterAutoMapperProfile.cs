@@ -181,7 +181,7 @@ namespace Iter.Api.Mapping
 
             this.CreateMap<UserUpsertRequest?, Employee?>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.BirthDate, "dd-MM-yyyy", CultureInfo.InvariantCulture)))
+                .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.BirthDate, "dd.MM.yyyy", CultureInfo.InvariantCulture)))
                 .ForPath(dest => dest.User.Email, opt => opt.MapFrom(src => src.Email))
                 .ForPath(dest => dest.User.Role, opt => opt.MapFrom(src => src.Role))
                 .ForPath(dest => dest.User.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
@@ -203,7 +203,7 @@ namespace Iter.Api.Mapping
 
             this.CreateMap<UserUpsertRequest?, Client?>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.BirthDate, "dd-MM-yyyy", CultureInfo.InvariantCulture)))
+                .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.BirthDate, "dd.MM.yyyy", CultureInfo.InvariantCulture)))
                 .ForPath(dest => dest.User.Email, opt => opt.MapFrom(src => src.Email))
                 .ForPath(dest => dest.User.Role, opt => opt.MapFrom(src => src.Role))
                 .ForPath(dest => dest.User.UserName, opt => opt.MapFrom(src => src.Email))

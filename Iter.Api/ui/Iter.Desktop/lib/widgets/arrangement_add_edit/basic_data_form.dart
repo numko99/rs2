@@ -38,11 +38,15 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
   String? selectedAgency;
   List<DropdownModel>? agenciesDropdown;
   DateTime? selectedStartDate;
+  DateTime? tomorowDate;
+
   @override
   void initState() {
     super.initState();
     _dropdownProvider = context.read<DropdownProvider>();
     arangmentType = widget.initialArrangementType;
+    tomorowDate = DateTime.now().add(const Duration(days: 1));
+
     if (widget.controllers.accomodationTypes.isEmpty) {
       addArrangementPrices();
     }
@@ -170,13 +174,12 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
                     (val) {
                       if (val == null)
                         return null;
-                      if ((val as DateTime).isBefore(DateTime.now())) {
-                        return "Datum ne može biti manji od današnjeg datuma";
-                      }
+
                       return null;
                     },
                   ]),
-                  firstDate: DateTime.now(),
+                  firstDate: tomorowDate,
+                  initialDate: tomorowDate,
                   inputType: InputType.date,
                   onChanged: (val) {
                     setState(() {
@@ -204,7 +207,8 @@ class _BasicDataFormPageState extends State<BasicDataFormPage> {
                       return null;
                     },
                   ]),
-                  firstDate: DateTime.now(),
+                  firstDate: tomorowDate,
+                  initialDate: tomorowDate,
                   inputType: InputType.date,
                 ),
               )

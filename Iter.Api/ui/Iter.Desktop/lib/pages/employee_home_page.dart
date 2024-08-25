@@ -132,10 +132,6 @@ class _EmployeeHomeState extends State<EmployeeHome> {
                                 child: DataTable(
                                   columns: const [
                                       DataColumn(
-                                          label: Text('Broj rezervacije',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold))),
-                                      DataColumn(
                                           label: Text('Ime i prezime',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold))),
@@ -153,8 +149,6 @@ class _EmployeeHomeState extends State<EmployeeHome> {
                                       .map(
                                         (reservation) => DataRow(
                                           cells: [
-                                              DataCell(
-                                                  Text(reservation.reservationNumber)),
                                               DataCell(Text(
                                                   "${reservation.firstName} ${reservation.lastName}")),
                                             DataCell(Text(reservation.arrangementName)),

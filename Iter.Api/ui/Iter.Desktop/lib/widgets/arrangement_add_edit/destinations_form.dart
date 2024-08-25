@@ -235,7 +235,7 @@ class _DestinationFormPageState extends State<DestinationFormPage> {
                           labelText: 'Vrijeme dolaska',
                           suffixIcon: Icon(Icons.calendar_today),
                         ),
-                        readOnly: true, // Sprečava pojavu tastature
+                        readOnly: true, 
                         onTap: () => DateTimeHelper.selectDateAndTime(
                             context,
                             widget
@@ -244,6 +244,7 @@ class _DestinationFormPageState extends State<DestinationFormPage> {
                           if (value == null || value.isEmpty) {
                             return 'Polje je obavezno';
                           }
+                          
                           return null;
                         },
                       ),
