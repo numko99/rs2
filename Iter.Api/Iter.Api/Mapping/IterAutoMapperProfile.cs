@@ -1,18 +1,18 @@
 using AutoMapper;
 
-using Iter.Core;
+using Iter.Model;
 using Iter.Core.Dto;
 using Iter.Core.Dto.User;
 using Iter.Core.EntityModels;
+using Iter.Core.EntityModelss;
 using Iter.Core.Enum;
 using Iter.Core.Models;
 using Iter.Core.RequestParameterModels;
-using Iter.Core.Requests;
 using Iter.Core.Responses;
 using Iter.Core.Search_Models;
-using Iter.Core.Search_Responses;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
+using Iter.Core;
 
 namespace Iter.Api.Mapping
 {

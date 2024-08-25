@@ -1,5 +1,4 @@
-using AspNetCore.Reporting;
-using Iter.Core.Responses;
+using Iter.Model;
 
 namespace Iter.Services.Interface
 {

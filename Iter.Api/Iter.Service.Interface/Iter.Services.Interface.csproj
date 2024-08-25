@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Iter.Core\Iter.Core.csproj" />
+    <ProjectReference Include="..\Iter.Model\Iter.Model.csproj" />
   </ItemGroup>
 
 </Project>

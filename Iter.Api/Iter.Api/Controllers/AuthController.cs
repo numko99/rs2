@@ -1,14 +1,10 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 using Iter.Core.Dto;
 using Swashbuckle.AspNetCore.Annotations;
 using Iter.Services.Interface;
-using Iter.Services;
-using Iter.Core;
+using Iter.Model;
 using Iter.Core.Helper;
-using Iter.Core.Requests;
-using System.Security.Claims;
 
 namespace Iter.Api.Controllers
 {

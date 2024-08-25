@@ -7,6 +7,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="ReportDatasetModels\**" />
+	  <Compile Remove="Static files\**" />
+	  <EmbeddedResource Remove="ReportDatasetModels\**" />
+	  <EmbeddedResource Remove="Static files\**" />
+	  <None Remove="ReportDatasetModels\**" />
+	  <None Remove="Static files\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.16" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.16" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.16" />
@@ -19,8 +28,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Dto\Home\" />
-	  <Folder Include="ReportDatasetModels\" />
-	  <Folder Include="Static files\" />
+	  <Folder Include="Models\" />
 	</ItemGroup>
 
 

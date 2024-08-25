@@ -1,10 +1,7 @@
 using Iter.Services.Interfaces;
-using Iter.Core.Search_Models;
 using Iter.Core.EntityModels;
-using Iter.Core;
-using Iter.Core.Responses;
+using Iter.Model;
 using Iter.Core.Dto;
-using Iter.Core.Search_Responses;
 
 namespace Iter.Services.Interface
 {

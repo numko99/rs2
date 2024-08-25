@@ -1,0 +1,1 @@
+namespace Iter.Model{    public class CountryUpsertRequest    {        public string Name { get; set; }    }}

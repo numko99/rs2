@@ -5,7 +5,6 @@ import 'package:ui/helpers/scaffold_messenger_helper.dart';
 import 'package:ui/modals/insert_agency_modal.dart';
 import 'package:ui/models/agency.dart';
 import 'package:ui/services/agency_provider.dart';
-import 'package:ui/services/report_provider.dart';
 import 'package:ui/widgets/layout.dart';
 import 'package:ui/widgets/search_button.dart';
 
@@ -20,7 +19,6 @@ class AgencyPage extends StatefulWidget {
 
 class _AgencyPageState extends State<AgencyPage> {
   AgencyProvider? _agencyProvider;
-  ReportProvider? _reportProvider;
 
   List<Agency> agencies = [];
   int? agencyCount;
@@ -34,7 +32,6 @@ class _AgencyPageState extends State<AgencyPage> {
   void initState() {
     super.initState();
     _agencyProvider = context.read<AgencyProvider>();
-    _reportProvider = context.read<ReportProvider>();
 
     loadData();
   }
@@ -62,7 +59,7 @@ class _AgencyPageState extends State<AgencyPage> {
                         margin: const EdgeInsets.symmetric(horizontal: 20),
                         child: TextFormField(
                           controller: searchController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Naziv',
                           ),
                           onFieldSubmitted: (value) async {
@@ -143,7 +140,6 @@ class _AgencyPageState extends State<AgencyPage> {
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
-                                          // Align to the end (right)
                                           children: <Widget>[
                                             IconButton(
                                                 icon: const Icon(Icons.open_in_new_off),
@@ -181,11 +177,9 @@ class _AgencyPageState extends State<AgencyPage> {
                                                         title:
                                                             "Potvrda brisanja?",
                                                         content:
-                                                            "Da li ste sigurni da želite obrisati agenciju ${agency?.name}",
+                                                            "Da li ste sigurni da želite obrisati agenciju ${agency.name}",
                                                         onConfirm: () async {
-                                                          await _agencyProvider
-                                                              ?.delete(
-                                                                  agency.id);
+                                                          await delete(agency.id);
                                                         },
                                                       );
                                                     },
@@ -249,7 +243,7 @@ class _AgencyPageState extends State<AgencyPage> {
       var searchResultAgencies = await _agencyProvider?.get({
         "currentPage": _currentPage,
         "pageSize": pageSize,
-        "name": searchController?.text
+        "name": searchController.text
       });
 
       if (searchResultAgencies != null) {
@@ -264,6 +258,32 @@ class _AgencyPageState extends State<AgencyPage> {
           agencyCount = 0;
         });
       }
+    } catch (error) {
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Došlo je do greške",
+          backgroundColor: Colors.red);
+    } finally {
+      setState(() {
+        displayLoader = false;
+      });
+    }
+  }
+
+   Future<void> delete(id) async {
+    try {
+      setState(() {
+        displayLoader = true;
+      });
+      
+      await _agencyProvider?.delete(id);
+      await loadData();
+
+      ScaffoldMessengerHelper.showCustomSnackBar(
+          context: context,
+          message: "Uspješno ste obirsali agenciju",
+          backgroundColor: Colors.green);
+
     } catch (error) {
       ScaffoldMessengerHelper.showCustomSnackBar(
           context: context,

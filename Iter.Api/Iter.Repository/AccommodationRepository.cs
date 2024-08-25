@@ -1,24 +1,14 @@
-using AutoMapper;
 using Iter.Core.EntityModels;
-using Iter.Core;
-using Iter.Core.Search_Models;
 using Iter.Infrastrucure;
 using Iter.Repository.Interface;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Iter.Repository
 {
     public class AccommodationRepository : BaseCrudRepository<Accommodation>, IAccommodationRepository
     {
-        private readonly IterContext dbContext;
-        public AccommodationRepository(IterContext dbContext, IMapper mapper) : base(dbContext, mapper)
+        public AccommodationRepository(IterContext dbContext, ILogger<AccommodationRepository> logger) : base(dbContext, logger)
         {
-            this.dbContext = dbContext;
         }
     }
 }

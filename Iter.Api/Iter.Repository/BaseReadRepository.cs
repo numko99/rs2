@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using Iter.Core;
-using Iter.Core.Models;
-using Iter.Core.Search_Models;
-using Iter.Infrastrucure;
+﻿using Iter.Infrastrucure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Iter.Repository
 {
@@ -11,47 +8,56 @@ namespace Iter.Repository
     {
         private readonly IterContext dbContext;
         private readonly DbSet<T> dbSet;
-        private readonly IMapper mapper;
+        private readonly ILogger<BaseReadRepository<T>> logger;
 
-        public BaseReadRepository(IterContext dbContext, IMapper mapper)
+        public BaseReadRepository(IterContext dbContext, ILogger<BaseReadRepository<T>> logger)
         {
             this.dbContext = dbContext;
             this.dbSet = this.dbContext.Set<T>();
-            this.mapper = mapper;
+            this.logger = logger;
         }
 
         public async virtual Task<T?> GetById(Guid id)
         {
-            return await this.dbSet.FindAsync(id);
+            logger.LogInformation("GetById operation started for ID: {Id}", id);
+
+            try
+            {
+                var entity = await this.dbSet.FindAsync(id);
+                if (entity == null)
+                {
+                    logger.LogWarning("GetById operation completed: No entity found for ID: {Id}", id);
+                }
+                else
+                {
+                    logger.LogInformation("GetById operation completed successfully for ID: {Id}", id);
+                }
+
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetById operation for ID: {Id}", id);
+                throw;
+            }
         }
 
         public async virtual Task<IEnumerable<T>> GetAll()
         {
-            return await this.dbSet.ToListAsync();
+            logger.LogInformation("GetAll operation started.");
+
+            try
+            {
+                var entities = await this.dbSet.ToListAsync();
+                logger.LogInformation("GetAll operation completed successfully with {Count} entities retrieved.", entities.Count);
+
+                return entities;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetAll operation.");
+                throw;
+            }
         }
-
-        //public virtual async Task<PagedResult<TSearchResponse>> Get(TSearchRequest? search = null)
-        //{
-        //    var query = dbContext.Set<T>().AsQueryable();
-
-        //    PagedResult<TSearchResponse> result = new PagedResult<TSearchResponse>();
-
-        //    query = AddFilter(query, search);
-
-        //    query = AddInclude(query, search);
-
-        //    result.Count = await query.CountAsync();
-
-        //    if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
-        //    {
-        //        query = query.Skip((search.CurrentPage.Value - 1) * search.PageSize.Value).Take(search.PageSize.Value);
-        //    }
-
-        //    var list = await query.ToListAsync();
-
-        //    var tmp = mapper.Map<List<TSearchResponse>>(list);
-        //    result.Result = tmp;
-        //    return result;
-        //}
     }
 }

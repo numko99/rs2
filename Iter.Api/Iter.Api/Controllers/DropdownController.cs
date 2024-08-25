@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using Iter.Core.Enum;
 using Iter.Core.Models;
-using Iter.Repository;
 using Iter.Repository.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Iter.Api.Controllers
 {
@@ -16,22 +18,38 @@ namespace Iter.Api.Controllers
     {
         private readonly IDropdownRepository dropdownRepository;
         private readonly IMapper mapper;
+        private readonly ILogger<DropdownController> logger;
 
-        public DropdownController(IDropdownRepository dropdownRepository, IMapper mapper)
+        public DropdownController(IDropdownRepository dropdownRepository, IMapper mapper, ILogger<DropdownController> logger)
         {
             this.dropdownRepository = dropdownRepository;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get(int dropdownType, string? arrangementId = null, string? agencyId = null, string? countryId = null)
         {
-            var list = await this.dropdownRepository.Get(dropdownType, arrangementId, agencyId, countryId);
-            return Ok(new PagedResult<DropdownModel>()
+            logger.LogInformation("Dropdown Get operation started with parameters: dropdownType={DropdownType}, arrangementId={ArrangementId}, agencyId={AgencyId}, countryId={CountryId}", dropdownType, arrangementId, agencyId, countryId);
+
+            try
             {
-                Count = list.Count,
-                Result = this.mapper.Map<List<DropdownModel>>(list)
-            });
+                var list = await this.dropdownRepository.Get(dropdownType, arrangementId, agencyId, countryId);
+                var mappedResult = this.mapper.Map<List<DropdownModel>>(list);
+
+                logger.LogInformation("Dropdown Get operation completed successfully with {Count} results.", list.Count);
+
+                return Ok(new PagedResult<DropdownModel>()
+                {
+                    Count = list.Count,
+                    Result = mappedResult
+                });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during Dropdown Get operation with parameters: dropdownType={DropdownType}", dropdownType);
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
     }
 }

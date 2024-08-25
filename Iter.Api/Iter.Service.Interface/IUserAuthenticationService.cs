@@ -1,6 +1,6 @@
 ﻿using Iter.Core.Dto;
 using Iter.Core.EntityModels;
-using Iter.Core.Requests;
+using Iter.Model;
 using Microsoft.AspNetCore.Identity;
 
 namespace Iter.Services.Interface

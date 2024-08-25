@@ -12,7 +12,7 @@ public class IRepositoryTemplate
     this.entityName = entityName;
     this.iRepositoryTemplate =
 $@"using Iter.Core.EntityModels;
-using Iter.Core;
+using Iter.Model;
 using Iter.Core.Responses;
 using System;
 using System.Collections.Generic;

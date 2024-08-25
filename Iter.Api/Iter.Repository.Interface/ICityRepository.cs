@@ -1,4 +1,4 @@
-using Iter.Core.EntityModels;
+using Iter.Core.EntityModelss;
 using Iter.Core.Models;
 
 namespace Iter.Repository.Interface

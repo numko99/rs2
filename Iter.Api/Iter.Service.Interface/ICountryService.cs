@@ -1,16 +1,6 @@
-using Iter.Core.EntityModels;
-using Iter.Core;
-using Iter.Core.Responses;
+using Iter.Model;
 using Iter.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Iter.Core.Models;
-using Iter.Core.RequestParameterModels;
-using Iter.Core.Requests;
-using Iter.Core.Search_Models;
+using Iter.Core.EntityModelss;
 
 namespace Iter.Services.Interface
 {

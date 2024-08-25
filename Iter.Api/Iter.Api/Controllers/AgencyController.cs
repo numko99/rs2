@@ -1,6 +1,6 @@
 ﻿using Iter.API.Controllers;
 using Iter.Core.EntityModels;
-using Iter.Core;
+using Iter.Model;
 using Iter.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Iter.Core.Search_Models;
@@ -14,7 +14,7 @@ namespace Iter.Api.Controllers
     [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Coordinator))]
     public class AgencyController : BaseCRUDController<Agency, AgencyInsertRequest, AgencyInsertRequest, AgencyResponse, AgencySearchModel, AgencyResponse>
     {
-        public AgencyController(IAgencyService agencyService): base(agencyService)
+        public AgencyController(IAgencyService agencyService, ILogger<AgencyController> logger): base(agencyService, logger)
         {
         }
     }

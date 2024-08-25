@@ -12,7 +12,7 @@ public class IServiceTemplate
     this.entityName = entityName;
     this.iServiceTemplate =
 $@"using Iter.Core.EntityModels;
-using Iter.Core;
+using Iter.Model;
 using Iter.Core.Responses;
 using Iter.Services.Interfaces;
 using System;

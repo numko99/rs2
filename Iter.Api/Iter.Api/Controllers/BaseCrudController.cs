@@ -1,7 +1,5 @@
 ﻿using Iter.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Iter.API.Controllers
 {
@@ -10,31 +8,66 @@ namespace Iter.API.Controllers
     public class BaseCRUDController<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> : BaseReadController<T, TGet, TSearchRequest, TSearchResponse> where TInsert : class where T : class where TGet : class where TSearchResponse : class
     {
         private readonly IBaseCrudService<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> baseCrudService;
-
-        public BaseCRUDController(IBaseCrudService<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> baseCrudService) : base(baseCrudService)
+        private readonly ILogger<BaseCRUDController<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse>> logger;
+        public BaseCRUDController(IBaseCrudService<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse> baseCrudService, ILogger<BaseCRUDController<T, TInsert, TUpdate, TGet, TSearchRequest, TSearchResponse>> logger) : base(baseCrudService, logger)
         {
             this.baseCrudService = baseCrudService;
+            this.logger = logger;
         }
 
         [HttpPost]
         public virtual async Task<IActionResult> Insert([FromBody] TInsert request)
         {
-            await this.baseCrudService.Insert(request);
-            return Ok();
+            logger.LogInformation("Insert operation started with request data: {@Request}", request);
+
+            try
+            {
+                await this.baseCrudService.Insert(request);
+                logger.LogInformation("Insert operation completed successfully.");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during Insert operation.");
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         [HttpPut("{id}")]
         public virtual async Task<IActionResult> Update(string id, [FromBody] TUpdate request)
         {
-            await this.baseCrudService.Update(new Guid(id), request);
-            return Ok();
+           logger.LogInformation("Update operation started for ID: {Id}", id);
+           logger.LogDebug("Update request data: {@Request}", request);
+
+            try
+            {
+                await this.baseCrudService.Update(new Guid(id), request);
+                logger.LogInformation("Update operation completed successfully for ID: {Id}", id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during Update operation for ID: {Id}", id);
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> Delete(string id)
         {
-            await this.baseCrudService.Delete(new Guid(id));
-            return Ok();
+            logger.LogInformation("Delete operation started for ID: {Id}", id);
+
+            try
+            {
+                await this.baseCrudService.Delete(new Guid(id));
+                logger.LogInformation("Delete operation completed successfully for ID: {Id}", id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during Delete operation for ID: {Id}", id);
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
     }
 }

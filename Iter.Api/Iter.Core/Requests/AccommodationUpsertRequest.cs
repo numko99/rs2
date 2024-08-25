@@ -1,2 +1,0 @@
-namespace Iter.Core
-{    public class AccommodationUpsertRequest    {        public string? HotelName { get; set; }        public AddressInsertRequest HotelAddress { get; set; }        public DateTime? CheckInDate { get; set; }        public DateTime? CheckOutDate { get; set; }    }}

@@ -1,8 +1,6 @@
 using Iter.Infrastrucure;
 using Iter.Repository.Interface;
 using Iter.Core.Search_Models;
-using AutoMapper;
-using Iter.Core;
 using Iter.Core.EntityModels;
 using Iter.Core.Models;
 using Microsoft.EntityFrameworkCore;
@@ -10,40 +8,63 @@ using Microsoft.AspNetCore.Identity;
 using Iter.Core.Responses;
 using Iter.Core.Enum;
 using Iter.Core.Dto.User;
+using Microsoft.Extensions.Logging;
 
 namespace Iter.Repository
 {
     public class UserRepository : BaseCrudRepository<User>, IUserRepository
     {
         private readonly IterContext dbContext;
-        private readonly IMapper mapper;
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly ILogger<UserRepository> logger;
 
-        public UserRepository(IterContext dbContext, IMapper mapper, UserManager<User> userManager, RoleManager<IdentityRole> roleManager) : base(dbContext, mapper)
+        public UserRepository(IterContext dbContext,  UserManager<User> userManager, RoleManager<IdentityRole> roleManager, ILogger<UserRepository> logger) : base(dbContext, logger)
         {
             this.dbContext = dbContext;
-            this.mapper = mapper;
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.logger = logger;
         }
 
         public async override Task<User?> GetById(Guid id)
         {
-            var user = await dbContext.Users
-           .Include(u => u.Client)
-           .Include(u => u.Employee)
-           .ThenInclude(u => u.Agency)
-           .Where(u => u.Id == id.ToString()).FirstOrDefaultAsync();
+            logger.LogInformation("GetById operation started for User ID: {Id}", id);
 
-            return user;
-        }
-        public async Task<PagedResult<User>> Get(UserSearchRequestParameters search)
-        {
             try
             {
-                var query = this.dbContext.Set<User>().AsQueryable();
+                var user = await dbContext.Users
+                    .Include(u => u.Client)
+                    .Include(u => u.Employee)
+                    .ThenInclude(u => u.Agency)
+                    .Where(u => u.Id == id.ToString())
+                    .FirstOrDefaultAsync();
 
+                if (user == null)
+                {
+                    logger.LogWarning("No user found for ID: {Id}", id);
+                }
+                else
+                {
+                    logger.LogInformation("GetById operation completed successfully for User ID: {Id}", id);
+                }
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetById operation for User ID: {Id}", id);
+                throw;
+            }
+        }
+
+        public async Task<PagedResult<User>> Get(UserSearchRequestParameters search)
+        {
+            logger.LogInformation("Get operation started with search parameters: {@SearchParameters}", search);
+
+            try
+            {
+                var query = dbContext.Set<User>().AsQueryable();
                 PagedResult<User> result = new PagedResult<User>();
 
                 if (!string.IsNullOrEmpty(search?.Name))
@@ -56,20 +77,20 @@ namespace Iter.Repository
                         (a.Employee != null &&
                          (a.Employee.LastName + " " + a.Employee.FirstName).ToLower().StartsWith(lowerSearchName) ||
                          (a.Employee.FirstName + " " + a.Employee.LastName).ToLower().StartsWith(lowerSearchName))
-                    ).AsQueryable();
+                    );
                 }
 
                 if (Guid.TryParse(search?.AgencyId, out var guid))
                 {
-                    query = query.Where(a => a.Employee != null && a.Employee.AgencyId == guid).AsQueryable();
+                    query = query.Where(a => a.Employee != null && a.Employee.AgencyId == guid);
                 }
 
                 if (search.RoleId != null)
                 {
-                    query = query.Where(q => q.Role == search.RoleId).AsQueryable();
+                    query = query.Where(q => q.Role == search.RoleId);
                 }
 
-                query = query.Where(q => (q.Employee != null && q.Employee.IsDeleted == false) || (q.Client != null && q.Client.IsDeleted == false)).AsQueryable();
+                query = query.Where(q => (q.Employee != null && q.Employee.IsDeleted == false) || (q.Client != null && q.Client.IsDeleted == false));
 
                 result.Count = await query.CountAsync();
 
@@ -77,8 +98,7 @@ namespace Iter.Repository
                         .Include(u => u.Client)
                         .Include(u => u.Employee)
                         .Include(u => u.Employee)
-                        .ThenInclude(u => u.Agency)
-                        .AsQueryable();
+                        .ThenInclude(u => u.Agency);
 
                 if (search?.CurrentPage.HasValue == true && search?.PageSize.HasValue == true)
                 {
@@ -86,94 +106,197 @@ namespace Iter.Repository
                 }
 
                 var users = await query.OrderByDescending(q => q.CreatedAt).ToListAsync();
-
                 result.Result = users;
+
+                logger.LogInformation("Get operation completed successfully with {Count} results.", users.Count);
+
                 return result;
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "An error occurred during Get operation with search parameters: {@SearchParameters}", search);
                 throw;
             }
         }
 
-        public async virtual Task DeleteAsync(User entity)
+        public async override Task DeleteAsync(User entity)
         {
-            if (entity.Employee != null)
-            {
-                entity.Employee.IsDeleted = true;
-            }
+            logger.LogInformation("DeleteAsync operation started for User ID: {Id}", entity.Id);
 
-            if (entity.Client != null)
+            try
             {
-                entity.Client.IsDeleted = true;
+                if (entity.Employee != null)
+                {
+                    entity.Employee.IsDeleted = true;
+                }
+
+                if (entity.Client != null)
+                {
+                    entity.Client.IsDeleted = true;
+                }
+
+                dbContext.User.Update(entity);
+                await dbContext.SaveChangesAsync();
+
+                logger.LogInformation("DeleteAsync operation completed successfully for User ID: {Id}", entity.Id);
             }
-            this.dbContext.User.Update(entity);
-            await this.dbContext.SaveChangesAsync();
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during DeleteAsync operation for User ID: {Id}", entity.Id);
+                throw;
+            }
         }
 
         public async Task<UserStatisticDto> GetCurrentUserStatistic(string id)
         {
-            var user = await this.dbContext.User.Where(u => u.Id == id).Include(nameof(Client)).FirstOrDefaultAsync();
-            var reservationCount = await this.dbContext.Reservation.Where(r => r.ClientId == user.ClientId && r.ReservationStatusId != (int)Core.Enum.ReservationStatus.Cancelled).CountAsync();
-            var arrangementCount = await this.dbContext.Arrangement.Where(a => (a.StartDate < DateTime.Now) && a.Reservations.Any(x => x.ClientId == user.ClientId && x.ReservationStatusId == (int)Core.Enum.ReservationStatus.Confirmed)).CountAsync();
-            return new UserStatisticDto()
+            logger.LogInformation("GetCurrentUserStatistic operation started for User ID: {Id}", id);
+
+            try
             {
-                ArrangementsCount = arrangementCount,
-                ReservationCount = reservationCount,
-                FirstName = user.Client.FirstName,
-                LastName = user.Client.LastName,
-            };
+                var user = await dbContext.User
+                    .Where(u => u.Id == id)
+                    .Include(nameof(Client))
+                    .FirstOrDefaultAsync();
+
+                var reservationCount = await dbContext.Reservation
+                    .Where(r => r.ClientId == user.ClientId && r.ReservationStatusId != (int)Core.Enum.ReservationStatus.Cancelled)
+                    .CountAsync();
+
+                var arrangementCount = await dbContext.Arrangement
+                    .Where(a => (a.StartDate < DateTime.Now) && a.Reservations.Any(x => x.ClientId == user.ClientId && x.ReservationStatusId == (int)Core.Enum.ReservationStatus.Confirmed))
+                    .CountAsync();
+
+                var result = new UserStatisticDto
+                {
+                    ArrangementsCount = arrangementCount,
+                    ReservationCount = reservationCount,
+                    FirstName = user.Client.FirstName,
+                    LastName = user.Client.LastName,
+                };
+
+                logger.LogInformation("GetCurrentUserStatistic operation completed successfully for User ID: {Id}.", id);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetCurrentUserStatistic operation for User ID: {Id}", id);
+                throw;
+            }
         }
 
         public async Task<UserStatisticDto> GetCurrentEmployeeStatistic(string id)
         {
-            var user = await this.dbContext.User.Where(u => u.Id == id).Include(nameof(Employee)).FirstOrDefaultAsync();
-            var arrangementsQuery = this.dbContext.EmployeeArrangment.Where(r => r.EmployeeId == user.EmployeeId && r.IsDeleted == false && r.Arrangement.StartDate < DateTime.Now).AsQueryable();
-            var count = arrangementsQuery.Count();
-            var avgRating = await arrangementsQuery.Include(a => a.Arrangement).Select(x => x.Arrangement.Rating).AverageAsync();
-            return new UserStatisticDto()
+            logger.LogInformation("GetCurrentEmployeeStatistic operation started for Employee ID: {Id}", id);
+
+            try
             {
-                AvgRating = avgRating,
-                ArrangementsCount = arrangementsQuery.Count(),
-                FirstName = user.Employee.FirstName,
-                LastName = user.Employee.LastName,
-            };
+                var user = await dbContext.User
+                    .Where(u => u.Id == id)
+                    .Include(nameof(Employee))
+                    .FirstOrDefaultAsync();
+
+                var arrangementsQuery = dbContext.EmployeeArrangment
+                    .Where(r => r.EmployeeId == user.EmployeeId && r.IsDeleted == false && r.Arrangement.StartDate < DateTime.Now);
+
+                var count = arrangementsQuery.Count();
+                var avgRating = await arrangementsQuery
+                    .Include(a => a.Arrangement)
+                    .Select(x => x.Arrangement.Rating)
+                    .AverageAsync();
+
+                var result = new UserStatisticDto
+                {
+                    AvgRating = avgRating,
+                    ArrangementsCount = count,
+                    FirstName = user.Employee.FirstName,
+                    LastName = user.Employee.LastName,
+                };
+
+                logger.LogInformation("GetCurrentEmployeeStatistic operation completed successfully for Employee ID: {Id}.", id);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetCurrentEmployeeStatistic operation for Employee ID: {Id}", id);
+                throw;
+            }
         }
 
         public async Task InsertClient(Client client)
         {
-            await this.dbContext.Client.AddAsync(client);
-            await this.dbContext.SaveChangesAsync();
+            logger.LogInformation("InsertClient operation started.");
+
+            try
+            {
+                await dbContext.Client.AddAsync(client);
+                await dbContext.SaveChangesAsync();
+
+                logger.LogInformation("InsertClient operation completed successfully.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during InsertClient operation.");
+                throw;
+            }
         }
 
         public async Task<List<UserNamesDto>> GetUserNamesByIds(List<string> ids)
         {
-            if (ids == null || !ids.Any())
+            logger.LogInformation("GetUserNamesByIds operation started with IDs: {@Ids}", ids);
+
+            try
             {
-                return new List<UserNamesDto>();
-            }
-
-            var users = await this.dbContext.User
-                .AsNoTracking()
-                .Include(x => x.Client)
-                .Include(x => x.Employee)
-                .ThenInclude(x => x.Agency)
-                .Where(u => ids.Contains(u.Id))
-                .Select(x => new UserNamesDto
+                if (ids == null || !ids.Any())
                 {
-                    Id = x.Id,
-                    FirstName = x.Role == (int)Roles.Client ? x.Client.FirstName : x.Employee.FirstName,
-                    LastName = x.Role == (int)Roles.Client ? x.Client.LastName : x.Employee.LastName,
-                    AgencyName = (x.Role == (int)Roles.TouristGuide || x.Role == (int)Roles.Coordinator) ? x.Employee.Agency.Name : null,
-                })
-                .ToListAsync();
+                    logger.LogWarning("No IDs provided for GetUserNamesByIds operation.");
+                    return new List<UserNamesDto>();
+                }
 
-            return users;
+                var users = await dbContext.User
+                    .AsNoTracking()
+                    .Include(x => x.Client)
+                    .Include(x => x.Employee)
+                    .ThenInclude(x => x.Agency)
+                    .Where(u => ids.Contains(u.Id))
+                    .Select(x => new UserNamesDto
+                    {
+                        Id = x.Id,
+                        FirstName = x.Role == (int)Roles.Client ? x.Client.FirstName : x.Employee.FirstName,
+                        LastName = x.Role == (int)Roles.Client ? x.Client.LastName : x.Employee.LastName,
+                        AgencyName = (x.Role == (int)Roles.TouristGuide || x.Role == (int)Roles.Coordinator) ? x.Employee.Agency.Name : null,
+                    })
+                    .ToListAsync();
+
+                logger.LogInformation("GetUserNamesByIds operation completed successfully with {Count} users.", users.Count);
+
+                return users;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetUserNamesByIds operation with IDs: {@Ids}", ids);
+                throw;
+            }
         }
 
         public async Task<int> GetCount()
         {
-            return await this.dbContext.User.CountAsync();
+            logger.LogInformation("GetCount operation started.");
+
+            try
+            {
+                var count = await dbContext.User.CountAsync();
+
+                logger.LogInformation("GetCount operation completed successfully with count: {Count}.", count);
+
+                return count;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetCount operation.");
+                throw;
+            }
         }
     }
 }

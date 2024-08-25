@@ -1,17 +1,15 @@
 ﻿using AutoMapper;
-using Iter.Core;
+using Iter.Model;
 using Iter.Core.Dto;
 using Iter.Core.EntityModels;
 using Iter.Core.EntityModelss;
 using Iter.Core.Enum;
 using Iter.Core.Helper;
 using Iter.Core.Options;
-using Iter.Core.Requests;
 using Iter.Repository.Interface;
 using Iter.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Reporting.Map.WebForms.BingMaps;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -25,21 +23,21 @@ namespace Iter.Services
         private readonly IMapper mapper;
         private readonly JwtConfiguration jwtConfiguration;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IEmailService emailService;
         private readonly IVerificationTokenRepository verificationTokenRepository;
+        private readonly IRabbitMQProducer rabbitMQProducer;
 
         private User? user;
 
         public UserAuthenticationService(
-        UserManager<User> userManager, IMapper mapper, JwtConfiguration jwtConfiguration, RoleManager<IdentityRole> roleManager, IHttpContextAccessor httpContextAccessor, IEmailService emailService, IVerificationTokenRepository verificationTokenRepository)
+        UserManager<User> userManager, IMapper mapper, JwtConfiguration jwtConfiguration, RoleManager<IdentityRole> roleManager, IHttpContextAccessor httpContextAccessor,  IVerificationTokenRepository verificationTokenRepository, IRabbitMQProducer rabbitMQProducer)
         {
             this.userManager = userManager;
             this.mapper = mapper;
             this.jwtConfiguration = jwtConfiguration;
             this.roleManager = roleManager;
             this.httpContextAccessor = httpContextAccessor;
-            this.emailService = emailService;
             this.verificationTokenRepository = verificationTokenRepository;
+            this.rabbitMQProducer = rabbitMQProducer;
         }
 
         public async Task<IdentityResult> RegisterUserAsync(UserRegistrationDto userRegistration)
@@ -283,7 +281,7 @@ namespace Iter.Services
 
             if (type == EmailHelper.EMAIL_VERIFICATION)
             {
-                await emailService.SendEmailAsync(
+                rabbitMQProducer.SendMessage(
                     new Core.Models.EmailMessage()
                     {
                         Email = user.Email,
@@ -298,7 +296,7 @@ namespace Iter.Services
 
             if (type == EmailHelper.FORGOT_PASSWORD)
             {
-                await emailService.SendEmailAsync(new Core.Models.EmailMessage()
+                rabbitMQProducer.SendMessage(new Core.Models.EmailMessage()
                 {
                     Email = user.Email,
                     Subject = "Reset lozinke",

@@ -1,32 +1,49 @@
-﻿using Iter.Core.EntityModels;
-using Iter.Core.Search_Models;
-using Iter.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Iter.Core.EntityModelss;
+﻿using Iter.Core.EntityModelss;
 using Iter.Repository.Interface;
-using AutoMapper;
 using Iter.Infrastrucure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Iter.Repository
 {
     public class VerificationTokenRepository : BaseCrudRepository<VerificationToken>, IVerificationTokenRepository
     {
         private readonly IterContext dbContext;
-        private readonly IMapper mapper;
-        public VerificationTokenRepository(IterContext context, IMapper mapper) : base(context, mapper)
+        private readonly ILogger<VerificationTokenRepository> logger;
+
+        public VerificationTokenRepository(IterContext context, ILogger<VerificationTokenRepository> logger) : base(context, logger)
         {
             this.dbContext = context;
-            this.mapper = mapper;
+            this.logger = logger;
         }
 
         public async Task<VerificationToken?> GetLastTokenByUserId(string userId)
         {
-            return await this.dbContext.VerificationToken.OrderBy(x => x.ExpiryDate).Where(x => x.UserId == userId).LastOrDefaultAsync();
+            logger.LogInformation("GetLastTokenByUserId operation started for User ID: {UserId}", userId);
+
+            try
+            {
+                var token = await dbContext.VerificationToken
+                    .OrderBy(x => x.ExpiryDate)
+                    .Where(x => x.UserId == userId)
+                    .LastOrDefaultAsync();
+
+                if (token == null)
+                {
+                    logger.LogWarning("No verification token found for User ID: {UserId}", userId);
+                }
+                else
+                {
+                    logger.LogInformation("GetLastTokenByUserId operation completed successfully for User ID: {UserId}", userId);
+                }
+
+                return token;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetLastTokenByUserId operation for User ID: {UserId}", userId);
+                throw;
+            }
         }
     }
 }

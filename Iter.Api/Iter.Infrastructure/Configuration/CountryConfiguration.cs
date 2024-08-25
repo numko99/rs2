@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using Iter.Core.Models;
+using Iter.Core.EntityModelss;
 
 namespace Iter.Infrastrucure.Configurations
 {

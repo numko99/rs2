@@ -14,8 +14,6 @@ using Iter.Repository.Interface;
 using Iter.Repository;
 using Iter.Services;
 using Iter.Infrastrucure;
-using Iter.Api.Services.Report;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Iter.Api.Infrastructure
 {
@@ -34,7 +32,6 @@ namespace Iter.Api.Infrastructure
 
 
             services.AddScoped<IReportService, ReportService>();
-            services.AddScoped<IReportPathGetterService, ReportPathGetterService>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();

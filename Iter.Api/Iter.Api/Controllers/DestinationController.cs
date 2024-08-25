@@ -1,5 +1,5 @@
 using Iter.API.Controllers;
-using Iter.Core;
+using Iter.Model;
 using Iter.Core.EntityModels;
 using Iter.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +14,8 @@ namespace Iter.Api.Controllers
     [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Coordinator))]
     public class DestinationController : BaseCRUDController<Destination, DestinationUpsertRequest, DestinationUpsertRequest, DestinationResponse, AgencySearchModel, DestinationResponse>
     {
-        public DestinationController(IDestinationService destinationService) : base(destinationService)
+
+        public DestinationController(IDestinationService destinationService, ILogger<DestinationController> logger) : base(destinationService, logger)
         {
         }
     }

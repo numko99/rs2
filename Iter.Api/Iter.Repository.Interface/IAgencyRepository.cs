@@ -1,6 +1,4 @@
 ﻿using Iter.Core.EntityModels;
-using Iter.Core;
-using Iter.Core.Search_Models;
 using Iter.Core.Models;
 
 namespace Iter.Repository.Interface

@@ -1,61 +1,96 @@
-using Iter.Core.EntityModels;
 using Iter.Infrastrucure;
 using Iter.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper;
 using Iter.Core.Models;
+using Iter.Core.EntityModelss;
+using Microsoft.Extensions.Logging;
 
 namespace Iter.Repository
 {
     public class CityRepository : BaseCrudRepository<City>, ICityRepository
     {
         private readonly IterContext dbContext;
-        private readonly IMapper mapper;
+        private readonly ILogger<CityRepository> logger;
 
-        public CityRepository(IterContext dbContext, IMapper mapper) : base(dbContext, mapper)
+        public CityRepository(IterContext dbContext, ILogger<CityRepository> logger) : base(dbContext, logger)
         {
             this.dbContext = dbContext;
-            this.mapper = mapper;
+            this.logger = logger;
         }
 
         public async Task<PagedResult<City>> Get(int? pageSize, int? currentPage, string? name, int? countryId)
         {
-            var query = dbContext.Set<City>().AsQueryable();
+            logger.LogInformation("Get operation started with filters: name={Name}, countryId={CountryId}, pageSize={PageSize}, currentPage={CurrentPage}", name, countryId, pageSize, currentPage);
 
-            if (!string.IsNullOrEmpty(name))
+            try
             {
-                query = query.Where(a => a.Name.Contains(name));
+                var query = dbContext.Set<City>().AsQueryable();
+
+                if (!string.IsNullOrEmpty(name))
+                {
+                    query = query.Where(a => a.Name.Contains(name));
+                }
+
+                if (countryId != null)
+                {
+                    query = query.Where(a => a.CountryId == countryId);
+                }
+
+                var totalCount = await query.CountAsync();
+
+                query = query.OrderByDescending(q => q.Id);
+
+                if (currentPage.HasValue && pageSize.HasValue)
+                {
+                    query = query.Skip((currentPage.Value - 1) * pageSize.Value).Take(pageSize.Value);
+                }
+
+                query = query.Include(a => a.Country);
+
+                var resultList = await query.ToListAsync();
+
+                logger.LogInformation("Get operation completed successfully with {Count} results.", resultList.Count);
+
+                return new PagedResult<City>
+                {
+                    Result = resultList,
+                    Count = totalCount
+                };
             }
-
-            if (countryId != null)
+            catch (Exception ex)
             {
-                query = query.Where(a => a.CountryId == countryId);
+                logger.LogError(ex, "An error occurred during Get operation with filters: name={Name}, countryId={CountryId}, pageSize={PageSize}, currentPage={CurrentPage}", name, countryId, pageSize, currentPage);
+                throw;
             }
-
-            var totalCount = await query.CountAsync();
-
-            query = query.OrderByDescending(q => q.Id);
-
-            if (currentPage.HasValue && pageSize.HasValue)
-            {
-                query = query.Skip((currentPage.Value - 1) * pageSize.Value).Take(pageSize.Value);
-            }
-
-            query = query.Include(a => a.Country);
-
-            var resultList = await query.ToListAsync();
-
-            return new PagedResult<City>
-            {
-                Result = resultList,
-                Count = totalCount
-            };
         }
 
         public async Task<City> GetById(int id)
         {
-            return await this.dbContext.City.Include(x => x.Country).Where(c => c.Id == id).FirstOrDefaultAsync();
-        }
+            logger.LogInformation("GetById operation started for City ID: {Id}", id);
 
+            try
+            {
+                var city = await dbContext.City
+                    .Include(x => x.Country)
+                    .Where(c => c.Id == id)
+                    .FirstOrDefaultAsync();
+
+                if (city == null)
+                {
+                    logger.LogWarning("GetById operation completed: No city found for ID: {Id}", id);
+                }
+                else
+                {
+                    logger.LogInformation("GetById operation completed successfully for City ID: {Id}", id);
+                }
+
+                return city;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetById operation for City ID: {Id}", id);
+                throw;
+            }
+        }
     }
 }

@@ -1,18 +1,10 @@
 using AutoMapper;
-using Iter.Core.EntityModels;
-using Iter.Core;
-using Iter.Core.Responses;
+using Iter.Model;
 using Iter.Repository.Interface;
 using Iter.Services.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Iter.Core.Requests;
-using Iter.Core.RequestParameterModels;
+using Microsoft.Extensions.Logging;
 using Iter.Core.Models;
-using Iter.Core.Search_Models;
+using Iter.Core.EntityModelss;
 
 namespace Iter.Services
 {
@@ -20,65 +12,124 @@ namespace Iter.Services
     {
         private readonly ICityRepository cityRepository;
         private readonly IMapper mapper;
-        public CityService(ICityRepository cityRepository, IMapper mapper) : base(cityRepository, mapper)
+        private readonly ILogger<CityService> logger;
+
+        public CityService(ICityRepository cityRepository, IMapper mapper, ILogger<CityService> logger) : base(cityRepository, mapper, logger)
         {
             this.cityRepository = cityRepository;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         public virtual async Task<PagedResult<CityResponse>> Get(CitySearchModel searchObject)
         {
-            int? countryId = null;
+            logger.LogInformation("Get operation started with search parameters: {@SearchObject}", searchObject);
 
-            if (int.TryParse(searchObject.CountryId, out var countryIdTemp))
+            try
             {
-                countryId = countryIdTemp;
-            }
+                int? countryId = null;
 
-            var searchData = await this.cityRepository.Get(searchObject.PageSize, searchObject.CurrentPage, searchObject.Name, countryId);
-            return this.mapper.Map<PagedResult<CityResponse>>(searchData);
+                if (int.TryParse(searchObject.CountryId, out var countryIdTemp))
+                {
+                    countryId = countryIdTemp;
+                }
+
+                var searchData = await this.cityRepository.Get(searchObject.PageSize, searchObject.CurrentPage, searchObject.Name, countryId);
+                var result = this.mapper.Map<PagedResult<CityResponse>>(searchData);
+
+                logger.LogInformation("Get operation completed successfully with {Count} results.", result.Count);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during Get operation with search parameters: {@SearchObject}", searchObject);
+                throw;
+            }
         }
 
         public virtual async Task<CityResponse> GetById(int id)
         {
-            var entity = await this.cityRepository.GetById(id);
+            logger.LogInformation("GetById operation started for City ID: {Id}", id);
 
-            if (entity == null)
+            try
             {
-                throw new ArgumentException("Invalid request");
-            }
+                var entity = await this.cityRepository.GetById(id);
 
-            return this.mapper.Map<CityResponse>(entity);
+                if (entity == null)
+                {
+                    logger.LogWarning("City with ID {Id} not found.", id);
+                    throw new ArgumentException("Invalid request");
+                }
+
+                var result = this.mapper.Map<CityResponse>(entity);
+
+                logger.LogInformation("GetById operation completed successfully for City ID: {Id}", id);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetById operation for City ID: {Id}", id);
+                throw;
+            }
         }
 
         public async Task Update(int id, CityUpsertRequest request)
         {
-            if (request == null)
+            logger.LogInformation("Update operation started for City ID: {Id}", id);
+
+            try
             {
-                throw new ArgumentException("Invalid request");
+                if (request == null)
+                {
+                    logger.LogWarning("Invalid request for Update operation.");
+                    throw new ArgumentException("Invalid request");
+                }
+
+                var entity = await this.cityRepository.GetById(id);
+
+                if (entity == null)
+                {
+                    logger.LogWarning("City with ID {Id} not found.", id);
+                    throw new ArgumentException("Invalid id");
+                }
+
+                this.mapper.Map(request, entity);
+                await this.cityRepository.UpdateAsync(entity);
+
+                logger.LogInformation("Update operation completed successfully for City ID: {Id}", id);
             }
-
-            var entity = await this.cityRepository.GetById(id);
-
-            if (entity == null)
+            catch (Exception ex)
             {
-                throw new ArgumentException("Invalid id");
+                logger.LogError(ex, "An error occurred during Update operation for City ID: {Id}", id);
+                throw;
             }
-
-            this.mapper.Map(request, entity);
-            await this.cityRepository.UpdateAsync(entity);
         }
 
         public async Task Delete(int id)
         {
-            var entity = await this.cityRepository.GetById(id);
+            logger.LogInformation("Delete operation started for City ID: {Id}", id);
 
-            if (entity == null)
+            try
             {
-                throw new ArgumentException("Invalid id");
-            }
+                var entity = await this.cityRepository.GetById(id);
 
-            await this.cityRepository.DeleteAsync(entity);
+                if (entity == null)
+                {
+                    logger.LogWarning("City with ID {Id} not found.", id);
+                    throw new ArgumentException("Invalid id");
+                }
+
+                await this.cityRepository.DeleteAsync(entity);
+
+                logger.LogInformation("Delete operation completed successfully for City ID: {Id}", id);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during Delete operation for City ID: {Id}", id);
+                throw;
+            }
         }
     }
 }

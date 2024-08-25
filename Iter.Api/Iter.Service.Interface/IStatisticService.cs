@@ -1,4 +1,5 @@
 ﻿using Iter.Core.Responses;
+using Iter.Model;
 
 namespace Iter.Services.Interface
 {

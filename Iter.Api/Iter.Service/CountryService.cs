@@ -1,18 +1,10 @@
 using AutoMapper;
-using Iter.Core.EntityModels;
-using Iter.Core;
-using Iter.Core.Responses;
+using Iter.Model;
 using Iter.Repository.Interface;
 using Iter.Services.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Iter.Core.Models;
-using Iter.Core.RequestParameterModels;
-using Iter.Core.Requests;
-using Iter.Core.Search_Models;
+using Iter.Core.EntityModelss;
 
 namespace Iter.Services
 {
@@ -20,65 +12,117 @@ namespace Iter.Services
     {
         private readonly ICountryRepository countryRepository;
         private readonly IMapper mapper;
-        public CountryService(ICountryRepository countryRepository, IMapper mapper) : base(countryRepository, mapper)
+        private readonly ILogger<CountryService> logger;
+
+        public CountryService(ICountryRepository countryRepository, IMapper mapper, ILogger<CountryService> logger) : base(countryRepository, mapper, logger)
         {
             this.countryRepository = countryRepository;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         public virtual async Task<PagedResult<CountryResponse>> Get(CitySearchModel searchObject)
         {
-            int? countryId = null;
+            logger.LogInformation("Get operation started with search parameters: {@SearchObject}", searchObject);
 
-            if (int.TryParse(searchObject.CountryId, out var countryIdTemp))
+            try
             {
-                countryId = countryIdTemp;
-            }
+                var searchData = await this.countryRepository.Get(searchObject.PageSize, searchObject.CurrentPage, searchObject.Name);
+                var result = this.mapper.Map<PagedResult<CountryResponse>>(searchData);
 
-            var searchData = await this.countryRepository.Get(searchObject.PageSize, searchObject.CurrentPage, searchObject.Name);
-            return this.mapper.Map<PagedResult<CountryResponse>>(searchData);
+                logger.LogInformation("Get operation completed successfully with {Count} results.", result.Count);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during Get operation with search parameters: {@SearchObject}", searchObject);
+                throw;
+            }
         }
 
         public virtual async Task<CountryResponse> GetById(int id)
         {
-            var entity = await this.countryRepository.GetById(id);
+            logger.LogInformation("GetById operation started for Country ID: {Id}", id);
 
-            if (entity == null)
+            try
             {
-                throw new ArgumentException("Invalid request");
-            }
+                var entity = await this.countryRepository.GetById(id);
 
-            return this.mapper.Map<CountryResponse>(entity);
+                if (entity == null)
+                {
+                    logger.LogWarning("Country with ID {Id} not found.", id);
+                    throw new ArgumentException("Invalid request");
+                }
+
+                var result = this.mapper.Map<CountryResponse>(entity);
+
+                logger.LogInformation("GetById operation completed successfully for Country ID: {Id}", id);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetById operation for Country ID: {Id}", id);
+                throw;
+            }
         }
 
         public async Task Update(int id, CountryUpsertRequest request)
         {
-            if (request == null)
+            logger.LogInformation("Update operation started for Country ID: {Id}", id);
+
+            try
             {
-                throw new ArgumentException("Invalid request");
+                if (request == null)
+                {
+                    logger.LogWarning("Invalid request for Update operation.");
+                    throw new ArgumentException("Invalid request");
+                }
+
+                var entity = await this.countryRepository.GetById(id);
+
+                if (entity == null)
+                {
+                    logger.LogWarning("Country with ID {Id} not found.", id);
+                    throw new ArgumentException("Invalid id");
+                }
+
+                this.mapper.Map(request, entity);
+                await this.countryRepository.UpdateAsync(entity);
+
+                logger.LogInformation("Update operation completed successfully for Country ID: {Id}", id);
             }
-
-            var entity = await this.countryRepository.GetById(id);
-
-            if (entity == null)
+            catch (Exception ex)
             {
-                throw new ArgumentException("Invalid id");
+                logger.LogError(ex, "An error occurred during Update operation for Country ID: {Id}", id);
+                throw;
             }
-
-            this.mapper.Map(request, entity);
-            await this.countryRepository.UpdateAsync(entity);
         }
 
         public async Task Delete(int id)
         {
-            var entity = await this.countryRepository.GetById(id);
+            logger.LogInformation("Delete operation started for Country ID: {Id}", id);
 
-            if (entity == null)
+            try
             {
-                throw new ArgumentException("Invalid id");
-            }
+                var entity = await this.countryRepository.GetById(id);
 
-            await this.countryRepository.DeleteAsync(entity);
+                if (entity == null)
+                {
+                    logger.LogWarning("Country with ID {Id} not found.", id);
+                    throw new ArgumentException("Invalid id");
+                }
+
+                await this.countryRepository.DeleteAsync(entity);
+
+                logger.LogInformation("Delete operation completed successfully for Country ID: {Id}", id);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during Delete operation for Country ID: {Id}", id);
+                throw;
+            }
         }
     }
 }
