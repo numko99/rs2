@@ -29,6 +29,7 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
   Arrangement? arrangement;
   List<ArrangementSearchResponse> recommendedArrangements = [];
   bool displayLoader = true;
+  bool displayRecommendedArrangementsLoader = true;
 
   @override
   void initState() {
@@ -63,11 +64,15 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
   }
 
   Future<void> loadRecommendedArrangements() async {
+    setState(() {
+      displayRecommendedArrangementsLoader = true;
+    });
     var recommendedArrangementsTemp =
         await _arrangementProvider?.getRecommendedArrangements(widget.id);
     if (this.mounted) {
       setState(() {
         recommendedArrangements = recommendedArrangementsTemp ?? [];
+        displayRecommendedArrangementsLoader = false;
       });
     }
   }
@@ -199,7 +204,7 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                           ),
                           SizedBox(
                             height: 220.0,
-                            child: ListView.builder(
+                            child: displayRecommendedArrangementsLoader == false ? ListView.builder(
                               scrollDirection: Axis.horizontal,
                               itemCount: recommendedArrangements.length,
                               itemBuilder: (context, index) {
@@ -211,7 +216,7 @@ class _ArrangementDetailsPageState extends State<ArrangementDetailsPage> {
                                       arrangement: arrangement),
                                 );
                               },
-                            ),
+                            ) : Center(child: Text("Učitavanje...")),
                           )
                         ],
                       ),

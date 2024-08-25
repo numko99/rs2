@@ -13,6 +13,7 @@ import 'package:ui/models/destination.dart';
 import 'package:ui/models/destinatios_form_controllers.dart';
 import 'package:ui/models/image_model.dart';
 import 'package:ui/services/arrangment_provider.dart';
+import 'package:ui/services/auth_storage_provider.dart';
 import 'package:ui/widgets/layout.dart';
 import 'package:ui/widgets/arrangement_add_edit/basic_data_form.dart';
 import 'package:ui/widgets/arrangement_add_edit/description_images_form.dart';
@@ -196,7 +197,7 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
 
         ScaffoldMessengerHelper.showCustomSnackBar(
             context: context,
-            message: "Aranžman uspješno dodan!",
+            message:widget.arrangementId == null ? "Aranžman uspješno dodan!" : "Aranžman uspješno uređen!",
             backgroundColor: Colors.green);
 
            Navigator.pushNamed(context, '/arrangements');
@@ -235,14 +236,15 @@ class _ArrangementAddEditPageState extends State<ArrangementAddEditPage> {
     if (endDate != null) {
       endDate = endDate.add(const Duration(hours: 2));
     }
-    
+
     formData["startDate"] = startDate.toIso8601String();
     if (endDate != null){
       formData["endDate"] = endDate.toIso8601String();
     }
     formData["prices"] = prices;
     formData["price"] = arrangementType == ArrangementType.multiDayTrip ? null : formData["price"];
-    formData["agencyId"] = agencyId ?? widget.agencyId;
+    formData["agencyId"] = agencyId ?? widget.agencyId ?? AuthStorageProvider.getAuthData()?["agencyId"];
+
 
     return formData;
   }

@@ -59,7 +59,7 @@ class _InsertReservationModalState extends State<InsertReservationModal> {
       "currentPage": 1,
       "pageSize": 10,
       "name": filter,
-      "role": Roles.client.index + 1
+      "roleId": Roles.client.index + 1
     });
 
     setState(() {

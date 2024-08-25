@@ -368,7 +368,7 @@ class _InsertAgencyModalState extends State<InsertAgencyModal> {
 
       ScaffoldMessengerHelper.showCustomSnackBar(
           context: context,
-          message: "Agencija uspješno dodana!",
+          message: widget.id == null ? "Agencija uspješno dodana!" : "Agencija uspješno uređena!",
           backgroundColor: Colors.green);
     } catch (error) {
       ScaffoldMessengerHelper.showCustomSnackBar(

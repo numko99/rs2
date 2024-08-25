@@ -81,8 +81,8 @@ class _MyArrangementsPageState extends State<MyArrangementsPage>
           labelColor: Colors.white,
           controller: _tabController,
           tabs: const [
-            Tab(text: 'Aktivne Rezervacije'),
-            Tab(text: 'Prethodna Putovanja'),
+            Tab(text: 'Aktivne rezervacije'),
+            Tab(text: 'Prethodna putovanja'),
           ],
         ),
       ),

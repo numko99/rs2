@@ -36,11 +36,18 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 void _submit() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await _userProvider?.updatePassword(_oldPasswordController.text, _newPasswordController.text);
-        ScaffoldMessengerHelper.showCustomSnackBar(
-            context: context,
-            message: "Uspješno ste promijenili lozinku",
-            backgroundColor: Colors.green);
+        var res = await _userProvider?.updatePassword(_oldPasswordController.text, _newPasswordController.text);
+         if (res) {
+          ScaffoldMessengerHelper.showCustomSnackBar(
+              context: context,
+              message: "Uspješno ste promijenili lozinku",
+              backgroundColor: Colors.green);
+        } else {
+          ScaffoldMessengerHelper.showCustomSnackBar(
+              context: context,
+              message: "Trenutna lozinka nije ispravna!",
+              backgroundColor: Colors.red);
+        }
       } catch (e) {
         _showErrorDialog('Trenutna lozinka nije ispravna.');
       }

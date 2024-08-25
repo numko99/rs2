@@ -344,7 +344,7 @@ class _InsertUserModalState extends State<InsertUserModal> {
 
       ScaffoldMessengerHelper.showCustomSnackBar(
           context: context,
-          message: "Korisnik uspješno dodan!",
+          message: widget.user?.id == null ? "Korisnik uspješno dodan!" : "Korisnik uspješno uređen!",
           backgroundColor: Colors.green);
     } catch (error) {
       ScaffoldMessengerHelper.showCustomSnackBar(

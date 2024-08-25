@@ -117,8 +117,8 @@ class _EmployeePreviousArrangementsPageState extends State<EmployeePreviousArran
           labelColor: Colors.white,
           controller: _tabController,
           tabs: const [
-            Tab(text: 'Aktivne Rezervacije'),
-            Tab(text: 'Prethodna Putovanja'),
+            Tab(text: 'Aktivna putovanja'),
+            Tab(text: 'Prethodna putovanja'),
           ],
         ),
       ),

@@ -61,7 +61,7 @@ services:
         EMAILSETTINGS_USERNAME: iter_travel@hotmail.com
         EMAILSETTINGS_PASSWORD: Iter_12345
     environment:
-        - ConnectionStrings:AppDatabase=Server=sql,1433;Database=iter_db_IB180063;User=sa;Password=Iter123456;TrustServerCertificate=True;ConnectRetryCount=0
+        - ConnectionStrings:AppDatabase=Server=sql,1433;Database=iter__db__IB180063;User=sa;Password=Iter123456;TrustServerCertificate=True;ConnectRetryCount=0
     ports:
       - 8080:80
     networks:

@@ -200,10 +200,17 @@ namespace Iter.Repository
                     .Where(r => r.EmployeeId == user.EmployeeId && r.IsDeleted == false && r.Arrangement.StartDate < DateTime.Now);
 
                 var count = arrangementsQuery.Count();
-                var avgRating = await arrangementsQuery
-                    .Include(a => a.Arrangement)
-                    .Select(x => x.Arrangement.Rating)
-                    .AverageAsync();
+                var ratings = await arrangementsQuery
+                 .Include(a => a.Arrangement)
+                 .Select(x => x.Arrangement.Rating)
+                 .ToListAsync();
+
+                decimal avgRating = 0;
+
+                if (ratings.Any())
+                {
+                    avgRating = ratings.Average();
+                }
 
                 var result = new UserStatisticDto
                 {

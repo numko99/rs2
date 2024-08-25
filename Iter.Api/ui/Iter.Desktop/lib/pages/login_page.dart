@@ -64,7 +64,7 @@ class _LoginContainerState extends State<LoginContainer> {
       }
 
       if (authData?["role"] == Roles.coordinator) {
-        Navigator.pushReplacementNamed(context, '/users');
+        Navigator.pushReplacementNamed(context, '/employeeHome');
       }
     } else {
       setState(() {

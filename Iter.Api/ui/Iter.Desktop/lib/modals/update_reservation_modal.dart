@@ -336,7 +336,7 @@ class UpdateReservationModalState extends State<UpdateReservationModal> {
 
       ScaffoldMessengerHelper.showCustomSnackBar(
           context: context,
-          message: "Rezervacija uspješno dodana!",
+          message: "Rezervacija uspješno uređena!",
           backgroundColor: Colors.green);
     } catch (error) {
       ScaffoldMessengerHelper.showCustomSnackBar(

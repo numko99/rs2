@@ -125,9 +125,6 @@ class CountryDataTableState extends State<CountryDataTable> {
                   child: DataTable(
                     columns: const [
                       DataColumn(
-                          label: Text('Id',
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(
                           label: Text('Naziv',
                               style: TextStyle(fontWeight: FontWeight.bold))),
                       DataColumn(label: Text('')),
@@ -136,7 +133,6 @@ class CountryDataTableState extends State<CountryDataTable> {
                         .map(
                           (country) => DataRow(
                             cells: [
-                              DataCell(Text(country.id.toString())),
                               DataCell(Text(country.name)),
                               DataCell(
                                 SizedBox(

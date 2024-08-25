@@ -33,12 +33,7 @@ class UserProvider extends BaseProvider<User, User> {
 
     var response = await http!.post(url, headers: headers,  body: jsonEncode(body2));
 
-    if (isValidResponseCode(response)) {
-      var data = jsonDecode(response.body);
-      return fromJson(data);
-    } else {
-      return null;
-    }
+    return response.statusCode == 200;
   }
 
     Future<User> getCurrentUser() async {

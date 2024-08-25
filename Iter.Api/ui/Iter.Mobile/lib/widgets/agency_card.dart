@@ -41,7 +41,7 @@ class AgencyCard extends StatelessWidget {
               SizedBox(height: 6),
               Row(
                 children: [
-                  // Slika agencije
+                  if (agency.logo != null)
                   CircleAvatar(
                     radius: 30.0,
                     backgroundColor: Colors.transparent,

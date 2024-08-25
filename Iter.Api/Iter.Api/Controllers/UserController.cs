@@ -54,7 +54,7 @@ namespace Iter.Api.Controllers
                 if (!checkPassword)
                 {
                     _logger.LogWarning("UpdatePassword operation failed: current password is incorrect for user ID: {UserId}", User.FindFirstValue(ClaimTypes.NameIdentifier));
-                    return Unauthorized("Current password is incorrect");
+                    return BadRequest("Current password is incorrect");
                 }
 
                 await _userAuthenticationService.ChangePassword(request.CurrentPassword, request.NewPassword);
@@ -135,7 +135,7 @@ namespace Iter.Api.Controllers
             if (userIds == null || userIds.Count == 0)
             {
                 _logger.LogWarning("GetUserNamesByIds operation failed: no user IDs provided.");
-                return BadRequest("User IDs are required.");
+                return Ok(new List<UserNamesResponse>());
             }
 
             try
