@@ -59,12 +59,11 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
     setState(() {
       displayLoader = true;
     });
+    String? returnData = null;
     try {
       var paymentIntentData = await createPaymentIntent(
           ((reservation!.arrangementPrice!.price)! * 100).round().toString(),
           "BAM");
-      await reservationProvider!.addPayment(reservation!.id,
-          reservation!.arrangementPrice?.price, paymentIntentData['id']);
       await stripe.Stripe.instance
           .initPaymentSheet(
         paymentSheetParameters: stripe.SetupPaymentSheetParameters(
@@ -90,22 +89,23 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
       });
 
       await stripe.Stripe.instance.presentPaymentSheet();
-      await reservationProvider!.addPayment(reservation!.id,
-          reservation!.arrangementPrice?.price, paymentIntentData['id']);
-      await loadData();
       ScaffoldMessengerHelper.showCustomSnackBar(
           context: context,
-          message: "Uspješno ste izvršili upratu",
+          message: "Uspješno ste izvršili uplatu",
           backgroundColor: Colors.green);
+        returnData = paymentIntentData['id'];
     } catch (error) {
-      ScaffoldMessengerHelper.showCustomSnackBar(
-          context: context,
-          message: "Došlo je do greške: ${error.toString()}",
-          backgroundColor: Colors.red);
+      // ScaffoldMessengerHelper.showCustomSnackBar(
+      //     context: context,
+      //     message: "Došlo je do greške: ${error.toString()}",
+      //     backgroundColor: Colors.red);
+      print(error);
     }
     setState(() {
       displayLoader = false;
     });
+
+    return returnData;
   }
 
   createPaymentIntent(String amount, String currency) async {
@@ -293,7 +293,15 @@ class _ReservationDetailsScreenState extends State<ReservationDetailsScreen> {
           children: [
             ElevatedButton(
               onPressed: () async {
-                await showPaymentSheet();
+                var paymentId = await showPaymentSheet();
+
+                if (paymentId != null){
+                   await reservationProvider!.addPayment(
+                      reservation!.id,
+                      reservation!.arrangementPrice?.price,
+                      paymentId);
+                  await loadData();
+                }
               },
               child: const Text('Izvrši plaćanje',
                   style: TextStyle(color: Colors.white)),

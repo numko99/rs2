@@ -70,6 +70,7 @@ class ReservationDetailsModalState extends State<ReservationDetailsModal> {
                         reservation!.user!.phoneNumber!,
                       ),
                     ),
+                    if (reservation?.arrangementPrice!.accommodationType != null)
                     ListTile(
                       leading: Icon(Icons.hotel, color: Colors.amber),
                       title: Text(

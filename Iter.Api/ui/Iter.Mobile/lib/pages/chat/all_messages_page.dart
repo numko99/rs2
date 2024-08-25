@@ -79,7 +79,10 @@ class _UserListPageState extends State<UserListPage> {
                 Timestamp timestamp = doc['timestamp'] ?? Timestamp.now();
                 if (!userMessages.containsKey(otherUserId) || ( doc['timestamp'] != null &&
                     (timestamp).compareTo(
-                            userMessages[otherUserId]!['timestamp']) >
+                            (userMessages[otherUserId]
+                                    ?['timestamp'] as Timestamp?) ??
+                                Timestamp.fromMillisecondsSinceEpoch(0))
+                            >
                         0)) {
                   userMessages[otherUserId] = {
                     'message': doc['text'],
