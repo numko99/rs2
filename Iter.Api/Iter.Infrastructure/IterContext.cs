@@ -26,11 +26,11 @@ namespace Iter.Infrastrucure
                 // Podijeli skriptu na pojedinačne naredbe na temelju 'GO'
                 var sqlCommands = sqlScript.Split("GO\r", StringSplitOptions.RemoveEmptyEntries);
 
+                this.Database.SetCommandTimeout(600);
                 foreach (var command in sqlCommands)
                 {
                     if (!string.IsNullOrWhiteSpace(command))
                     {
-                        this.Database.SetCommandTimeout(300);
                         this.Database.ExecuteSqlRaw(command);
                     }
                 }
