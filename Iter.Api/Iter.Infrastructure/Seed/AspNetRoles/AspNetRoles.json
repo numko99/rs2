@@ -1,0 +1,26 @@
+﻿[
+  {
+    "Id": "1",
+    "Name": "Admin",
+    "NormalizedName": "Administrator",
+    "ConcurrencyStamp": "40c09cc1-9733-4e1f-baad-6bbfa445e2d5"
+  },
+  {
+    "Id": "2",
+    "Name": "Coordinator",
+    "NormalizedName": "Coordinator",
+    "ConcurrencyStamp": "40c09cc1-9733-4e1f-baad-6bbfa445e2d5"
+  },
+  {
+    "Id": "3",
+    "Name": "TouristGuide",
+    "NormalizedName": "TouristGuide",
+    "ConcurrencyStamp": "40c09cc1-9733-4e1f-baad-6bbfa445e2d5"
+  },
+  {
+    "Id": "4",
+    "Name": "Client",
+    "NormalizedName": "Client",
+    "ConcurrencyStamp": "40c09cc1-9733-4e1f-baad-6bbfa445e2d5"
+  }
+]

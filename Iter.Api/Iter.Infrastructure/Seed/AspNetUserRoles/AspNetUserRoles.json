@@ -1,0 +1,62 @@
+﻿[
+  {
+    "UserId": "bf85b04a-2c8d-4e29-a9f3-0b34210b7d63",
+    "RoleId": "1"
+  },
+  {
+    "UserId": "39539a1b-2f21-46f7-87b8-bee4745d50f7",
+    "RoleId": "2"
+  },
+  {
+    "UserId": "6789925f-fdf3-4c76-8236-0a50a57f1c2c",
+    "RoleId": "2"
+  },
+  {
+    "UserId": "bb23c4f8-afc5-401f-91d0-e8908648c60e",
+    "RoleId": "2"
+  },
+  {
+    "UserId": "c6e805ba-56eb-4958-913d-cabd5f5f8495",
+    "RoleId": "2"
+  },
+  {
+    "UserId": "0bfe9409-2df3-405a-b34d-530f8e86293b",
+    "RoleId": "3"
+  },
+  {
+    "UserId": "67be2123-c0ad-4b94-a4c3-cbfe002a7313",
+    "RoleId": "3"
+  },
+  {
+    "UserId": "8a55e790-9562-45aa-a1e9-4c26022582d2",
+    "RoleId": "3"
+  },
+  {
+    "UserId": "8b778d69-5d48-4690-8d8a-945c7fb250b1",
+    "RoleId": "3"
+  },
+  {
+    "UserId": "aabf1ca0-abb2-4082-81d9-4275fcdd080b",
+    "RoleId": "3"
+  },
+  {
+    "UserId": "d0b17a41-d2b6-40cc-9f70-45ec162ec043",
+    "RoleId": "3"
+  },
+  {
+    "UserId": "0dfe16b1-d7cd-4545-be89-a0f3f5945de4",
+    "RoleId": "4"
+  },
+  {
+    "UserId": "67be2123-c0ad-4b94-a4c3-cbfe002a7313",
+    "RoleId": "4"
+  },
+  {
+    "UserId": "67fc1dec-4ba5-460e-b4a1-eabae216efe9",
+    "RoleId": "4"
+  },
+  {
+    "UserId": "d143d790-dd84-483b-819a-5423303c4ceb",
+    "RoleId": "4"
+  }
+]

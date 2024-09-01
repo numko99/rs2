@@ -21,9 +21,9 @@ namespace CodeGenerator.Script
             string absolutePathTargetFolderRepository = Path.GetFullPath(targetFolderRepository);
             string targetFolderRepositoryInterface = @"C:\Projects\rs2\Iter.Api\Iter.Repository.Interface";
             string absolutePathTargetFolderRepositoryInterface = Path.GetFullPath(targetFolderRepositoryInterface);
-            string targetFolderUpsertModels = @"C:\Projects\rs2\Iter.Api\Iter.Core\Requests";
+            string targetFolderUpsertModels = @"C:\Projects\rs2\Iter.Api\Iter.Model\Requests";
             string absolutePathTargetFolderUpsertModels = Path.GetFullPath(targetFolderUpsertModels);
-            string targetFolderResponseModels = @"C:\Projects\rs2\Iter.Api\Iter.Core\Responses\";
+            string targetFolderResponseModels = @"C:\Projects\rs2\Iter.Api\Iter.Model\Responses\";
             string absolutePathTargetFolderResponseModels = Path.GetFullPath(targetFolderResponseModels);
 
             string targetFolderMapper = @"C:\Projects\rs2\Iter.Api\Iter.Api\Mapping";

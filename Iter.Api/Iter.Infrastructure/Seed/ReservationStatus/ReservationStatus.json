@@ -1,0 +1,22 @@
+﻿[
+  {
+    "Id": 1,
+    "Name": "Na čekanju"
+  },
+  {
+    "Id": 2,
+    "Name": "Odbijeno"
+  },
+  {
+    "Id": 3,
+    "Name": "Otkazano"
+  },
+  {
+    "Id": 4,
+    "Name": "Potvrđeno"
+  },
+  {
+    "Id": 6,
+    "Name": "Isteklo"
+  }
+]

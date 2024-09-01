@@ -1,5 +1,6 @@
 using Iter.Core.Dto.User;
 using Iter.Core.EntityModels;
+using Iter.Core.Enum;
 using Iter.Core.Models;
 using Iter.Core.Responses;
 using Iter.Core.Search_Models;
@@ -19,5 +20,7 @@ namespace Iter.Repository.Interface
         Task<PagedResult<User>> Get(UserSearchRequestParameters search);
 
         Task<int> GetCount();
+
+        Task<Roles?> GetUserRoleByClientIdOrEmployeeId(Guid id);
     }
 }

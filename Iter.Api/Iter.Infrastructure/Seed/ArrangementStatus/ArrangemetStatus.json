@@ -1,0 +1,34 @@
+﻿[
+  {
+    "Id": 0,
+    "Name": "U Pripremi"
+  },
+  {
+    "Id": 1,
+    "Name": "Dostupan za Rezervaciju"
+  },
+  {
+    "Id": 2,
+    "Name": "Rezervacije Zatvorene"
+  },
+  {
+    "Id": 10,
+    "Name": "U Pripremi"
+  },
+  {
+    "Id": 11,
+    "Name": "U Pripremi"
+  },
+  {
+    "Id": 12,
+    "Name": "U Pripremi"
+  },
+  {
+    "Id": 13,
+    "Name": "U Pripremi"
+  },
+  {
+    "Id": 14,
+    "Name": "U Pripremi"
+  }
+]

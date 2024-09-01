@@ -1,0 +1,152 @@
+﻿[
+  {
+    "Id": "fda36cb7-4616-48e9-cf2a-08dc728077ad",
+    "FirstName": "Klijent",
+    "LastName": "Mujic",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-05-12T14:38:46.8171754",
+    "ModifiedAt": "2024-05-22T00:47:41.8077223",
+    "BirthDate": "2001-12-03T00:00:00.0000000",
+    "ResidencePlace": "Mostar"
+  },
+  {
+    "Id": "6240d8f1-b80d-49e3-77d0-08dc8003d380",
+    "FirstName": "Admir",
+    "LastName": "Numanović",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-05-29T19:33:04.9853286",
+    "ModifiedAt": "2024-05-29T19:35:03.9254234",
+    "BirthDate": "1999-06-07T00:00:00.0000000",
+    "ResidencePlace": "Mostar"
+  },
+  {
+    "Id": "20affdb3-aa89-4387-d057-08dc9dc24d12",
+    "FirstName": "Tajib",
+    "LastName": "Vikalo",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-07-06T15:48:22.1014672",
+    "ModifiedAt": "2024-07-06T15:48:22.1015430",
+    "BirthDate": "1999-01-01T00:00:00.0000000",
+    "ResidencePlace": "Srebreni"
+  },
+  {
+    "Id": "52c17ce6-c3c2-49f8-246f-08dc9dc44f56",
+    "FirstName": "Tajib",
+    "LastName": "Tajci",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-07-06T16:02:44.9046235",
+    "ModifiedAt": "2024-07-06T16:02:44.9046632",
+    "BirthDate": "1999-11-11T00:00:00.0000000",
+    "ResidencePlace": "Mostar"
+  },
+  {
+    "Id": "e61d7eee-9996-4dd5-b987-37f10bddb38c",
+    "FirstName": "Pat",
+    "LastName": "Anderson",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-16T00:00:00.0000000",
+    "ModifiedAt": "2024-06-16T00:00:00.0000000",
+    "BirthDate": "1965-10-30T00:00:00.0000000",
+    "ResidencePlace": "San Jose"
+  },
+  {
+    "Id": "157d8713-1176-4050-b53f-49e38670337a",
+    "FirstName": "Alice",
+    "LastName": "Johnson",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-23T00:00:00.0000000",
+    "ModifiedAt": "2024-06-23T00:00:00.0000000",
+    "BirthDate": "1985-03-22T00:00:00.0000000",
+    "ResidencePlace": "Chicago"
+  },
+  {
+    "Id": "8fd6aa7e-2afa-402b-a05c-541ab2ddbc5a",
+    "FirstName": "Sam",
+    "LastName": "Wilson",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-19T00:00:00.0000000",
+    "ModifiedAt": "2024-06-19T00:00:00.0000000",
+    "BirthDate": "1970-07-20T00:00:00.0000000",
+    "ResidencePlace": "San Antonio"
+  },
+  {
+    "Id": "c2f846f6-c807-404b-a803-9f1e26e1bdd2",
+    "FirstName": "Laura",
+    "LastName": "Miller",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-20T00:00:00.0000000",
+    "ModifiedAt": "2024-06-20T00:00:00.0000000",
+    "BirthDate": "1988-06-09T00:00:00.0000000",
+    "ResidencePlace": "Philadelphia"
+  },
+  {
+    "Id": "1eb9eee6-d946-4111-a2e6-a3a67445ad97",
+    "FirstName": "Mike",
+    "LastName": "Davis",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-21T00:00:00.0000000",
+    "ModifiedAt": "2024-06-21T00:00:00.0000000",
+    "BirthDate": "1992-05-16T00:00:00.0000000",
+    "ResidencePlace": "Phoenix"
+  },
+  {
+    "Id": "0523fca9-d9bd-4e14-98f5-aa73c208a274",
+    "FirstName": "Jane",
+    "LastName": "Smith",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-24T00:00:00.0000000",
+    "ModifiedAt": "2024-06-24T00:00:00.0000000",
+    "BirthDate": "1990-02-15T00:00:00.0000000",
+    "ResidencePlace": "Los Angeles"
+  },
+  {
+    "Id": "67be2123-c0ad-4b94-a4c3-cbfe002a7313",
+    "FirstName": "Adnann",
+    "LastName": "Numanovic",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-02-16T00:00:00.0000000",
+    "ModifiedAt": "2024-08-24T18:00:25.4686081",
+    "BirthDate": "1999-02-16T00:00:00.0000000",
+    "ResidencePlace": "Tuzla"
+  },
+  {
+    "Id": "5780ee88-d758-4ead-861a-cd19e001bf3d",
+    "FirstName": "Bob",
+    "LastName": "Brown",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-22T00:00:00.0000000",
+    "ModifiedAt": "2024-06-22T00:00:00.0000000",
+    "BirthDate": "1975-04-30T00:00:00.0000000",
+    "ResidencePlace": "Houston"
+  },
+  {
+    "Id": "fd72d7b7-a9e8-4740-b370-e3a2a33d61df",
+    "FirstName": "Chris",
+    "LastName": "Taylor",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-17T00:00:00.0000000",
+    "ModifiedAt": "2024-06-17T00:00:00.0000000",
+    "BirthDate": "1995-09-25T00:00:00.0000000",
+    "ResidencePlace": "Dallas"
+  },
+  {
+    "Id": "534322c0-4ea4-488a-946c-e67d044ba637",
+    "FirstName": "John",
+    "LastName": "Doe",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-25T00:00:00.0000000",
+    "ModifiedAt": "2024-06-25T00:00:00.0000000",
+    "BirthDate": "1980-01-01T00:00:00.0000000",
+    "ResidencePlace": "New York"
+  },
+  {
+    "Id": "7f5734f6-d8e6-4d66-82d4-f1f7da73a6d3",
+    "FirstName": "Kate",
+    "LastName": "Moore",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-18T00:00:00.0000000",
+    "ModifiedAt": "2024-06-18T00:00:00.0000000",
+    "BirthDate": "1983-08-11T00:00:00.0000000",
+    "ResidencePlace": "San Diego"
+  }
+]

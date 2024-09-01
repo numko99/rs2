@@ -305,5 +305,28 @@ namespace Iter.Repository
                 throw;
             }
         }
+
+        public async Task<Roles?> GetUserRoleByClientIdOrEmployeeId(Guid id)
+        {
+            logger.LogInformation("GetUserRoleByClientIdOrEmployeeId operation started.");
+
+            try
+            {
+                var user = await dbContext.User.Where(e => e.EmployeeId == id || e.ClientId == id).FirstOrDefaultAsync();
+
+                if (user != null)
+                {
+                    return (Roles)user.Role;
+                }
+
+                return null;
+            }
+
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during GetCount operation.");
+                throw;
+            }
+        }
     }
 }

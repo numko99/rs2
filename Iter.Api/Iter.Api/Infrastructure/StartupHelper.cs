@@ -14,6 +14,7 @@ using Iter.Repository.Interface;
 using Iter.Repository;
 using Iter.Services;
 using Iter.Infrastrucure;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Iter.Api.Infrastructure
 {
@@ -85,7 +86,14 @@ namespace Iter.Api.Infrastructure
             services.AddDbContext<IterContext>(options =>
                 options.UseSqlServer(connectionString));
 
+            var serviceProvider = services.BuildServiceProvider();
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<IterContext>();
+                dbContext.Database.Migrate();
+            }
         }
+
         public static void ConfigureResponseCaching(this IServiceCollection services) => services.AddResponseCaching();
 
         public static void ConfigureIdentity(this IServiceCollection services)

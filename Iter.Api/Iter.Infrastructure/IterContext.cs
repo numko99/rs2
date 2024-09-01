@@ -1,5 +1,7 @@
 ﻿using Iter.Core.EntityModels;
 using Iter.Core.EntityModelss;
+using Iter.Core.Models;
+using Iter.Infrastructure;
 using Iter.Infrastrucure.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +33,14 @@ namespace Iter.Infrastrucure
                 {
                     if (!string.IsNullOrWhiteSpace(command))
                     {
-                        this.Database.ExecuteSqlRaw(command);
+                        try
+                        {
+                            this.Database.ExecuteSqlRaw(command);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Data already exists {ex}", ex);
+                        }
                     }
                 }
             }
@@ -102,6 +111,14 @@ namespace Iter.Infrastrucure
             builder.ApplyConfiguration(new VerificationTokenConfiguration());
             builder.ApplyConfiguration(new CityConfiguration());
             builder.ApplyConfiguration(new CountryConfiguration());
+
+            //builder.ApplyConfiguration(new ReservationStatusSeed());
+            //builder.ApplyConfiguration(new ArrangementStatusSeed());
+            //builder.ApplyConfiguration(new AspNetUserSeed());
+            //builder.ApplyConfiguration(new AspNetRoleSeed());
+            //builder.ApplyConfiguration(new AspNetUserRoleSeed());
+            //builder.ApplyConfiguration(new ClientSeed());
+            //builder.ApplyConfiguration(new EmployeeSeed());
         }
     }
 }
