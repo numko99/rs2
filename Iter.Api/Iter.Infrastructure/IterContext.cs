@@ -13,7 +13,7 @@ namespace Iter.Infrastrucure
     {
         public void Initialize()
         {
-            if (Database.GetAppliedMigrations()?.Count() == 0)
+            if (Database.GetPendingMigrations()?.Count() > 0)
             {
                 Database.Migrate();
 
@@ -39,7 +39,6 @@ namespace Iter.Infrastrucure
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Data already exists {ex}", ex);
                         }
                     }
                 }
@@ -111,14 +110,20 @@ namespace Iter.Infrastrucure
             builder.ApplyConfiguration(new VerificationTokenConfiguration());
             builder.ApplyConfiguration(new CityConfiguration());
             builder.ApplyConfiguration(new CountryConfiguration());
+            builder.ApplyConfiguration(new ArrangementStatusConfiguration());
+            builder.ApplyConfiguration(new ReservationStatusConfiguration());
 
-            //builder.ApplyConfiguration(new ReservationStatusSeed());
-            //builder.ApplyConfiguration(new ArrangementStatusSeed());
-            //builder.ApplyConfiguration(new AspNetUserSeed());
-            //builder.ApplyConfiguration(new AspNetRoleSeed());
-            //builder.ApplyConfiguration(new AspNetUserRoleSeed());
-            //builder.ApplyConfiguration(new ClientSeed());
-            //builder.ApplyConfiguration(new EmployeeSeed());
+            builder.ApplyConfiguration(new CountrySeed());
+            builder.ApplyConfiguration(new CitySeed());
+            builder.ApplyConfiguration(new AddressSeed());
+            builder.ApplyConfiguration(new ReservationStatusSeed());
+            builder.ApplyConfiguration(new AgencySeed());
+            builder.ApplyConfiguration(new EmployeeSeed());
+            builder.ApplyConfiguration(new ClientSeed());
+            builder.ApplyConfiguration(new ArrangementStatusSeed());
+            builder.ApplyConfiguration(new AspNetRoleSeed());
+            builder.ApplyConfiguration(new AspNetUserSeed());
+            builder.ApplyConfiguration(new AspNetUserRoleSeed());
         }
     }
 }

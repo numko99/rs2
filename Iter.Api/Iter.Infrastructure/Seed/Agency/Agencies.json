@@ -1,0 +1,47 @@
+﻿[
+  {
+    "Id": "66f20b4e-9e6d-4c95-6a66-08dc298d67da",
+    "Name": "Letsgo",
+    "AddressId": "462e18e6-5009-43b5-15be-08dc298c5934",
+    "ContactEmail": "letsgo@gmail.com",
+    "ContactPhone": "062-123-123",
+    "Website": "www.letsgo.com",
+    "LicenseNumber": "12343",
+    "IsActive": 0,
+    "Rating": 3.08,
+    "IsDeleted": 0,
+    "CreatedAt": "2024-02-09T17:37:25.2712606",
+    "ModifiedAt": "2024-06-01T14:05:34.7225465",
+    "ImageId": null
+  },
+  {
+    "Id": "62f78fa6-4e5e-4420-a91d-08dc37b68f22",
+    "Name": "Studentski pohodi",
+    "AddressId": "8af7c2da-c52a-4322-b2d7-08dc37b68f24",
+    "ContactEmail": "pohodi@gmail.com",
+    "ContactPhone": "062-123-1234",
+    "Website": "www.pohodi.com",
+    "LicenseNumber": "1234",
+    "IsActive": 0,
+    "Rating": 0.00,
+    "IsDeleted": 0,
+    "CreatedAt": "2024-02-27T18:07:20.4473028",
+    "ModifiedAt": "2024-08-20T22:28:37.9372096",
+    "ImageId": null
+  },
+  {
+    "Id": "1b73b899-6578-4120-0caf-08dc8233593a",
+    "Name": "Trans turist",
+    "AddressId": "39c6bbd9-57a1-4b5a-3d83-08dc8233593d",
+    "ContactEmail": "trans.tourist@gmail.com",
+    "ContactPhone": "035-882-085",
+    "Website": "www.transtourist.com",
+    "LicenseNumber": "01475214",
+    "IsActive": 0,
+    "Rating": 0.00,
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-01T14:07:03.1257917",
+    "ModifiedAt": "2024-08-23T23:48:15.9759403",
+    "ImageId": null
+  }
+]

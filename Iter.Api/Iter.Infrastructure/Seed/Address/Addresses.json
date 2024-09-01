@@ -1,0 +1,32 @@
+﻿[
+  {
+    "Id": "462e18e6-5009-43b5-15be-08dc298c5934",
+    "Street": "Ivana krndelja",
+    "HouseNumber": "99",
+    "PostalCode": "1234",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-02-09T17:37:28.0335556",
+    "ModifiedAt": "2024-06-01T14:05:34.7222045",
+    "CityId": 101
+  },
+  {
+    "Id": "8af7c2da-c52a-4322-b2d7-08dc37b68f24",
+    "Street": "uLICA MARSALA TITA",
+    "HouseNumber": "99",
+    "PostalCode": "74000",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-02-27T18:07:20.4469789",
+    "ModifiedAt": "2024-08-20T22:28:37.9371298",
+    "CityId": 101
+  },
+  {
+    "Id": "39c6bbd9-57a1-4b5a-3d83-08dc8233593d",
+    "Street": "Ulica Ivana krndelja",
+    "HouseNumber": "55",
+    "PostalCode": "77000",
+    "IsDeleted": 0,
+    "CreatedAt": "2024-06-01T14:07:03.1257525",
+    "ModifiedAt": "2024-08-23T23:48:15.9753442",
+    "CityId": 104
+  }
+]

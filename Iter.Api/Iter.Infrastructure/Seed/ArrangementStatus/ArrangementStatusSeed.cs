@@ -8,7 +8,7 @@ namespace Iter.Infrastructure
     {
         public void Configure(EntityTypeBuilder<ArrangementStatus> entity)
         {
-            var data = Common.Deserialize<List<ArrangementStatus>>("ArrangementStatus.json");
+            var data = Common.Deserialize<List<ArrangementStatus>>("ArrangemetStatus.json");
             if (data != null)
             {
                 entity.HasData(data);

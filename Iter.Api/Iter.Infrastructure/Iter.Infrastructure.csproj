@@ -8,12 +8,60 @@
 
   <ItemGroup>
     <None Remove="iter_seed.sql" />
+    <None Remove="Seed\Address\Addresses.json" />
+    <None Remove="Seed\Agency\Agencies.json" />
+    <None Remove="Seed\ArrangementStatus\ArrangemetStatus.json" />
+    <None Remove="Seed\AspNetRoles\AspNetRoles.json" />
+    <None Remove="Seed\AspNetUserRoles\AspNetUserRoles.json" />
+    <None Remove="Seed\AspNetUser\AspNetUsers.json" />
+    <None Remove="Seed\Cities\Cities.json" />
+    <None Remove="Seed\Client\Clients.json" />
+    <None Remove="Seed\Country\Countries.json" />
+    <None Remove="Seed\Employees\Employees.json" />
+    <None Remove="Seed\ReservationStatus\ReservationStatus.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="iter_seed.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Seed\Address\Addresses.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Seed\Cities\Cities.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Seed\Country\Countries.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Seed\ArrangementStatus\ArrangemetStatus.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Seed\AspNetRoles\AspNetRoles.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Seed\AspNetUserRoles\AspNetUserRoles.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Seed\AspNetUser\AspNetUsers.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Seed\Agency\Agencies.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Seed\Client\Clients.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Seed\Employees\Employees.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Seed\ReservationStatus\ReservationStatus.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
