@@ -1,6 +1,6 @@
 ﻿using Iter.Core.EntityModels;
 using Iter.Core.EntityModelss;
-using Iter.Core.Models;
+using Iter.Core.Options;
 using Iter.Infrastructure;
 using Iter.Infrastrucure.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -11,13 +11,16 @@ namespace Iter.Infrastrucure
 {
     public class IterContext : IdentityDbContext<User>
     {
+        public readonly ApplicationSettings applicationSettings;
+        public IterContext(DbContextOptions options, ApplicationSettings applicationSettings) : base(options)
+        {
+            this.applicationSettings = applicationSettings;
+        }
+
         public void Initialize()
         {
-            if (Database.GetPendingMigrations()?.Count() > 0)
+            if (this.applicationSettings.AllowInsertingSeedData)
             {
-                Database.Migrate();
-
-
                 var assembly = typeof(IterContext).Assembly;
                 var assemblyName = assembly.FullName[..assembly.FullName.IndexOf(',')];
                 using var resource = assembly.GetManifestResourceStream($"{assemblyName}.iter_seed.sql");
@@ -43,10 +46,6 @@ namespace Iter.Infrastrucure
                     }
                 }
             }
-        }
-
-        public IterContext(DbContextOptions options) : base(options)
-        {
         }
 
         public virtual DbSet<Accommodation> Accommodation { get; set; }

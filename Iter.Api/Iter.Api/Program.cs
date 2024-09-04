@@ -5,12 +5,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.ConfigureServices();
+builder.Services.AddCustomOptions(builder.Configuration);
 builder.Services.ConfigureDb(builder.Configuration);
 builder.Services.ConfigureResponseCaching();
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJWT(builder.Configuration);
 builder.Services.ConfigureSwagger();
-builder.Services.AddCustomOptions(builder.Configuration);
 
 builder.Services.AddCors(options =>
 {

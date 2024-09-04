@@ -85,7 +85,14 @@ namespace Iter.Api.Infrastructure
             services.AddDbContext<IterContext>(options =>
                 options.UseSqlServer(connectionString));
 
+            var serviceProvider = services.BuildServiceProvider();
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<IterContext>();
+                dbContext.Database.Migrate();
+            }
         }
+
         public static void ConfigureResponseCaching(this IServiceCollection services) => services.AddResponseCaching();
 
         public static void ConfigureIdentity(this IServiceCollection services)
@@ -188,7 +195,9 @@ namespace Iter.Api.Infrastructure
                 .Configure<EmailSettings>(configuration.GetSection(nameof(ApplicationOptions.EmailSettings)))
                 .AddSingleton(x => x.GetRequiredService<IOptions<EmailSettings>>().Value)
                 .Configure<Core.Options.RabbitMqSettings>(configuration.GetSection(nameof(ApplicationOptions.RabbitMqSettings)))
-                .AddSingleton(x => x.GetRequiredService<IOptions<Core.Options.RabbitMqSettings>>().Value);
+                .AddSingleton(x => x.GetRequiredService<IOptions<Core.Options.RabbitMqSettings>>().Value)
+                .Configure<ApplicationSettings>(configuration.GetSection(nameof(ApplicationOptions.ApplicationSettings)))
+                .AddSingleton(x => x.GetRequiredService<IOptions<ApplicationSettings>>().Value);
         }
     }
 }

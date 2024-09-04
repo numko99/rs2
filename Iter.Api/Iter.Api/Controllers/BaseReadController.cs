@@ -37,7 +37,7 @@ namespace Iter.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] TSearchRequest searchModel)
+        public virtual async Task<IActionResult> Get([FromQuery] TSearchRequest searchModel)
         {
             logger.LogInformation("Get operation started with search model: {@SearchModel}", searchModel);
 
